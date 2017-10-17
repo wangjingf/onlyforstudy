@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>战友融创</title>
+<script type="text/javascript"
+	src="../../jquery-ui/external/jquery/jquery.js"></script>
+<script type="text/javascript" src="../../resource/js/bootstrap.js"></script>
+<script type="text/javascript"
+	src="../../resource/js/jquery.SuperSlide.2.1.1.source.js"></script>
+<link href="../../resource/css/bootstrap.css" rel="stylesheet">
+<link href="../../resource/css/self/wx_lib.css" rel="stylesheet">
+</head>
+<body>
+	<div id="header">
+		<div class="top">
+			<div class="headerTop w1230 clearfix">
+				<span class="logo"><img src="../../resource/css/images/logo.png">
+				</span> <span class="title"><img
+					src="../../resource/css/images/title.png"> </span>
+				<!-- <span class="weather"> <span>武汉</span> <span>高温 30℃ - 低温 24℃<i>小雨</i></span> <span>2017-08-15</span> </span> -->
+			</div>
+		</div>
+		<div class="nav">
+			<div class="w1230">
+				<ul>
+					<li class="list "><a href="../../index.html">主页</a></li>
+					<li class="list selected"><a href="../../product.html">公司产品</a></li>
+					<li class="list  last"><a href="../../contact_us.html">联系我们</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div id="content">
+	  <div class="bread">
+		<div class="w1230">
+			<div class="left">
+				<span>当前位置：</span><a href="../index.html">首页</a> &gt; <a href="../../product.html">公司产品</a> &gt; 单兵手环
+			</div>
+		</div>
+	</div>
+	<div class="content-detail">
+	 <h1>单兵手环信息</h1>
+	 <p></p>
+	</div>
+	</div>
+	<div class="footer">
+		<div class="w1230 clearfix">
+			<p class="left fl">
+				<span>联系电话：027-83868181 027-83867171&nbsp;<br>
+					地址：武汉市江汉区淮海路泛海国际SOHO城4栋11楼 邮编：430000<br> 版权信息： 湖北战友企业管理集团有限公司<br>
+					备案信息： 鄂ICP备16006446号-1 &nbsp;&nbsp;
+
+				</span>
+			</p>
+			<p class="right fr">
+				<span class="ma"><img src="../../resource/css/images/ma.jpg">
+				</span> <span>官方二维码</span>
+			</p>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(function() {
+			$('.list').click(function(e) {
+				$('.list').removeClass("selected");
+				$(this).addClass("selected");
+				e.stopPropagation();
+			});
+		});
+	</script>
+</body>
+</html>

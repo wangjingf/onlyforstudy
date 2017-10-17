@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	 xmlns:jaxws="http://cxf.apache.org/jaxws"    xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+    xmlns:cxf="http://cxf.apache.org/core" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	http://cxf.apache.org/jaxws   
+    http://cxf.apache.org/schemas/jaxws.xsd 
+     http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+	http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
+
+<import resource="classpath:META-INF/cxf/cxf.xml" />  
+<!--     <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />   -->
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />  
+      
+    <jaxws:server id="soapServer" serviceClass="test.impl.HelloWorldImpl"  
+    address="/helloCxf">	
+    	   <jaxws:serviceBean>  
+    	   	 <ref bean="hello"/>
+		    </jaxws:serviceBean>  
+		    <jaxws:inInterceptors>  
+		        <bean class="org.apache.cxf.interceptor.LoggingInInterceptor" />  
+		    </jaxws:inInterceptors>  
+		    <jaxws:outInterceptors>  
+		        <bean class="org.apache.cxf.interceptor.LoggingOutInterceptor" />  
+		    </jaxws:outInterceptors> 
+    	<jaxws:handlers>
+    		<ref bean="tokenAddHandler"/>
+    	</jaxws:handlers>
+    </jaxws:server>
+       
+     <bean id="tokenAddHandler"  class="test.handler.TokenAddHandler"/>
+    <bean id="hello" class="test.impl.HelloWorldImpl"/>  
+     <bean id="personService" class="com.DAO.PersonService"/>
+     <bean id="customerService" class="demo.jaxrs.server.CustomerService"/>
+     <jaxrs:server id="restServer" address="/PersonService">
+     		<jaxrs:serviceBeans>
+     			<ref bean="personService"/>
+     			<ref bean="customerService"/>
+     		</jaxrs:serviceBeans>
+     		<jaxrs:extensionMappings>
+            <entry key="json" value="application/json" />
+            <entry key="xml" value="application/xml" />
+        </jaxrs:extensionMappings> 
+             <jaxrs:languageMappings>
+            <entry key="en" value="en-gb" />
+        </jaxrs:languageMappings> 
+         <jaxrs:providers> 
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean class="demo.jaxrs.RestFilter"/>
+    </jaxrs:providers> 
+     </jaxrs:server>
+    <jaxws:endpoint id="helloWorld" implementor="#hello" address="/HelloWorld" >
+    </jaxws:endpoint>
+    <jaxws:endpoint id="helloWorld1" implementor="#hello" address="/v1.0/*" />
+   <!--  <jaxws:client id="helloClient"
+                  serviceClass="demo.spring.HelloWorld"
+                  address="http://localhost:8080/HelloWorld" /> -->
+      <cxf:bus>
+    	<cxf:features>
+     		<cxf:logging/>
+    	</cxf:features> 
+     </cxf:bus>     
+ </beans>
+ 

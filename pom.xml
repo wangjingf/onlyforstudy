@@ -1,0 +1,394 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.cxf.my</groupId>
+  <artifactId>cxf3.1</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>cxf3.1 Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+		<spring.version>4.1.9.RELEASE</spring.version>
+		<hibernate.version>4.3.6.Final</hibernate.version>
+		<mysql.version>5.1.6</mysql.version>
+	</properties>
+  <dependencies>
+	<!-- https://mvnrepository.com/artifact/xom/xom -->
+<!-- <dependency>
+    <groupId>xom</groupId>
+    <artifactId>xom</artifactId>
+    <version>1.1</version>
+</dependency> -->
+   
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    <groupId>org.apache.cxf</groupId>
+    <artifactId>cxf-rt-transports-http</artifactId>
+    <version>3.1.10</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.cxf</groupId>
+    <artifactId>cxf-rt-frontend-jaxws</artifactId>
+    <version>3.1.10</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.cxf</groupId>
+    <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+    <version>3.1.10</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>4.1.9.RELEASE</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-web</artifactId>
+    <version>4.1.9.RELEASE</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.cxf</groupId>
+    <artifactId>cxf-rt-rs-client</artifactId>
+    <version>3.1.10</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.cxf</groupId>
+    <artifactId>cxf-rt-transports-http-jetty</artifactId>
+    <version>3.1.10</version>
+</dependency>
+<dependency>  
+        <groupId>org.slf4j</groupId>  
+        <artifactId>slf4j-log4j12</artifactId>  
+        <version>1.7.2</version>  
+    </dependency>  
+<dependency>
+    <groupId>net.sf.json-lib</groupId>
+    <artifactId>json-lib</artifactId>
+    <version>2.3</version>
+    <classifier>jdk15</classifier>
+</dependency>
+<dependency>
+    <groupId>org.apache.cxf</groupId>
+    <artifactId>cxf-rt-rs-extension-providers</artifactId>
+    <version>3.1.10</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
+<dependency>
+    <groupId>dom4j</groupId>
+    <artifactId>dom4j</artifactId>
+    <version>1.6.1</version>
+</dependency>
+<dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>1.4.4</version>
+    </dependency>
+<!-- https://mvnrepository.com/artifact/org.codehaus.jettison/jettison -->
+<!-- <dependency>
+    <groupId>org.codehaus.jettison</groupId>
+    <artifactId>jettison</artifactId>
+    <version>1.3.8</version>
+</dependency> -->
+ <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.4.1</version>
+        </dependency> 
+          <dependency>  
+                <groupId>com.fasterxml.jackson.core</groupId>  
+                <artifactId>jackson-core</artifactId>  
+                <version>2.4.1</version>  
+            </dependency>  
+            <dependency>  
+               <groupId>com.fasterxml.jackson.core</groupId>  
+                <artifactId>jackson-databind</artifactId>  
+                <version>2.4.1</version>  
+            </dependency>  
+           <dependency>  
+                <groupId>com.fasterxml.jackson.core</groupId>  
+                <artifactId>jackson-annotations</artifactId>  
+                <version>2.4.1</version>  
+            </dependency>  
+<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+<!-- <dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-core</artifactId>
+    <version>2.4.1</version>
+</dependency> -->
+
+
+<dependency>
+  <groupId>redis.clients</groupId>
+  <artifactId>jedis</artifactId>
+  <version>2.4.1</version>
+</dependency>
+
+
+
+ <dependency>  
+        <groupId>org.springframework.data</groupId>  
+        <artifactId>spring-data-redis</artifactId>  
+        <version>1.3.4.RELEASE</version>  
+    </dependency>  
+    <dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session</artifactId>
+			<version>1.0.2.RELEASE</version>
+		</dependency>
+    <dependency>  
+        <groupId>org.springframework</groupId>  
+        <artifactId>spring-test</artifactId>  
+        <version>3.1.2.RELEASE</version>  
+        <scope>test</scope>  
+    </dependency>  
+
+
+
+
+
+
+<!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache -->
+<dependency>
+    <groupId>net.sf.ehcache</groupId>
+    <artifactId>ehcache</artifactId>
+    <version>2.9.0</version>
+</dependency>
+
+
+
+
+<!-- 添加Log4J依赖 -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+		<!-- servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+			<version>3.1.0</version>
+		</dependency>
+<!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.31</version>
+</dependency>
+
+		
+		<!-- Spring 4 dependencies -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<!-- 测试组件 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version> ${spring.version}  </version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- AspectJ 支持spring切面编程 -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.7.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.7.4</version>
+		</dependency>
+		<!-- hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>  
+		    <groupId>org.hibernate</groupId>  
+		    <artifactId>hibernate-ehcache</artifactId>  
+		    <version>${hibernate.version}</version>  
+		</dependency> 
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+
+		<!--mysql -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+
+		<!-- dbcp连接池 -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
+		
+		<!-- Jackson -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+		
+		<!-- json -->
+		<!-- <dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.6.2</version>
+		</dependency> -->
+		
+		<!-- 用于文件上传 -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+
+      <!-- 邮件start -->
+      <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.7</version>
+      </dependency>
+      <!-- 邮件end -->
+
+
+  <!-- <dependency>
+            <groupId>org.reficio</groupId>
+            <artifactId>soap-builder</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.reficio</groupId>
+            <artifactId>soap-client</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.reficio</groupId>
+            <artifactId>soap-server</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency> -->
+
+  </dependencies>
+  <build>
+    <finalName>cxf3.1</finalName>
+     <pluginManagement>  
+        <plugins>  
+            <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat6-maven-plugin</artifactId>
+        <version>2.0-SNAPSHOT</version>
+        <configuration>
+          <url>http://localhost:8080/manager/html</url>
+          <server>admin</server>
+        </configuration>
+      </plugin>
+      <!-- 第三方tomcat插件,支持redeploy -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <version>1.1</version>
+        <configuration>
+          <url>http://localhost:8080/manager</url>
+          <server>admin</server>
+          <ignorePackaging>true</ignorePackaging>
+        </configuration>
+      </plugin>
+          <plugin>   
+        <groupId>org.mortbay.jetty</groupId>   
+        <artifactId>maven-jetty-plugin</artifactId>  
+        <configuration>      
+            <contextPath>/</contextPath>      
+            <connectors>      
+                <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">  
+                    <port>8080</port>      
+                </connector>      
+            </connectors>      
+            <reload>automatic</reload>    
+            <scanIntervalSeconds>3</scanIntervalSeconds>  
+            <systemProperties>  
+                <systemProperty>  
+                <name>org.mortbay.util.URI.charset</name>  
+                <value>GBK</value>  
+            </systemProperty>  
+         </systemProperties>  
+         </configuration>   
+    </plugin>  
+        </plugins>  
+    </pluginManagement>  
+  </build>
+  
+    <repositories>  
+    		  <repository>
+            <id>reficio</id>
+            <url>http://repo.reficio.org/maven/</url>
+        </repository>
+            <repository>  
+                <id>people.apache.snapshots</id>  
+                <url>  
+                    http://repository.apache.org/content/groups/snapshots-group/  
+                </url>  
+                <releases>  
+                    <enabled>false</enabled>  
+                </releases>  
+                <snapshots>  
+                    <enabled>true</enabled>  
+                </snapshots>  
+            </repository>  
+        </repositories>  
+      
+        <pluginRepositories>  
+            <pluginRepository>  
+                <id>apache.snapshots</id>  
+                <name>Apache Snapshots</name>  
+                <url>http://repository.apache.org/content/groups/snapshots-group/</url>  
+                <releases>  
+                    <enabled>false</enabled>  
+                </releases>  
+                <snapshots>  
+                    <enabled>true</enabled>  
+                </snapshots>  
+            </pluginRepository>  
+        </pluginRepositories>  
+</project>

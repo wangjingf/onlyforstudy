@@ -1,0 +1,38 @@
+package test;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
+import javax.xml.ws.soap.SOAPBinding;
+
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+
+
+public class TestClient {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		JaxWsProxyFactoryBean svr = new JaxWsProxyFactoryBean();
+		svr.setServiceClass(HelloWorld.class);
+		svr.setAddress("http://localhost:8080/xxxxx/v1.0/*");
+		HelloWorld hello = (HelloWorld) svr.create();
+		String name = hello.hello("xxxxxxxx");
+		System.out.println(name);
+		/*final QName SERVICE_NAME  = new QName("http://impl.test/", "HelloWorldImpl");
+	     final QName PORT_NAME = new QName("http://impl.test/", "HelloWorldImplPort");
+	        Service service = Service.create(SERVICE_NAME);
+	        // Endpoint Address
+	        String endpointAddress = "http://localhost:8080/spring_cxf/v1.0/*";
+	        // If web service deployed on Tomcat deployment, endpoint should be changed to:
+	        // String endpointAddress = "http://localhost:8080/java_first_jaxws/services/hello_world";
+
+	        // Add a port to the Service
+	        service.addPort(PORT_NAME, SOAPBinding.SOAP11HTTP_BINDING, endpointAddress);
+	        
+	        HelloWorld hw = service.getPort(HelloWorld.class);
+	        hw.hello("213");*/
+	}
+
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>战友融创</title>
+<script type="text/javascript"
+	src="../jquery-ui/external/jquery/jquery.js"></script>
+<script type="text/javascript" src="resource/js/bootstrap.js"></script>
+<script type="text/javascript"
+	src="resource/js/jquery.SuperSlide.2.1.1.source.js"></script>
+<link href="resource/css/bootstrap.css" rel="stylesheet">
+<link href="resource/css/self/wx_lib.css" rel="stylesheet">
+</head>
+<body>
+	<div id="header">
+		<div class="top">
+			<div class="headerTop w1230 clearfix">
+				<span class="logo"><img src="resource/css/images/logo.png">
+				</span> <span class="title"><img
+					src="resource/css/images/title.png"> </span>
+				<!-- <span class="weather"> <span>武汉</span> <span>高温 30℃ - 低温 24℃<i>小雨</i></span> <span>2017-08-15</span> </span> -->
+			</div>
+		</div>
+		<div class="nav">
+			<div class="w1230">
+				<ul>
+					<li class="list "><a href="index_new.html">主页</a></li>
+					<li class="list"><a href="product.html">公司产品</a></li>
+					<li class="list selected last"><a href="contact_us.html">联系我们</a>
+					</l
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div id="content">
+	  <div class="contact content-top">
+	  <div class="widget ">
+				<div class="widget-header">
+					<span class="widget-title">联系我们</span>
+				</div>
+				<div class="widget-body" style="height:470px;padding:10px">
+					<iframe src="map_nav.html" style="width:100%;height:100%;border:0;overflow:hidden"></iframe>
+				</div>
+			</div>
+	  	
+	  </div>
+	  <div>
+		<!-- 	<div id="rh_left" >
+				<span class="rtitle">调研/投资者接待</span>
+				<ul>
+					<li><span>请联系：xxx</span></li>
+					<li><span>电话：010-821111800</span></li>
+					<li><span>邮箱：abc@163.com</span></li>
+					<li><span>地址：中关村军民融合创业园</span></li>
+				</ul>
+			</div> -->
+
+		</div>
+	</div>
+	<div class="footer">
+		<div class="w1230 clearfix">
+			<p class="left fl">
+				<span>联系电话：027-83868181 027-83867171&nbsp;<br>
+					地址：武汉市江汉区淮海路泛海国际SOHO城4栋11楼 邮编：430000<br> 版权信息： 湖北战友企业管理集团有限公司<br>
+					备案信息： 鄂ICP备16006446号-1 &nbsp;&nbsp;
+
+				</span>
+			</p>
+			<p class="right fr">
+				<span class="ma"><img src="resource/css/images/ma.jpg">
+				</span> <span>官方二维码</span>
+			</p>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(function() {
+			$('.list').click(function(e) {
+				$('.list').removeClass("selected");
+				$(this).addClass("selected");
+				e.stopPropagation();
+			});
+		});
+	</script>
+</body>
+</html>

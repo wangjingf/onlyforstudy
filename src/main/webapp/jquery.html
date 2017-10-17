@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="jquery-ui/external/jquery/jquery.js"></script>
+<style type="text/css">
+	.content-box{
+		border:1px solid;
+		width:100px;
+		height:100px;
+		padding:10px;
+		margin:10px;
+		box-sizing:content-box;
+	}
+	.border-box{
+		box-sizing:border-box;
+		border:1px solid;
+		width:100px;
+		height:100px;
+		padding:10px;
+		margin:10px;
+	}
+</style>
+<script type="text/javascript">
+	$(function(){
+		$('.content-box').html("针对contentBox width()=css.width:"+$('.content-box').width()+"\n"+"outerWidth():"+$('.content-box').outerWidth()+"\n"+"innerWidth():"+$('.content-box').innerWidth()+"\n");
+		$('.border-box').html("针对borderBox width():"+$('.border-box').width()+"\n"+"outerWidth():"+$('.border-box').outerWidth()+"\n"+"innerWidth():"+$('.border-box').innerWidth()+"\n");
+		
+	});
+</script>
+</head>
+<body>
+	<div class="content-box">
+	
+	</div>
+	<div class="border-box">
+	
+	</div>
+</body>
+</html>

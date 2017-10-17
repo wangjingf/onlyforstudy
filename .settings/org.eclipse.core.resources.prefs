@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+encoding//src/main/java/servlet/UploadServlet.java=gbk
+encoding//src/main/java/study/redis/RedisClient.java=gbk
+encoding//src/main/java/test/DynamicClientCall.java=UTF-8
+encoding//src/main/resources/std_config.properties=UTF-8
+encoding//src/main/webapp/corsTest.jsp=UTF-8
+encoding//src/main/webapp/file/fileDownload.jsp=UTF-8
+encoding//src/main/webapp/mobile/location_bd.jsp=UTF-8
+encoding//src/main/webapp/mobile/photo.jsp=UTF-8

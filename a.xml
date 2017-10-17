@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<o>
+	<friends class="array">
+		<e class="object">
+			<friends class="array" />
+			<job class="object" null="true" />
+			<name type="string" />
+			<sex type="string" />
+		</e>
+	</friends>
+	<job class="object">
+		<jobDesc type="string" />
+		<jobName type="string" />
+	</job>
+	<name type="string">name</name>
+	<sex type="string" />
+</o>

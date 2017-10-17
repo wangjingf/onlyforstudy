@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://service.test/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://www.w3.org/2007/05/addressing/metadata" xmlns:tns="http://service.test/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <types>
+    <xsd:schema>
+<xsd:import namespace="http://service.test/" schemaLocation="./service0.xsd"/>
+</xsd:schema>
+  </types>
+  <message name="helloResponse">
+    <part name="parameters" element="tns:helloResponse">
+    </part>
+  </message>
+  <message name="hello">
+    <part name="parameters" element="tns:hello">
+    </part>
+  </message>
+  <portType name="IHelloWorld">
+    <operation name="hello">
+      <input message="tns:hello" ns1:Action="http://service.test/IHelloWorld/helloRequest">
+    </input>
+      <output message="tns:helloResponse" ns1:Action="http://service.test/IHelloWorld/helloResponse">
+    </output>
+    </operation>
+  </portType>
+</definitions>
