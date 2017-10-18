@@ -292,7 +292,11 @@
       <version>1.4.7</version>
       </dependency>
       <!-- 邮件end -->
-
+<dependency>
+    <groupId>io.netty</groupId>
+    <artifactId>netty-all</artifactId>
+    <version>4.1.6.Final</version>
+</dependency>
 
   <!-- <dependency>
             <groupId>org.reficio</groupId>
