@@ -26,21 +26,22 @@ import java.net.URL;
 import org.apache.cxf.helpers.IOUtils;
 import org.apache.cxf.io.CachedOutputStream;
 import org.apache.cxf.resource.URIResolver;
-import org.apache.http.client.HttpClient;
+import org.springframework.http.RequestEntity;
+import sun.net.www.http.HttpClient;
 
 public final class Client {
 
-    private Client() {
+  /*  private Client() {
     }
 
     public static void main(String args[]) throws Exception {
         // Sent HTTP GET request to query all customer info
-        /*
+        *//*
          * URL url = new URL("http://localhost:9000/customers");
          * System.out.println("Invoking server through HTTP GET to query all
          * customer info"); InputStream in = url.openStream(); StreamSource
          * source = new StreamSource(in); printSource(source);
-         */
+         *//*
 
         // Sent HTTP GET request to query customer info
         System.out.println("Sent HTTP GET request to query customer info");
@@ -111,6 +112,6 @@ public final class Client {
         in.close();
         bos.close();
         return bos.getOut().toString();
-    }
+    }*/
 
 }

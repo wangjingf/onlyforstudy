@@ -19,7 +19,6 @@ public class TestConcurrentHashMap {
 					for(int j=0;j<500;j++){
 						increase("hello");
 						increase1("hello");
-						increase2("hello");
 					}
 				}
 			});

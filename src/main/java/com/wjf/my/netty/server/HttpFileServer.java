@@ -9,12 +9,11 @@ import java.io.RandomAccessFile;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-import org.jboss.netty.handler.stream.ChunkedNioFile;
-import org.slf4j.Logger;
+import io.netty.handler.stream.ChunkedNioFile;
+ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.thu.lang.exceptions.StdException;
-import io.netty.bootstrap.ServerBootstrap;
+ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -185,7 +184,7 @@ public class HttpFileServer {
 
 		private void downloadFile(ChannelHandlerContext ctx, File file,FullHttpRequest request) throws IOException {
 			if(file.isDirectory()){
-				throw new StdException("file.CAN_err_invalid_file");
+				throw new RuntimeException("file.CAN_err_invalid_file");
 			}
 			HttpResponse response = new DefaultHttpResponse(request.protocolVersion(), HttpResponseStatus.OK);
 			boolean isKeepAlive = HttpUtil.isKeepAlive(request);
@@ -210,7 +209,7 @@ public class HttpFileServer {
 
 		private void showDirectory(ChannelHandlerContext ctx,File file,FullHttpRequest request) {
 			if(!file.isDirectory()){
-				throw new StdException("file.CAN_err_invalid_directory");
+				throw new RuntimeException("file.CAN_err_invalid_directory");
 			}
 			FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 			response.headers().set("content-type", "text/html;charset=utf-8");

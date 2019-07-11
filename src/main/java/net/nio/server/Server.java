@@ -11,83 +11,50 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
-public class Server implements Runnable {
-	private Selector selector;
-	private ServerSocketChannel serverChannel;
-	private volatile boolean stop;
-	public Server(int port) {
-		try {
-			selector = selector.open();
-			serverChannel = ServerSocketChannel.open();
-			serverChannel.configureBlocking(false);//非阻塞的channel
-			serverChannel.socket().bind(new InetSocketAddress("127.0.0.1", 8010),1024);
-			serverChannel.register(selector, SelectionKey.OP_ACCEPT);//channel注册到selector上
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	public void stop(){
-		this.stop = true;
-	}
+public class Server  {
 	public static void main(String[] args) throws IOException {
-		Server server = new Server(1024);
-		new Thread(server).start();
-		
-	}
-	private void handleInput(SelectionKey key) throws IOException{
-		if(key.isValid()){
-			if(key.isAcceptable()){
-				ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
-				SocketChannel sc= ssc.accept();
-				sc.configureBlocking(false);
-				sc.register(selector, SelectionKey.OP_READ);
-			}
-			if(key.isReadable()){
-				SocketChannel sc = (SocketChannel) key.channel();
-				 ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-				 int readBytes = sc.read(readBuffer);
-				 if(readBytes>0){
-					 readBuffer.flip();
-					 byte[] bytes  = new byte[readBuffer.remaining()];
-					 readBuffer.get(bytes);
-					 String body = new String(bytes,"utf-8");
-					 System.out.println("the time server receive order:" + body);
-					 String currentTime = "QUERY TIME ORDER".equalsIgnoreCase(body)? new Date(System.currentTimeMillis()).toString():"BAD ORDER";
-					 doWrite(sc,currentTime);
-				 }else if(readBytes<0){//链路关闭
-					 key.cancel();
-					 sc.close();
-				 }else{
-					 ;//忽略
-				 }
-			}
-		}
-	}
-	private void doWrite(SocketChannel sc, String response) throws IOException     {
-		if(response!=null && response.trim().length()>0){
-			byte[] bytes = response.getBytes();
-			ByteBuffer writeBuffer = ByteBuffer.allocate(bytes.length);
-			writeBuffer.put(bytes);
-			writeBuffer.flip();
-			sc.write(writeBuffer);
-		}
-	}
-	@Override
-	public void run() {
-		while(!stop){
-			try{
-				selector.select(1000);
-				Set selectedKeys = selector.selectedKeys();
-				Iterator<SelectionKey> it = selectedKeys.iterator();
-				while(it.hasNext()){
-					SelectionKey key = it.next();
-					it.remove();
+		// Get the selector
+		Selector selector = Selector.open();
+		System.out.println("Selector is open for making connection: " + selector.isOpen());
+		// Get the server socket channel and register using selector
+		ServerSocketChannel SS = ServerSocketChannel.open();
+		InetSocketAddress hostAddress = new InetSocketAddress("localhost", 8080);
+		SS.bind(hostAddress);
+		SS.configureBlocking(false);
+		int ops = SS.validOps();
+		SelectionKey selectKy = SS.register(selector, ops, null);
+		for (;;) {
+			System.out.println("Waiting for the select operation...");
+			int noOfKeys = selector.select();
+			System.out.println("The Number of selected keys are: " + noOfKeys);
+			Set selectedKeys = selector.selectedKeys();
+			Iterator itr = selectedKeys.iterator();
+			while (itr.hasNext()) {
+				SelectionKey ky = (SelectionKey) itr.next();
+				if (ky.isAcceptable()) {
+					// The new client connection is accepted
+					SocketChannel client = SS.accept();
+					client.configureBlocking(false);
+					// The new connection is added to a selector
+					client.register(selector, SelectionKey.OP_READ);
+					System.out.println("The new connection is accepted from the client: " + client);
+				} else if (ky.isReadable()) {
+					// Data is read from the client
+					SocketChannel client = (SocketChannel) ky.channel();
+					ByteBuffer buffer = ByteBuffer.allocate(256);
+					client.read(buffer);
+					String output = new String(buffer.array()).trim();
+					System.out.println("Message read from client: " + output);
+					if (output.equals("Bye Bye")) {
+						client.close();
+						System.out.println("The Client messages are complete; close the session.");
+					}
 				}
-			}catch(Exception e){
-				
-			}
-		}
+				itr.remove();
+			} // end of while loop
+		} // end of for loop
 	}
+
+
 
 }
