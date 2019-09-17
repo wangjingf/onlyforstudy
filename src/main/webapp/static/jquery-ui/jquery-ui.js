@@ -1951,7 +1951,7 @@ $.widget("ui.draggable", $.ui.mouse, {
 
 	_getParentOffset: function() {
 
-		//Get the offsetParent and cache its position
+		//Get the offsetParent and io.study.cache its position
 		var po = this.offsetParent.offset(),
 			document = this.document[ 0 ];
 
@@ -3704,7 +3704,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 			prel = this._proportionallyResizeElements[i];
 
-			// TODO: Seems like a bug to cache this.outerDimensions
+			// TODO: Seems like a bug to io.study.cache this.outerDimensions
 			// considering that we are in a loop.
 			if (!this.outerDimensions) {
 				this.outerDimensions = this._getPaddingPlusBorderDimensions( prel );
@@ -4237,7 +4237,7 @@ var selectable = $.widget("ui.selectable", $.ui.mouse, {
 
 		this.dragged = false;
 
-		// cache selectee children based on filter
+		// io.study.cache selectee children based on filter
 		this.refresh = function() {
 			selectees = $(that.options.filter, that.element[0]);
 			selectees.addClass("ui-selectee");
@@ -5452,7 +5452,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 	_getParentOffset: function() {
 
 
-		//Get the offsetParent and cache its position
+		//Get the offsetParent and io.study.cache its position
 		this.offsetParent = this.helper.offsetParent();
 		var po = this.offsetParent.offset();
 
@@ -14350,7 +14350,7 @@ $.effects = {
 supportElem.style.cssText = "background-color:rgba(1,1,1,.5)";
 support.rgba = supportElem.style.backgroundColor.indexOf( "rgba" ) > -1;
 
-// define cache name and alpha properties
+// define io.study.cache name and alpha properties
 // for rgba and hsla spaces
 each( spaces, function( spaceName, space ) {
 	space.cache = "_" + spaceName;
@@ -14471,7 +14471,7 @@ color.fn = jQuery.extend( color.prototype, {
 					var cache = space.cache;
 					each( space.props, function( key, prop ) {
 
-						// if the cache doesn't exist, and we know how to convert
+						// if the io.study.cache doesn't exist, and we know how to convert
 						if ( !inst[ cache ] && space.to ) {
 
 							// if the value was null, we don't need to copy it
@@ -14716,7 +14716,7 @@ each( spaces, function( spaceName, space ) {
 	// makes rgba() and hsla()
 	color.fn[ spaceName ] = function( value ) {
 
-		// generate a cache for this space if it doesn't exist
+		// generate a io.study.cache for this space if it doesn't exist
 		if ( to && !this[ cache ] ) {
 			this[ cache ] = to( this._rgba );
 		}

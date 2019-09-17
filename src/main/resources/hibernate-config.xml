@@ -30,7 +30,7 @@
 
 	<!-- Hibernate session factory -->
 	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="dataSource">
 			<ref bean="dataSource" />
 		</property>
@@ -38,20 +38,20 @@
 		<property name="hibernateProperties">
 			<props>
 				 <prop key="hibernate.show_sql">true</prop>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<!-- 开启二级缓存 ehcache -->  
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>  
 				<!-- 开启查询的二级缓存  如果不需要就不设置-->  
 				<prop key="hibernate.cache.use_query_cache">true</prop>  
-				 <prop key="hibernate.cache.provider_class">  
-		         org.hibernate.cache.EhCacheProvider  
-		      </prop>
+				 <prop key="hibernate.cache.provider_class">
+					 net.sf.ehcache.hibernate.EhCacheProvider
+				 </prop>
 				<!-- Hibernate4.0以上设置factory -->  
 				
 				<prop key="hibernate.cache.region.factory_class">
-				    org.hibernate.cache.SingletonEhCacheRegionFactory
-				</prop>
+                    org.hibernate.cache.SingletonEhCacheRegionFactory
+                </prop>
 				
 				<!-- 二级缓存 ehcache的配置文件位置 -->  
 				<prop key="hibernate.cache.provider_configuration_file_resource_path">ehcache.xml</prop> 
@@ -61,7 +61,7 @@
 	</bean>
 
 	<bean id="transactionManager"
-		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<!-- 配置事务，hibernate必须配置事务 -->

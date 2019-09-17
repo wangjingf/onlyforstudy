@@ -1,5 +1,8 @@
 package test.handler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +13,9 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import org.apache.log4j.Logger;
 
 public class TokenAddHandler implements SOAPHandler<SOAPMessageContext> {
-	public static Logger logger = Logger.getLogger(TokenAddHandler.class);
+	public static Logger logger = LoggerFactory.getLogger(TokenAddHandler.class);
 	@Override
 	public boolean handleMessage(SOAPMessageContext context) {
 		Map<String,Object> headers =  (Map<String, Object>) context.get(MessageContext.HTTP_REQUEST_HEADERS);

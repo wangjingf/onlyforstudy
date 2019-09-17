@@ -14,79 +14,79 @@ import redis.clients.jedis.ShardedJedisPool;
 
 public class RedisClient {
 
-    private Jedis jedis;//·ÇÇĞÆ¬¶î¿Í»§¶ËÁ¬½Ó
-    private JedisPool jedisPool;//·ÇÇĞÆ¬Á¬½Ó³Ø
-    private ShardedJedis shardedJedis;//ÇĞÆ¬¶î¿Í»§¶ËÁ¬½Ó
-    private ShardedJedisPool shardedJedisPool;//ÇĞÆ¬Á¬½Ó³Ø
-    
-    public RedisClient() 
-    { 
-        initialPool(); 
-        initialShardedPool(); 
-        shardedJedis = shardedJedisPool.getResource(); 
-        jedis = jedisPool.getResource(); 
-        
-        
-    } 
- 
+    private Jedis jedis;//éåˆ‡ç‰‡é¢å®¢æˆ·ç«¯è¿æ¥
+    private JedisPool jedisPool;//éåˆ‡ç‰‡è¿æ¥æ± 
+    private ShardedJedis shardedJedis;//åˆ‡ç‰‡é¢å®¢æˆ·ç«¯è¿æ¥
+    private ShardedJedisPool shardedJedisPool;//åˆ‡ç‰‡è¿æ¥æ± 
+
+    public RedisClient()
+    {
+        initialPool();
+        initialShardedPool();
+        shardedJedis = shardedJedisPool.getResource();
+        jedis = jedisPool.getResource();
+
+
+    }
+
     /**
-     * ³õÊ¼»¯·ÇÇĞÆ¬³Ø
+     * åˆå§‹åŒ–éåˆ‡ç‰‡æ± 
      */
-    private void initialPool() 
-    { 
-        // ³Ø»ù±¾ÅäÖÃ 
+    private void initialPool()
+    {
+        // æ± åŸºæœ¬é…ç½®
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxIdle(5); 
-        config.setMaxWaitMillis(1000L); 
-        config.setTestOnBorrow(false); 
-        
+        config.setMaxIdle(5);
+        config.setMaxWaitMillis(1000L);
+        config.setTestOnBorrow(false);
+
         jedisPool = new JedisPool(config,"127.0.0.1",6379);
     }
-    
-    /** 
-     * ³õÊ¼»¯ÇĞÆ¬³Ø 
-     */ 
-    private void initialShardedPool() 
-    { 
-        // ³Ø»ù±¾ÅäÖÃ 
-        JedisPoolConfig config = new JedisPoolConfig(); 
-        config.setMaxIdle(5); 
+
+    /**
+     * åˆå§‹åŒ–åˆ‡ç‰‡æ± 
+     */
+    private void initialShardedPool()
+    {
+        // æ± åŸºæœ¬é…ç½®
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxIdle(5);
         config.setMaxWaitMillis(1000L);
-        config.setTestOnBorrow(false); 
-        // slaveÁ´½Ó 
-        List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>(); 
-        shards.add(new JedisShardInfo("127.0.0.1", 6379, "master")); 
+        config.setTestOnBorrow(false);
+        // slaveé“¾æ¥
+        List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>();
+        shards.add(new JedisShardInfo("127.0.0.1", 6379, "master"));
 
-        // ¹¹Ôì³Ø 
-        shardedJedisPool = new ShardedJedisPool(config, shards); 
-    } 
+        // æ„é€ æ± 
+        shardedJedisPool = new ShardedJedisPool(config, shards);
+    }
 
-    public void show() {     
-        KeyOperate(); 
-        StringOperate(); 
-        ListOperate(); 
+    public void show() {
+        KeyOperate();
+        StringOperate();
+        ListOperate();
         SetOperate();
         SortedSetOperate();
-        HashOperate(); 
+        HashOperate();
         jedis = jedisPool.getResource();
         shardedJedis = shardedJedisPool.getResource();
-    } 
+    }
 
-      private void KeyOperate() {
-      }
+    private void KeyOperate() {
+    }
 
-      private void StringOperate() {
-      }
+    private void StringOperate() {
+    }
 
-      private void ListOperate() {
-      }
+    private void ListOperate() {
+    }
 
-      private void SetOperate() {
-      }
+    private void SetOperate() {
+    }
 
-      private void SortedSetOperate() {
-      }
-    
-      private void HashOperate() {
-      }
+    private void SortedSetOperate() {
+    }
+
+    private void HashOperate() {
+    }
 }

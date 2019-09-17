@@ -1,8 +1,8 @@
 # Ignore Mac system files.
 ._*
 
-# Ignore sass-cache files.
-*.sass-cache*
+# Ignore sass-io.study.cache files.
+*.sass-io.study.cache*
 *.scssc
 
 # Ignore Gulp modules

@@ -1,0 +1,13 @@
+{
+  "analysis": {
+    "analyzer": {
+      "html_analyzer": {
+        "type":      "custom",
+        "tokenizer": "ik_smart",
+        "char_filter": [
+          "html_strip"
+        ]
+      }
+    }
+  }
+}

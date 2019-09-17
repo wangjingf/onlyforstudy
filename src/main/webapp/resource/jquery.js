@@ -42,7 +42,7 @@ var
 	// [[Class]] -> type pairs
 	class2type = {},
 
-	// List of deleted data cache ids, so we can reuse them
+	// List of deleted data io.study.cache ids, so we can reuse them
 	core_deletedIds = [],
 
 	core_version = "1.9.1",
@@ -813,10 +813,10 @@ jQuery.extend({
 		}
 
 		// Simulated bind 
-		args = core_slice.call( arguments, 2 );//¼Ù¶¨$.proxy(fn,context,1,2,3)
+		args = core_slice.call( arguments, 2 );//ï¿½Ù¶ï¿½$.proxy(fn,context,1,2,3)
 		proxy = function(/*arguments*/) {//proxy(4,5)
 
-    //ÐèÒª×¢Òâµ½µÄÊÇÕâÀïµÄargumentsÊÇµ±Ç°º¯ÊýµÄ²ÎÊýÁÐ±í
+    //ï¿½ï¿½Òª×¢ï¿½âµ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½argumentsï¿½Çµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
 			return fn.apply( context || this, args.concat( core_slice.call( arguments ) ) );//1,2,3,4,5
 		};
 
@@ -969,10 +969,10 @@ function isArraylike( obj ) {
 
 // All jQuery objects should point back to these
 rootjQuery = jQuery(document);
-// String to Object options format cache
+// String to Object options format io.study.cache
 var optionsCache = {};
 
-// Convert String-formatted options into Object-formatted ones and store in cache
+// Convert String-formatted options into Object-formatted ones and store in io.study.cache
 function createOptions( options ) {
 	var object = optionsCache[ options ] = {};
 	jQuery.each( options.match( core_rnotwhite ) || [], function( _, flag ) {
@@ -1006,7 +1006,7 @@ function createOptions( options ) {
 jQuery.Callbacks = function( options ) {
 
 	// Convert options from String-formatted to Object-formatted if needed
-	// (we check in cache first)
+	// (we check in io.study.cache first)
 	options = typeof options === "string" ?
 		( optionsCache[ options ] || createOptions( options ) ) :
 		jQuery.extend( {}, options );
@@ -1563,12 +1563,12 @@ function internalData( elem, name, data, pvt /* Internal Use Only */ ){
 		// can't GC object references properly across the DOM-JS boundary
 		isNode = elem.nodeType,
 
-		// Only DOM nodes need the global jQuery cache; JS object data is
+		// Only DOM nodes need the global jQuery io.study.cache; JS object data is
 		// attached directly to the object so GC can occur automatically
 		cache = isNode ? jQuery.cache : elem,
 
-		// Only defining an ID for JS objects if its cache already exists allows
-		// the code to shortcut on the same path as a DOM node with no cache
+		// Only defining an ID for JS objects if its io.study.cache already exists allows
+		// the code to shortcut on the same path as a DOM node with no io.study.cache
 		id = isNode ? elem[ internalKey ] : elem[ internalKey ] && internalKey;
 
 	// Avoid doing any more work than we need to when trying to get data on an
@@ -1579,7 +1579,7 @@ function internalData( elem, name, data, pvt /* Internal Use Only */ ){
 
 	if ( !id ) {
 		// Only DOM nodes need a new unique ID for each element since their data
-		// ends up in the global cache
+		// ends up in the global io.study.cache
 		if ( isNode ) {
 			elem[ internalKey ] = id = core_deletedIds.pop() || jQuery.guid++;
 		} else {
@@ -1598,7 +1598,7 @@ function internalData( elem, name, data, pvt /* Internal Use Only */ ){
 	}
 
 	// An object can be passed to jQuery.data instead of a key/value pair; this gets
-	// shallow copied over onto the existing cache
+	// shallow copied over onto the existing io.study.cache
 	if ( typeof name === "object" || typeof name === "function" ) {
 		if ( pvt ) {
 			cache[ id ] = jQuery.extend( cache[ id ], name );
@@ -1610,7 +1610,7 @@ function internalData( elem, name, data, pvt /* Internal Use Only */ ){
 	thisCache = cache[ id ];
 
 	// jQuery data() is stored in a separate object inside the object's internal data
-	// cache in order to avoid key collisions between internal data and user-defined
+	// io.study.cache in order to avoid key collisions between internal data and user-defined
 	// data.
 	if ( !pvt ) {
 		if ( !thisCache.data ) {
@@ -1656,7 +1656,7 @@ function internalRemoveData( elem, name, pvt ) {
 		cache = isNode ? jQuery.cache : elem,
 		id = isNode ? elem[ jQuery.expando ] : jQuery.expando;
 
-	// If there is already no cache entry for this object, there is no
+	// If there is already no io.study.cache entry for this object, there is no
 	// purpose in continuing
 	if ( !cache[ id ] ) {
 		return;
@@ -1698,8 +1698,8 @@ function internalRemoveData( elem, name, pvt ) {
 				delete thisCache[ name[i] ];
 			}
 
-			// If there is no data left in the cache, we want to continue
-			// and let the cache object itself get destroyed
+			// If there is no data left in the io.study.cache, we want to continue
+			// and let the io.study.cache object itself get destroyed
 			if ( !( pvt ? isEmptyDataObject : jQuery.isEmptyObject )( thisCache ) ) {
 				return;
 			}
@@ -1710,18 +1710,18 @@ function internalRemoveData( elem, name, pvt ) {
 	if ( !pvt ) {
 		delete cache[ id ].data;
 
-		// Don't destroy the parent cache unless the internal data object
+		// Don't destroy the parent io.study.cache unless the internal data object
 		// had been the only thing left in it
 		if ( !isEmptyDataObject( cache[ id ] ) ) {
 			return;
 		}
 	}
 
-	// Destroy the cache
+	// Destroy the io.study.cache
 	if ( isNode ) {
 		jQuery.cleanData( [ elem ], true );
 
-	// Use delete when supported for expandos or `cache` is not a window per isWindow (#10080)
+	// Use delete when supported for expandos or `io.study.cache` is not a window per isWindow (#10080)
 	} else if ( jQuery.support.deleteExpando || cache != cache.window ) {
 		delete cache[ id ];
 
@@ -1871,7 +1871,7 @@ function dataAttr( elem, key, data ) {
 	return data;
 }
 
-// checks a cache object for emptiness
+// checks a io.study.cache object for emptiness
 function isEmptyDataObject( obj ) {
 	var name;
 	for ( name in obj ) {
@@ -3847,7 +3847,7 @@ function isNative( fn ) {
 /**
  * Create key-value caches of limited size
  * @returns {Function(string, Object)} Returns the Object data after storing it on itself with
- *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
+ *	property name the (space-suffixed) string and (if the io.study.cache is larger than Expr.cacheLength)
  *	deleting the oldest entry
  */
 function createCache() {
@@ -4717,7 +4717,7 @@ Expr = Sizzle.selectors = {
 
 						start = [ forward ? parent.firstChild : parent.lastChild ];
 
-						// non-xml :nth-child(...) stores cache data on `parent`
+						// non-xml :nth-child(...) stores io.study.cache data on `parent`
 						if ( forward && useCache ) {
 							// Seek `elem` from a previously-cached index
 							outerCache = parent[ expando ] || (parent[ expando ] = {});
@@ -4731,7 +4731,7 @@ Expr = Sizzle.selectors = {
 								// Fallback to seeking `elem` from the start
 								(diff = nodeIndex = 0) || start.pop()) ) {
 
-								// When found, cache indexes on `parent` and break
+								// When found, io.study.cache indexes on `parent` and break
 								if ( node.nodeType === 1 && ++diff && node === elem ) {
 									outerCache[ type ] = [ dirruns, nodeIndex, diff ];
 									break;
@@ -6591,7 +6591,7 @@ jQuery.extend({
 						}
 					}
 
-					// Remove cache only if it was not already removed by jQuery.event.remove
+					// Remove io.study.cache only if it was not already removed by jQuery.event.remove
 					if ( cache[ id ] ) {
 
 						delete cache[ id ];
@@ -7628,7 +7628,7 @@ jQuery.extend({
 	// Counter for holding the number of active queries
 	active: 0,
 
-	// Last-Modified header cache for next request
+	// Last-Modified header io.study.cache for next request
 	lastModified: {},
 	etag: {},
 
@@ -7646,7 +7646,7 @@ jQuery.extend({
 		dataType: null,
 		username: null,
 		password: null,
-		cache: null,
+		io.study.cache: null,
 		throws: false,
 		traditional: false,
 		headers: {},
@@ -7730,7 +7730,7 @@ jQuery.extend({
 			parts,
 			// Loop variable
 			i,
-			// URL without anti-cache param
+			// URL without anti-io.study.cache param
 			cacheURL,
 			// Response headers as string
 			responseHeadersString,
@@ -7901,7 +7901,7 @@ jQuery.extend({
 				delete s.data;
 			}
 
-			// Add anti-cache in url if needed
+			// Add anti-io.study.cache in url if needed
 			if ( s.cache === false ) {
 				s.url = rts.test( cacheURL ) ?
 
@@ -8276,7 +8276,7 @@ jQuery.ajaxSetup({
 	}
 });
 
-// Handle cache's special case and global
+// Handle io.study.cache's special case and global
 jQuery.ajaxPrefilter( "script", function( s ) {
 	if ( s.cache === undefined ) {
 		s.cache = false;
@@ -8605,7 +8605,7 @@ if ( xhrSupported ) {
 						// if we're in sync mode we fire the callback
 						callback();
 					} else if ( xhr.readyState === 4 ) {
-						// (IE6 & IE7) if it's in cache and has been
+						// (IE6 & IE7) if it's in io.study.cache and has been
 						// retrieved directly we need to fire the callback
 						setTimeout( callback );
 					} else {

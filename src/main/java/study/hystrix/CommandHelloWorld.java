@@ -8,18 +8,33 @@ import rx.Observer;
 import rx.functions.Action1;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 
 public class CommandHelloWorld extends HystrixCommand<String> {
     String name;
+    boolean failure = false;
     protected CommandHelloWorld(String name) {
         super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
         this.name = name;
-    }
 
+    }
+    protected CommandHelloWorld(String name,boolean failure) {
+        this(name);
+        this.failure = failure;
+
+    }
     @Override
     protected String run() throws Exception {
+        if(failure){
+            throw new RuntimeException("error");
+        }
         return "Hello "+name+"!";
     }
+    @Override
+    protected String getFallback() {
+        return "failure";
+    }
+
     public static class UnitTest extends TestCase{
         
         public void testSynchronous() {
@@ -43,7 +58,17 @@ public class CommandHelloWorld extends HystrixCommand<String> {
             assertEquals("Hello Bob!", fBob.get());
         }
 
-        
+        public void testFailback(){
+            Observable observable = new CommandHelloWorld("world",true).observe();
+            assertEquals("failure",observable.toBlocking().single());
+        }
+
+        public void testSemaphore() throws InterruptedException {
+            Semaphore semaphore = new Semaphore(1);
+            semaphore.acquire();
+            System.out.println(true);
+            //semaphore.acquire();
+        }
         public void testObservable() throws Exception {
 
             Observable<String> fWorld = new CommandHelloWorld("World").observe();

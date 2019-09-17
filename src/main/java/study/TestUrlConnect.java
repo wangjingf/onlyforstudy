@@ -58,7 +58,7 @@ public class TestUrlConnect {
 			futures.add(future);
 		}
 		for (int i = 0; i < urls.size(); i++) {
-			Boolean result = futures.get(i).get();//get·½·¨»áÒ»Ö±×èÈûÖ±µ½ÈÎÎñÍê³É
+			Boolean result = futures.get(i).get();//getæ–¹æ³•ä¼šä¸€ç›´é˜»å¡ç›´åˆ°ä»»åŠ¡å®Œæˆ
 			if(result!=null){
 				ret.add(result);
 			}
@@ -88,12 +88,12 @@ public class TestUrlConnect {
 					return true;
 				}
 			};
-			
+
 			completionService.submit(task);
 		}
 		for (int i = 0; i < urls.size(); i++) {
-			Future<Boolean> future = completionService.take();//completionServiceÍê³ÉµÄÊÇÄÄÒ»¸ö?¿ÉÍ¨¹ıÒ»¸ö¶ÔÏóÔÚ´æ´¢url¶ÔÏó²»¾ÍĞĞÁË£¿
-				ret.add(future.get());
+			Future<Boolean> future = completionService.take();//completionServiceå®Œæˆçš„æ˜¯å“ªä¸€ä¸ª?å¯é€šè¿‡ä¸€ä¸ªå¯¹è±¡åœ¨å­˜å‚¨urlå¯¹è±¡ä¸å°±è¡Œäº†ï¼Ÿ
+			ret.add(future.get());
 		}
 		executorService.shutdown();
 		return ret;
@@ -107,7 +107,7 @@ public class TestUrlConnect {
 			e1.printStackTrace();
 		}
 		URLConnection connection;
-		
+
 		try {
 			connection = url.openConnection();
 			connection.setConnectTimeout(1*1000);

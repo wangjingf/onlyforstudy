@@ -515,7 +515,7 @@ if (!JSON) {
         };
     }
 
-// Augment the basic prototypes if they have not already been augmented.
+// Augment the io.study.test.basic prototypes if they have not already been augmented.
 // These forms are obsolete. It is recommended that JSON.stringify and
 // JSON.parse be used instead.
 

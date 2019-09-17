@@ -2,15 +2,16 @@ package com.wjf.my.netty.client;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimeClientHandler extends ChannelHandlerAdapter {
-	private static final Logger logger = Logger.getLogger(TimeClientHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(TimeClientHandler.class);
 	private final ByteBuf firstMessage;
 	public TimeClientHandler(){
 		byte[] req = "QUERY TIME ORDER".getBytes();

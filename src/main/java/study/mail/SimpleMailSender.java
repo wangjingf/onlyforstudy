@@ -12,148 +12,148 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
- * ¼òµ¥ÓÊ¼ş·¢ËÍÆ÷£¬¿Éµ¥·¢£¬Èº·¢¡£
- * 
+ * ç®€å•é‚®ä»¶å‘é€å™¨ï¼Œå¯å•å‘ï¼Œç¾¤å‘ã€‚
+ *
  * @author MZULE
- * 
+ *
  */
 public class SimpleMailSender {
 
 	/**
-	 * ·¢ËÍÓÊ¼şµÄpropsÎÄ¼ş
+	 * å‘é€é‚®ä»¶çš„propsæ–‡ä»¶
 	 */
 	private final transient Properties props = System.getProperties();
 	/**
-	 * ÓÊ¼ş·şÎñÆ÷µÇÂ¼ÑéÖ¤
+	 * é‚®ä»¶æœåŠ¡å™¨ç™»å½•éªŒè¯
 	 */
 	private transient MailAuthenticator authenticator;
 
 	/**
-	 * ÓÊÏäsession
+	 * é‚®ç®±session
 	 */
 	private transient Session session;
 
 	/**
-	 * ³õÊ¼»¯ÓÊ¼ş·¢ËÍÆ÷
-	 * 
+	 * åˆå§‹åŒ–é‚®ä»¶å‘é€å™¨
+	 *
 	 * @param smtpHostName
-	 *            SMTPÓÊ¼ş·şÎñÆ÷µØÖ·
+	 *            SMTPé‚®ä»¶æœåŠ¡å™¨åœ°å€
 	 * @param username
-	 *            ·¢ËÍÓÊ¼şµÄÓÃ»§Ãû(µØÖ·)
+	 *            å‘é€é‚®ä»¶çš„ç”¨æˆ·å(åœ°å€)
 	 * @param password
-	 *            ·¢ËÍÓÊ¼şµÄÃÜÂë
+	 *            å‘é€é‚®ä»¶çš„å¯†ç 
 	 */
 	public SimpleMailSender(final String smtpHostName, final String username, final String password) {
 		init(username, password, smtpHostName);
 	}
 
 	public static void main(String[] args) throws AddressException, MessagingException{
-    	SimpleMailSender sender = new SimpleMailSender("w1320989494@163.com","www6117497");
-    	sender.send("w1320989494@163.com", "½ñÌìÒªºÃºÃÑ§Ï°", "·¢ËÍµÄÓÊ¼şÄÚÈİ°üº¬ÁËÎ´±»Ğí¿ÉµÄĞÅÏ¢£¬»ò±»ÏµÍ³Ê¶±ğÎªÀ¬»øÓÊ¼ş¡£Çë¼ì²éÊÇ·ñÓĞÓÃ»§·¢ËÍ²¡¶¾»òÕßÀ¬»øÓÊ¼ş£¿");
-    }
+		SimpleMailSender sender = new SimpleMailSender("w1320989494@163.com","www6117497");
+		sender.send("w1320989494@163.com", "ä»Šå¤©è¦å¥½å¥½å­¦ä¹ ", "å‘é€çš„é‚®ä»¶å†…å®¹åŒ…å«äº†æœªè¢«è®¸å¯çš„ä¿¡æ¯ï¼Œæˆ–è¢«ç³»ç»Ÿè¯†åˆ«ä¸ºåƒåœ¾é‚®ä»¶ã€‚è¯·æ£€æŸ¥æ˜¯å¦æœ‰ç”¨æˆ·å‘é€ç—…æ¯’æˆ–è€…åƒåœ¾é‚®ä»¶ï¼Ÿ");
+	}
 
 	/**
-	 * ³õÊ¼»¯ÓÊ¼ş·¢ËÍÆ÷
-	 * 
+	 * åˆå§‹åŒ–é‚®ä»¶å‘é€å™¨
+	 *
 	 * @param username
-	 *            ·¢ËÍÓÊ¼şµÄÓÃ»§Ãû(µØÖ·)£¬²¢ÒÔ´Ë½âÎöSMTP·şÎñÆ÷µØÖ·
+	 *            å‘é€é‚®ä»¶çš„ç”¨æˆ·å(åœ°å€)ï¼Œå¹¶ä»¥æ­¤è§£æSMTPæœåŠ¡å™¨åœ°å€
 	 * @param password
-	 *            ·¢ËÍÓÊ¼şµÄÃÜÂë
+	 *            å‘é€é‚®ä»¶çš„å¯†ç 
 	 */
 	public SimpleMailSender(final String username, final String password) {
-		// Í¨¹ıÓÊÏäµØÖ·½âÎö³ösmtp·şÎñÆ÷£¬¶Ô´ó¶àÊıÓÊÏä¶¼¹ÜÓÃ
+		// é€šè¿‡é‚®ç®±åœ°å€è§£æå‡ºsmtpæœåŠ¡å™¨ï¼Œå¯¹å¤§å¤šæ•°é‚®ç®±éƒ½ç®¡ç”¨
 		final String smtpHostName = "smtp." + username.split("@")[1];
 		init(username, password, smtpHostName);
 
 	}
 
 	/**
-	 * ³õÊ¼»¯
-	 * 
+	 * åˆå§‹åŒ–
+	 *
 	 * @param username
-	 *            ·¢ËÍÓÊ¼şµÄÓÃ»§Ãû(µØÖ·)
+	 *            å‘é€é‚®ä»¶çš„ç”¨æˆ·å(åœ°å€)
 	 * @param password
-	 *            ÃÜÂë
+	 *            å¯†ç 
 	 * @param smtpHostName
-	 *            SMTPÖ÷»úµØÖ·
+	 *            SMTPä¸»æœºåœ°å€
 	 */
 	private void init(String username, String password, String smtpHostName) {
-		// ³õÊ¼»¯props
+		// åˆå§‹åŒ–props
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.host", smtpHostName);
-		// ÑéÖ¤
+		// éªŒè¯
 		authenticator = new MailAuthenticator(username, password);
-		// ´´½¨session
+		// åˆ›å»ºsession
 		session = Session.getInstance(props, authenticator);
 	}
 
 	/**
-	 * ·¢ËÍÓÊ¼ş
-	 * 
+	 * å‘é€é‚®ä»¶
+	 *
 	 * @param recipient
-	 *            ÊÕ¼şÈËÓÊÏäµØÖ·
+	 *            æ”¶ä»¶äººé‚®ç®±åœ°å€
 	 * @param subject
-	 *            ÓÊ¼şÖ÷Ìâ
+	 *            é‚®ä»¶ä¸»é¢˜
 	 * @param content
-	 *            ÓÊ¼şÄÚÈİ
+	 *            é‚®ä»¶å†…å®¹
 	 * @throws AddressException
 	 * @throws MessagingException
 	 */
 	public void send(String recipient, String subject, Object content) throws AddressException, MessagingException {
-		// ´´½¨mimeÀàĞÍÓÊ¼ş
+		// åˆ›å»ºmimeç±»å‹é‚®ä»¶
 		final MimeMessage message = new MimeMessage(session);
-		// ÉèÖÃ·¢ĞÅÈË
+		// è®¾ç½®å‘ä¿¡äºº
 		message.setFrom(new InternetAddress(authenticator.getUsername()));
-		// ÉèÖÃÊÕ¼şÈË
+		// è®¾ç½®æ”¶ä»¶äºº
 		message.setRecipient(RecipientType.TO, new InternetAddress(recipient));
-		// ÉèÖÃÖ÷Ìâ
+		// è®¾ç½®ä¸»é¢˜
 		message.setSubject(subject);
-		// ÉèÖÃÓÊ¼şÄÚÈİ
+		// è®¾ç½®é‚®ä»¶å†…å®¹
 		message.setContent(content.toString(), "text/html;charset=utf-8");
-		// ·¢ËÍ
+		// å‘é€
 		Transport.send(message);
 	}
 
 	/**
-	 * Èº·¢ÓÊ¼ş
-	 * 
+	 * ç¾¤å‘é‚®ä»¶
+	 *
 	 * @param recipients
-	 *            ÊÕ¼şÈËÃÇ
+	 *            æ”¶ä»¶äººä»¬
 	 * @param subject
-	 *            Ö÷Ìâ
+	 *            ä¸»é¢˜
 	 * @param content
-	 *            ÄÚÈİ
+	 *            å†…å®¹
 	 * @throws AddressException
 	 * @throws MessagingException
 	 */
 	public void send(List<String> recipients, String subject, Object content)
 			throws AddressException, MessagingException {
-		// ´´½¨mimeÀàĞÍÓÊ¼ş
+		// åˆ›å»ºmimeç±»å‹é‚®ä»¶
 		final MimeMessage message = new MimeMessage(session);
-		// ÉèÖÃ·¢ĞÅÈË
+		// è®¾ç½®å‘ä¿¡äºº
 		message.setFrom(new InternetAddress(authenticator.getUsername()));
-		// ÉèÖÃÊÕ¼şÈËÃÇ
+		// è®¾ç½®æ”¶ä»¶äººä»¬
 		final int num = recipients.size();
 		InternetAddress[] addresses = new InternetAddress[num];
 		for (int i = 0; i < num; i++) {
 			addresses[i] = new InternetAddress(recipients.get(i));
 		}
 		message.setRecipients(RecipientType.TO, addresses);
-		// ÉèÖÃÖ÷Ìâ
+		// è®¾ç½®ä¸»é¢˜
 		message.setSubject(subject);
-		// ÉèÖÃÓÊ¼şÄÚÈİ
+		// è®¾ç½®é‚®ä»¶å†…å®¹
 		message.setContent(content.toString(), "text/html;charset=utf-8");
-		// ·¢ËÍ
+		// å‘é€
 		Transport.send(message);
 	}
 
 	/**
-	 * ·¢ËÍÓÊ¼ş
-	 * 
+	 * å‘é€é‚®ä»¶
+	 *
 	 * @param recipient
-	 *            ÊÕ¼şÈËÓÊÏäµØÖ·
+	 *            æ”¶ä»¶äººé‚®ç®±åœ°å€
 	 * @param mail
-	 *            ÓÊ¼ş¶ÔÏó
+	 *            é‚®ä»¶å¯¹è±¡
 	 * @throws AddressException
 	 * @throws MessagingException
 	 */
@@ -164,12 +164,12 @@ public class SimpleMailSender {
 	 */
 
 	/**
-	 * Èº·¢ÓÊ¼ş
-	 * 
+	 * ç¾¤å‘é‚®ä»¶
+	 *
 	 * @param recipients
-	 *            ÊÕ¼şÈËÃÇ
+	 *            æ”¶ä»¶äººä»¬
 	 * @param mail
-	 *            ÓÊ¼ş¶ÔÏó
+	 *            é‚®ä»¶å¯¹è±¡
 	 * @throws AddressException
 	 * @throws MessagingException
 	 */
