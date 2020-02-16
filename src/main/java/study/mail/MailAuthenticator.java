@@ -6,21 +6,21 @@ import javax.mail.PasswordAuthentication;
 public class MailAuthenticator extends Authenticator {
 
 	/**
-	 * ÓÃ»§Ãû£¨µÇÂ¼ÓÊÏä£©
+	 * ç”¨æˆ·åï¼ˆç™»å½•é‚®ç®±ï¼‰
 	 */
 	private String username;
 	/**
-	 * ÃÜÂë
+	 * å¯†ç 
 	 */
 	private String password;
 
 	/**
-	 * ³õÊ¼»¯ÓÊÏäºÍÃÜÂë
-	 * 
+	 * åˆå§‹åŒ–é‚®ç®±å’Œå¯†ç 
+	 *
 	 * @param username
-	 *            ÓÊÏä
+	 *            é‚®ç®±
 	 * @param password
-	 *            ÃÜÂë
+	 *            å¯†ç 
 	 */
 	public MailAuthenticator(String username, String password) {
 		this.username = username;

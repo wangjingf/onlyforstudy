@@ -3,101 +3,101 @@ package study.mail;
 import java.util.Properties;
 
 public class MailSenderInfo {
- 
-     // ·¢ËÍÓÊ¼şµÄ·şÎñÆ÷µÄIPºÍ¶Ë¿Ú   
-     private String mailServerHost;   
-     private String mailServerPort = "25";   
-     // ÓÊ¼ş·¢ËÍÕßµÄµØÖ·   
-     private String fromAddress;   
-     // ÓÊ¼ş½ÓÊÕÕßµÄµØÖ·   
-     private String toAddress;   
-     // µÇÂ½ÓÊ¼ş·¢ËÍ·şÎñÆ÷µÄÓÃ»§ÃûºÍÃÜÂë   
-     private String userName;   
-     private String password;   
-     // ÊÇ·ñĞèÒªÉí·İÑéÖ¤   
-     private boolean validate = false;   
-     // ÓÊ¼şÖ÷Ìâ   
-     private String subject;   
-     // ÓÊ¼şµÄÎÄ±¾ÄÚÈİ   
-     private String content;   
-     // ÓÊ¼ş¸½¼şµÄÎÄ¼şÃû   
-     private String[] attachFileNames;  
-    
-     private String iwallHost ;
-     /**  
-       * »ñµÃÓÊ¼ş»á»°ÊôĞÔ  
-       */   
-     public Properties getProperties(){   
-       Properties p = new Properties();   
-       p.put("mail.smtp.host", this.mailServerHost);   
-       p.put("mail.smtp.port", this.mailServerPort);   
-       p.put("mail.smtp.auth", validate ? "true" : "false");   
-       return p;   
-     }   
-     public String getMailServerHost() {   
-       return mailServerHost;   
-     }   
-     public void setMailServerHost(String mailServerHost) {   
-       this.mailServerHost = mailServerHost;   
-     }  
-     public String getMailServerPort() {   
-       return mailServerPort;   
-     }  
-     public void setMailServerPort(String mailServerPort) {   
-       this.mailServerPort = mailServerPort;   
-     }  
-     public boolean isValidate() {   
-       return validate;   
-     }  
-     public void setValidate(boolean validate) {   
-       this.validate = validate;   
-     }  
-     public String[] getAttachFileNames() {   
-       return attachFileNames;   
-     }  
-     public void setAttachFileNames(String[] fileNames) {   
-       this.attachFileNames = fileNames;   
-     }  
-     public String getFromAddress() {   
-       return fromAddress;   
-     }   
-     public void setFromAddress(String fromAddress) {   
-       this.fromAddress = fromAddress;   
-     }  
-     public String getPassword() {   
-       return password;   
-     }  
-     public void setPassword(String password) {   
-       this.password = password;   
-     }  
-     public String getToAddress() {   
-       return toAddress;   
-     }   
-     public void setToAddress(String toAddress) {   
-       this.toAddress = toAddress;   
-     }   
-     public String getUserName() {   
-       return userName;   
-     }  
-     public void setUserName(String userName) {   
-       this.userName = userName;   
-     }  
-     public String getSubject() {   
-       return subject;   
-     }  
-     public void setSubject(String subject) {   
-       this.subject = subject;   
-     }  
-     public String getContent() {   
-       return content;   
-     }  
-     public void setContent(String textContent) {   
-       this.content = textContent;   
-     }
-  public String getIwallHost() {
-   return iwallHost;
-  }
-  public void setIwallHost(String iwallHost) {
-   this.iwallHost = iwallHost;
-  }  
- }  
+
+    // å‘é€é‚®ä»¶çš„æœåŠ¡å™¨çš„IPå’Œç«¯å£
+    private String mailServerHost;
+    private String mailServerPort = "25";
+    // é‚®ä»¶å‘é€è€…çš„åœ°å€
+    private String fromAddress;
+    // é‚®ä»¶æ¥æ”¶è€…çš„åœ°å€
+    private String toAddress;
+    // ç™»é™†é‚®ä»¶å‘é€æœåŠ¡å™¨çš„ç”¨æˆ·åå’Œå¯†ç 
+    private String userName;
+    private String password;
+    // æ˜¯å¦éœ€è¦èº«ä»½éªŒè¯
+    private boolean validate = false;
+    // é‚®ä»¶ä¸»é¢˜
+    private String subject;
+    // é‚®ä»¶çš„æ–‡æœ¬å†…å®¹
+    private String content;
+    // é‚®ä»¶é™„ä»¶çš„æ–‡ä»¶å
+    private String[] attachFileNames;
+
+    private String iwallHost ;
+    /**
+     * è·å¾—é‚®ä»¶ä¼šè¯å±æ€§
+     */
+    public Properties getProperties(){
+        Properties p = new Properties();
+        p.put("mail.smtp.host", this.mailServerHost);
+        p.put("mail.smtp.port", this.mailServerPort);
+        p.put("mail.smtp.auth", validate ? "true" : "false");
+        return p;
+    }
+    public String getMailServerHost() {
+        return mailServerHost;
+    }
+    public void setMailServerHost(String mailServerHost) {
+        this.mailServerHost = mailServerHost;
+    }
+    public String getMailServerPort() {
+        return mailServerPort;
+    }
+    public void setMailServerPort(String mailServerPort) {
+        this.mailServerPort = mailServerPort;
+    }
+    public boolean isValidate() {
+        return validate;
+    }
+    public void setValidate(boolean validate) {
+        this.validate = validate;
+    }
+    public String[] getAttachFileNames() {
+        return attachFileNames;
+    }
+    public void setAttachFileNames(String[] fileNames) {
+        this.attachFileNames = fileNames;
+    }
+    public String getFromAddress() {
+        return fromAddress;
+    }
+    public void setFromAddress(String fromAddress) {
+        this.fromAddress = fromAddress;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public String getToAddress() {
+        return toAddress;
+    }
+    public void setToAddress(String toAddress) {
+        this.toAddress = toAddress;
+    }
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    public String getSubject() {
+        return subject;
+    }
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+    public String getContent() {
+        return content;
+    }
+    public void setContent(String textContent) {
+        this.content = textContent;
+    }
+    public String getIwallHost() {
+        return iwallHost;
+    }
+    public void setIwallHost(String iwallHost) {
+        this.iwallHost = iwallHost;
+    }
+}

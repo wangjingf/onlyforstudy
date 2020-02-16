@@ -5,9 +5,8 @@ import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.lifesense.entity.User;
-
 import junit.framework.TestCase;
+import xapp.web.entity.User;
 
 public class SecondLevelCacheTest extends TestCase {
 	private ApplicationContext context;
