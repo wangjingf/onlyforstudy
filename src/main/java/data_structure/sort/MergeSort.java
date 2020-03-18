@@ -11,7 +11,8 @@ import java.util.Arrays;
  */
 public class MergeSort {
     public static void sort(int[] a){
-        sort(a,0,a.length -1);
+        int[] tempArr = new int[a.length];
+        sort(a,tempArr,0,a.length -1);
     }
     /**
      * 对[left,right]区间的数据执行归并排序，需要注意的是，left、right为闭区间
@@ -19,20 +20,20 @@ public class MergeSort {
      * @param left
      * @param right
      */
-    private static void sort(int[] a,int left,int right){
+    private static void sort1(int[] a,int[] tmpArr,int left,int right){
         if(right  == left){
             return;
         }
-      //  System.out.println("left:"+left+" right:"+right);
+        //  System.out.println("left:"+left+" right:"+right);
         int center = (left+right)/2;
-        sort(a,left,center);
-        sort(a,center+1,right);
+        sort(a,tmpArr,left,center);
+        sort(a,tmpArr,center+1,right);
         int[] newArr = new int[right - left+1];
         int i = left,j=center+1,index=0;
         while(index<newArr.length){ //左右有序后需要将左右有序的数据拷贝到一个新的数组里面重新排序
             if(i > center){//左边的数组元素插入完成
-              System.arraycopy(a,j,newArr,index,right - j+1);
-              break;
+                System.arraycopy(a,j,newArr,index,right - j+1);
+                break;
             }
             if(j > right){//右边的数组元素插入完成
                 System.arraycopy(a,i,newArr,index,center - i+1);
@@ -47,10 +48,45 @@ public class MergeSort {
         }
         System.arraycopy(newArr,0,a,left,newArr.length);
     }
+    /**
+     * 对[left,right]区间的数据执行归并排序，需要注意的是，left、right为闭区间
+     * @param a
+     * @param left
+     * @param right
+     */
+    private static void sort(int[] a,int[] tmpArr,int left,int right){
+        if(right  == left){
+            return;
+        }
+      //  System.out.println("left:"+left+" right:"+right);
+        int center = (left+right)/2;
+        sort(a,tmpArr,left,center);
+        sort(a,tmpArr,center+1,right);
+
+        int i = left,j=center+1,index=left;
+        while(index<=right){ //左右有序后需要将左右有序的数据拷贝到一个新的数组里面重新排序
+            if(i > center){//左边的数组元素插入完成
+              System.arraycopy(a,j,tmpArr,index,right - j+1);
+              break;
+            }
+            if(j > right){//右边的数组元素插入完成
+                System.arraycopy(a,i,tmpArr,index,center - i+1);
+                break;
+            }
+            if(a[i] < a[j]){
+                tmpArr[index] = a[i++];
+            }else{
+                tmpArr[index] = a[j++];
+            }
+            index++;
+        }
+        System.arraycopy(tmpArr,left,a,left,right-left+1);//拷贝回到a元素里
+    }
 
     public static void main(String[] args){
-        int[] a = new int[100];
-        for (int i = 99; i >=0 ; i--) {
+        int length = 50;
+        int[] a = new int[length];
+        for (int i = length - 1; i >=0 ; i--) {
             a[i] = i;
         }
         System.out.println(Arrays.toString(a));
