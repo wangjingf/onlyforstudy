@@ -6,12 +6,17 @@ import java.util.Arrays;
  * 堆排序不是一种稳定的算法
  */
 public class HeapSort {
+
     int[] a = new int[4];
     int size;
     public void enlargeArray(int size){
         int[] newArr = new int[size];
         System.arraycopy(a,0,newArr,0,a.length);
         a = newArr;
+    }
+    public HeapSort(){}
+    public HeapSort(int size){
+        a = new int[size];
     }
     /**
      * 依次向上比较
