@@ -1,4 +1,4 @@
-package data_structure.map;
+package data_structure.map.entity;
 
 public class Edge {
     Node to;

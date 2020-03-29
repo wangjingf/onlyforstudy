@@ -1,10 +1,17 @@
 package data_structure.map;
 
+import data_structure.map.entity.Edge;
+import data_structure.map.entity.Graph;
+import data_structure.map.entity.Node;
+
 import java.util.*;
 
+/**
+ * 带负边值的最短路径问题
+ */
 public class ShortestPath {
 
-    public static Collection<Integer> getShortestPath(Graph graph,int nodeIndex){
+    public static Collection<Integer> getShortestPath(Graph graph, int nodeIndex){
         Node headNode = graph.getNodes().get(nodeIndex-1);
         List<Integer> result = new ArrayList<>(graph.getNodes().size());
         for (Node node : graph.getNodes()) {

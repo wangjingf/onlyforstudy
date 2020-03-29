@@ -1,4 +1,4 @@
-package data_structure.map;
+package data_structure.map.entity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,5 +16,11 @@ public class Graph {
 
     public void addEdge(int srcNode,int targetNode,int weight){
         nodes.get(srcNode-1).getEdges().add(new Edge(nodes.get(targetNode-1),weight));
+    }
+    public int size(){
+        return nodes.size();
+    }
+    public boolean isEmpty(){
+        return nodes.isEmpty();
     }
 }

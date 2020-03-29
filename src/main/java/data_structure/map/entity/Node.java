@@ -1,4 +1,4 @@
-package data_structure.map;
+package data_structure.map.entity;
 
 import java.util.LinkedList;
 import java.util.List;

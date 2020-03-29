@@ -5,9 +5,9 @@ import java.util.Arrays;
 /**
  * 堆排序不是一种稳定的算法
  */
-public class HeapSort {
+public  class HeapSort {
 
-    int[] a = new int[4];
+    int[] a = new int[10];
     int size;
     public void enlargeArray(int size){
         int[] newArr = new int[size];
@@ -49,7 +49,7 @@ public class HeapSort {
     }
 
     /**
-     * 标准的实现
+     * 标准的实现,有bug
      * @param elm
      */
     public void siftUp1(int elm){
