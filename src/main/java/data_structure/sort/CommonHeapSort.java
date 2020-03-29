@@ -101,4 +101,7 @@ public class CommonHeapSort<T> {
         size=size-1;
         return ret;
     }
+    public boolean isEmpty(){
+        return size <=0;
+    }
 }
