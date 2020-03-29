@@ -17,8 +17,14 @@ public class PriorityQueue<T> {
     public void insert(T elm){
         sort.siftUp(elm);
     }
+    public void add(T elm){
+        insert(elm);
+    }
     public T pop(){
         return sort.siftDown();
+    }
+    public boolean isEmpty(){
+       return sort.isEmpty();
     }
     public static void main(String[] args){
         PriorityQueue<Integer> queue = new PriorityQueue();
