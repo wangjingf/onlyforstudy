@@ -3,10 +3,7 @@ package com.wjf.my.netty.client;
 import java.util.concurrent.ExecutionException;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -36,11 +33,18 @@ public class TimeClient {
 				public void operationComplete(Future<? super Void> future) throws Exception {
 					if(future.isSuccess()){
 						System.out.println("succeed");
+						f.channel().writeAndFlush("13").addListener(new ChannelFutureListener() {
+							@Override
+							public void operationComplete(ChannelFuture future) throws Exception {
+								System.out.println("futurefuture");
+							}
+						});
 					}else{
 						System.out.println("failure");
 					}
 				}
 			});
+
 			Object result =  f.get();
 			f.channel().closeFuture().sync();//等待服务端链路关闭之后才退出main函数
 			System.out.println("result is " + f.isSuccess());
