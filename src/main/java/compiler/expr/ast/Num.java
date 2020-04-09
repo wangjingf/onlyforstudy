@@ -7,6 +7,7 @@ public class Num extends ASTNode {
     int value;
 
     public Num(Token token) {
+        super("Num");
         this.token = token;
         this.value = (int) token.getValue();
     }
@@ -25,5 +26,9 @@ public class Num extends ASTNode {
 
     public void setValue(int value) {
         this.value = value;
+    }
+
+    public String toString(){
+        return this.value+"";
     }
 }

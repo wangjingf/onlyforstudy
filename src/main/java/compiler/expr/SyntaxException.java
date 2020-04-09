@@ -1,7 +1,9 @@
 package compiler.expr;
 
 public class SyntaxException extends RuntimeException {
+
     public SyntaxException() {
+
     }
 
     public SyntaxException(String message) {

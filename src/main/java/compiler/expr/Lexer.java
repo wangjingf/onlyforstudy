@@ -3,18 +3,41 @@ package compiler.expr;
 public class Lexer {
     String expr;
     int index;
+    int line=1;
+    int pos;
     public Lexer(String expr){
         this.expr = expr;
     }
     void advance(){
         advanceComment();
         while(!isEnd()){
-            if(Character.isWhitespace(expr.charAt(index))){
-                index++;
+            if(Character.isWhitespace(peek())){
+                skip();
             }
             break;
         }
         advanceComment();
+    }
+    void skip(){
+        skip(1);
+    }
+    void skip(int num){
+
+        index = index+num;
+        pos += num;
+    }
+    char peek(int skip){
+       char c = peek();
+        if(c=='\n'){
+            line++;
+            pos = 0;
+        }
+       skip(skip);
+       return c;
+    }
+    char peek(){
+        char c = expr.charAt(index);
+        return c;
     }
     public boolean isEnd(){
         return index>=expr.length();
@@ -38,7 +61,8 @@ public class Lexer {
     }
     void advanceLineComment(){
         while (index < expr.length()){
-            char c = expr.charAt(index++);
+            char c = expr.charAt(index);
+            skip();
             if(c != '\n'){
             }else{
                 break;
@@ -55,11 +79,11 @@ public class Lexer {
                }
                char nextChar = expr.charAt(index+1);
                if(nextChar == '/'){
-                   index = index+2;
+                   skip(2);
                    break;
                }
            }else{
-               index++;
+               skip();
            }
        }
         throw new jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException("unexpected end");
@@ -73,7 +97,8 @@ public class Lexer {
         if(isEnd()){
             throw new jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException("expected is :"+c+" but is end");
         }
-        char expectedChar =  expr.charAt(index++);
+        char expectedChar =  peek(1);
+
         if(expectedChar != c){
             throw new jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException("expected is :"+c+" but is："+expectedChar);
         }
@@ -82,36 +107,40 @@ public class Lexer {
         advance();
         StringBuilder sb = new StringBuilder();
         while(index < expr.length()){
-            char c = expr.charAt(index++);
+            char c = peek(1);
             if(Character.isDigit(c)){
                 sb.append(c);
-            }else if(!Character.isWhitespace(c)){
-                throw new SyntaxException("expected token type"+TokenType.NUM+" but is "+ c);
+            }else if(Character.isLetter(c)){
+                throw new SyntaxException("expected token type:"+TokenType.NUM+" but is "+ c);
             }else{
-                index--;
+                skip(-1);
                 break;
             }
         }
-        return new Token(TokenType.NUM,Integer.valueOf(sb.toString()));
+        Token token = new Token(TokenType.NUM,Integer.valueOf(sb.toString()));
+        token.setLine(line);
+        token.setPos(pos);
+        return token;
     }
+
     public Token getNextToken(){
         while (index < expr.length()){
             advance();
-            char c = expr.charAt(index++);
+            char c = peek(1);
             if(c == '+'){
-                return new Token(TokenType.PLUS);
+                return new Token(TokenType.PLUS,line,pos);
             }else if(c == '-'){
-                return new Token(TokenType.SUB);
+                return new Token(TokenType.SUB,line,pos);
             }else if(c == '*'){
-                return new Token(TokenType.MUL);
+                return new Token(TokenType.MUL,line,pos);
             }else if(c == '/'){
-                return new Token(TokenType.DIV);
-            }else if(c == '（'){
-                return new Token(TokenType.LEFT_PARA);
+                return new Token(TokenType.DIV,line,pos);
+            }else if(c == '('){
+                return new Token(TokenType.LEFT_PARA,line,pos);
             }else if(c == ')'){
-                return new Token(TokenType.LEFT_PARA);
+                return new Token(TokenType.RIGHT_PARA,line,pos);
             }else if(Character.isDigit(c)){
-                index--;
+                skip(-1);
                 return numToken();
             }else{
                 throw new SyntaxException("unexpected input"+c);
@@ -119,5 +148,7 @@ public class Lexer {
         }
         return new Token(TokenType.END);
     }
+
+
 }
 

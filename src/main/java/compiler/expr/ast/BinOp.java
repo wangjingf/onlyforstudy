@@ -3,23 +3,18 @@ package compiler.expr.ast;
 import compiler.expr.Token;
 
 public class BinOp extends ASTNode{
-    Token left;
+    ASTNode left;
     Token op;
-    Token right;
+    ASTNode right;
 
-    public BinOp(Token left, Token op, Token right) {
+    public BinOp(ASTNode left, Token op, ASTNode right) {
+        super("BinOp");
         this.left = left;
         this.op = op;
         this.right = right;
     }
 
-    public Token getLeft() {
-        return left;
-    }
 
-    public void setLeft(Token left) {
-        this.left = left;
-    }
 
     public Token getOp() {
         return op;
@@ -29,11 +24,23 @@ public class BinOp extends ASTNode{
         this.op = op;
     }
 
-    public Token getRight() {
+    public ASTNode getLeft() {
+        return left;
+    }
+
+    public void setLeft(ASTNode left) {
+        this.left = left;
+    }
+
+    public ASTNode getRight() {
         return right;
     }
 
-    public void setRight(Token right) {
+    public void setRight(ASTNode right) {
         this.right = right;
+    }
+
+    public String toString(){
+        return left.toString()+op.getTokenType().getName()+right.toString();
     }
 }

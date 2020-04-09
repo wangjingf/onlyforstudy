@@ -23,29 +23,16 @@
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 	<!-- 注解扫描包 -->
-	<context:component-scan base-package="com.lifesense" use-default-filters="false">
+	<context:component-scan base-package="xapp.web" use-default-filters="false">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController" />
 	</context:component-scan>
 
 	<mvc:default-servlet-handler/>
 
-	<!--<import resource="classpath*:spring_cache.xml" />-->
-	<import resource="classpath*:hibernate-config.xml" />
-<!-- 	<import resource="classpath*:spring_cxf.xml" /> -->
-	<!--  <import resource="classpath*:spring_jedis.xml" />  -->
-
-
     <context:annotation-config />
 
 	<!-- 开启AOP注解扫描 -->
-	<!--<aop:aspectj-autoproxy proxy-target-class="true" />-->
-
-
-
-
-
-
 
 	<!-- 定义视图解析器 -->
 	<bean id="viewResolver"
@@ -61,5 +48,10 @@
 		<property name="maxUploadSize" value="1048576000" />
 		<property name="maxInMemorySize" value="40960" />
 	</bean>
+	<!--<import resource="classpath*:spring_cache.xml" />-->
+	<import resource="classpath*:hibernate-config.xml" />
+	<!-- 	<import resource="classpath*:spring_cxf.xml" /> -->
+	<!--  <import resource="classpath*:spring_jedis.xml" />  -->
+	<import resource="classpath*:spring-data-elasticsearch.xml"/>
 
 </beans>
