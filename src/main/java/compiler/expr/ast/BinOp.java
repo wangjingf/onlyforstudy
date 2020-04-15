@@ -8,7 +8,6 @@ public class BinOp extends ASTNode{
     ASTNode right;
 
     public BinOp(ASTNode left, Token op, ASTNode right) {
-        super("BinOp");
         this.left = left;
         this.op = op;
         this.right = right;

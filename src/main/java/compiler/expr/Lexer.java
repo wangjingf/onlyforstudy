@@ -3,152 +3,199 @@ package compiler.expr;
 public class Lexer {
     String expr;
     int index;
-    int line=1;
+    int line = 1;
     int pos;
-    public Lexer(String expr){
-        this.expr = expr;
-    }
-    void advance(){
-        advanceComment();
-        while(!isEnd()){
-            if(Character.isWhitespace(peek())){
-                skip();
-            }
-            break;
-        }
-        advanceComment();
-    }
-    void skip(){
-        skip(1);
-    }
-    void skip(int num){
+    static final char EOF = 0;
+    char currentChar;
 
-        index = index+num;
-        pos += num;
+    public Lexer(String expr) {
+       this(expr,0);
     }
-    char peek(int skip){
-       char c = peek();
-        if(c=='\n'){
-            line++;
-            pos = 0;
+    public Lexer(String expr,int index) {
+        this.expr = expr;
+        if (expr.length() > index) {
+            currentChar = expr.charAt(index);
+            for (int i = 0; i < index; i++) {
+                if(expr.charAt(i) == '\n'){
+                    line++;
+                    pos = 0;
+                }
+                pos++;
+            }
+        } else {
+            currentChar = EOF;
         }
-       skip(skip);
-       return c;
+        this.index = index;
     }
-    char peek(){
-        char c = expr.charAt(index);
-        return c;
-    }
-    public boolean isEnd(){
-        return index>=expr.length();
-    }
-    void advanceComment(){
-        if(index >= expr.length()-1){
-            return;
+    void advance() {
+        while (!isEnd()) {
+            if (currentChar == '\n') {
+                line++;
+                pos = 0;
+            }
+            if (Character.isWhitespace(currentChar)) {
+                nextChar();
+            }else{
+                break;
+            }
         }
-        char c = expr.charAt(index);
-        char nextChar = expr.charAt(index+1);
-        if(c == '/' ){
-            if(nextChar == '/'){
-                eat("//");
+
+        advanceComment();
+    }
+
+
+    public char peekChar() {
+        int pos = index + 1;
+        if (pos > expr.length()) {
+            return EOF;
+        }
+        return expr.charAt(pos);
+    }
+
+    void nextChar() {
+        index++;
+        pos++;
+        if (index >= expr.length()) {
+            currentChar = EOF;
+        } else {
+            currentChar = expr.charAt(index);
+        }
+    }
+
+    public boolean isEnd() {
+        return currentChar == EOF;
+    }
+
+    void advanceComment() {
+        if (currentChar == '/') {
+            if (peekChar() == '/') {
                 advanceLineComment();
-            }else if(nextChar == '*'){
-                eat("/*");
+            } else if (peekChar() == '*') {
                 advanceMultiLineComment();
             }
         }
 
     }
-    void advanceLineComment(){
-        while (index < expr.length()){
-            char c = expr.charAt(index);
-            skip();
-            if(c != '\n'){
-            }else{
+
+    void advanceLineComment() {
+        nextChar();
+        nextChar();// 跳过//
+        while (true) {
+            if (currentChar == EOF) {
                 break;
+            } else if (currentChar == '\n') {
+                nextChar();
+                break;
+            } else {
+                nextChar();
             }
         }
     }
 
-    void advanceMultiLineComment(){
-       while(!isEnd()){
-           char c = expr.charAt(index);
-           if(c == '*'){
-               if(isEnd()){
-                   throw new jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException("unexpected end");
-               }
-               char nextChar = expr.charAt(index+1);
-               if(nextChar == '/'){
-                   skip(2);
-                   break;
-               }
-           }else{
-               skip();
-           }
-       }
-        throw new jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException("unexpected end");
-    }
-    void eat(String  s){
-        for (int i = 0; i < s.length(); i++) {
-            eat(s.charAt(i));
+    void advanceMultiLineComment() {
+        nextChar();
+        nextChar();// 跳过/*
+        while (true) {
+            if (currentChar == EOF) {
+                break;
+            } else if (currentChar == '*' && peekChar() == '/') {
+                nextChar();
+                nextChar();
+            } else {
+                nextChar();
+            }
         }
     }
-    void eat(char c){
-        if(isEnd()){
-            throw new jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException("expected is :"+c+" but is end");
-        }
-        char expectedChar =  peek(1);
 
-        if(expectedChar != c){
-            throw new jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException("expected is :"+c+" but is："+expectedChar);
-        }
-    }
-    Token numToken(){
+
+    Token numToken() {
         advance();
         StringBuilder sb = new StringBuilder();
-        while(index < expr.length()){
-            char c = peek(1);
-            if(Character.isDigit(c)){
-                sb.append(c);
-            }else if(Character.isLetter(c)){
-                throw new SyntaxException("expected token type:"+TokenType.NUM+" but is "+ c);
-            }else{
-                skip(-1);
+        boolean isReal = false;
+        while (index < expr.length()) {
+            if (Character.isDigit(currentChar)) {
+                sb.append(currentChar);
+                nextChar();
+            } else if (currentChar == '.') {
+                if (Character.isDigit(peekChar())) {
+                    isReal = true;
+                }
+                sb.append(currentChar);
+                nextChar();
+            } else if (Character.isLetter(currentChar)) {
+                throw error("expected token type:number but is " + currentChar);
+            } else {
                 break;
             }
         }
-        Token token = new Token(TokenType.NUM,Integer.valueOf(sb.toString()));
-        token.setLine(line);
-        token.setPos(pos);
-        return token;
+        if (isReal) {
+            return new Token(TokenType.REAL, Double.valueOf(sb.toString()));
+        } else {
+            return new Token(TokenType.INTEGER, Integer.valueOf(sb.toString()));
+        }
     }
 
-    public Token getNextToken(){
-        while (index < expr.length()){
-            advance();
-            char c = peek(1);
-            if(c == '+'){
-                return new Token(TokenType.PLUS,line,pos);
-            }else if(c == '-'){
-                return new Token(TokenType.SUB,line,pos);
-            }else if(c == '*'){
-                return new Token(TokenType.MUL,line,pos);
-            }else if(c == '/'){
-                return new Token(TokenType.DIV,line,pos);
-            }else if(c == '('){
-                return new Token(TokenType.LEFT_PARA,line,pos);
-            }else if(c == ')'){
-                return new Token(TokenType.RIGHT_PARA,line,pos);
-            }else if(Character.isDigit(c)){
-                skip(-1);
-                return numToken();
-            }else{
-                throw new SyntaxException("unexpected input"+c);
+    boolean isIdentifierType(char c) {
+        return Character.isLetter(c) || c == '_';
+    }
+
+    Token identifier() {
+        advance();
+        StringBuilder sb = new StringBuilder();
+        while (index < expr.length()) {
+            if (isIdentifierType(currentChar) || Character.isDigit(currentChar)) {
+                sb.append(currentChar);
+                nextChar();
+            } else {
+                break;
             }
         }
-        return new Token(TokenType.END);
+        String s = sb.toString();
+        TokenType tokenType = TokenHelper.getKeywordToken(s);
+        if (tokenType == null) {
+            tokenType = TokenType.IDENTIFIER;
+        }
+        return new Token(tokenType, s);
     }
 
+    public Token peek() {
+        if(currentChar == EOF){
+            return null;
+        }
+        return new Lexer(expr,index).getNextToken();
+    }
 
+    public Token getNextToken() {
+        advance();
+        Token token = null;
+        if (isIdentifierType(currentChar)) {
+            token = identifier();
+        } else if (currentChar == ':' && peekChar() == '=') {
+            token = new Token(TokenType.ASSIGN, null);
+            nextChar();nextChar();
+        } else if (TokenHelper.isSymbolToken(currentChar)) {
+            token = new Token(TokenHelper.getSymbolToken(currentChar), null);
+            nextChar();
+        } else if (Character.isDigit(currentChar)) {
+            token = numToken();
+        } else if (currentChar == EOF) {
+            token = new Token(TokenType.EOF);
+        } else {
+            throw error("unepected input char:" + currentChar);
+        }
+        return token;
+    }
+    LexerException error(String message){
+        LexerException exception = new LexerException(message+" at line "+line+" col:"+pos);
+        return exception;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public int getPos() {
+        return pos;
+    }
 }
 

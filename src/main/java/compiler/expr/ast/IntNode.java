@@ -2,12 +2,11 @@ package compiler.expr.ast;
 
 import compiler.expr.Token;
 
-public class Num extends ASTNode {
+public class IntNode extends ASTNode {
     Token token;
     int value;
 
-    public Num(Token token) {
-        super("Num");
+    public IntNode(Token token) {
         this.token = token;
         this.value = (int) token.getValue();
     }

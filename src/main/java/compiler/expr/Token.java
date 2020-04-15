@@ -37,10 +37,10 @@ public class Token implements ISourceLocation {
 
     @Override
     public String toString() {
-        if(TokenType.NUM.equals(tokenType)){
+        if(TokenType.INTEGER.equals(tokenType) || TokenType.REAL.equals(tokenType)){
             return "" + value;
         }else {
-            return tokenType.getName();
+            return tokenType.getName()==null?tokenType.name():tokenType.getName();
         }
 
     }
