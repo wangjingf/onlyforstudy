@@ -6,8 +6,6 @@ import io.study.helper.IoHelper;
 import junit.framework.TestCase;
 
 import java.io.*;
-import java.net.URL;
-import java.util.Map;
 
 public class ExprParserTest extends TestCase {
     String  getFileContent(String fileName){
@@ -30,7 +28,7 @@ public class ExprParserTest extends TestCase {
         return sb.toString();
     }
     Program parseProgram(String fileName){
-        String content = getFileContent("part1.pas");
+        String content = getFileContent(fileName);
         System.out.println(content);
         ExprParser parser = new ExprParser(content);
         return (Program) parser.program();
@@ -40,9 +38,9 @@ public class ExprParserTest extends TestCase {
         System.out.println(astNode);
     }
     public void testInterpreter(){
-        Program program = parseProgram("part1.pas");
+        Program program = parseProgram("procedure.pas");
         Interpreter interpreter = new Interpreter();
         interpreter.visit(program);
-        System.out.println(interpreter.getScope().getAllVars());
+        //System.out.println(interpreter.getCurrentScope().getAllVars());
     }
 }

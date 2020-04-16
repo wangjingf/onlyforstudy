@@ -2,18 +2,19 @@ package compiler.expr;
 
 import compiler.expr.ast.*;
 import compiler.expr.scope.PascalScope;
-import compiler.expr.symbol.BuiltinTypeSymbol;
-import compiler.expr.symbol.Symbol;
-import compiler.expr.symbol.SymbolTable;
-import compiler.expr.symbol.VarSymbol;
+import compiler.expr.stack.ActivatedRecord;
+import compiler.expr.stack.CallStack;
+import compiler.expr.symbol.*;
 import io.study.helper.Variant;
 import io.study.reflect.ReflectHelper;
 
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Interpreter {
-    PascalScope scope = new PascalScope();
-    SymbolTable symbolTable = new SymbolTable();
+    //PascalScope currentScope = new PascalScope();
+    CallStack callStack = new CallStack();
+    SymbolTable currentSymbolTable = new SymbolTable();
     public Object visit(ASTNode node){
         return ReflectHelper.invokeMethod(this,"visit"+node.getName(),node);
     }
@@ -51,7 +52,7 @@ public class Interpreter {
     public Object visitAssign(Assign assign){
         requireSymbol(assign.getLeft().getId());
         Object value = visit(assign.getRight());
-        scope.addVar(assign.getLeft().getId(),value);
+        callStack.peek().put(assign.getLeft().getId(),value);
         return null;
     }
     public Object visitCompoundNode(CompoundNode node){
@@ -61,6 +62,7 @@ public class Interpreter {
         }
         return ret;
     }
+
     public Object visitIdentifier(Identifier id){
         requireSymbol(id.getId());
         return requireValue(id.getId());
@@ -69,35 +71,75 @@ public class Interpreter {
         return node.getValue();
     }
     public Object visitProgram(Program program){
-        for (VarDeclaration declaration : program.getVarDeclarations()) {
-            visitVarDeclaration(declaration);
+        ActivatedRecord activatedRecord = new ActivatedRecord(1,program.getIdentifier().getId(),TokenType.PROGRAM);
+        callStack.push(activatedRecord);
+        for (ASTNode declaration : program.getVarDeclarations()) {
+            visit(declaration);
         }
-        return visitCompoundNode(program.getCompoundNode());
+        Object ret = visitCompoundNode(program.getCompoundNode());
+        callStack.pop();
+        return ret;
+    }
+    public Object visitProcedureCall(ProcedureCall procedureCall){
+        Symbol symbol = currentSymbolTable.lookup(procedureCall.getProcedureName());
+        if(!(symbol instanceof ProcedureSymbol)){
+            throw error("expected produceSymbol but is "+symbol);
+        }
+        for (VarDeclaration declaration : ((ProcedureSymbol) symbol).getAllVars()) {
+            BuiltinTypeSymbol typeSymbol = (BuiltinTypeSymbol) requireSymbol((String) declaration.getType().getValue());
+            currentSymbolTable.define(new VarSymbol(declaration.getId().getId(),typeSymbol ));
+        }
+        int size = callStack.size();
+        ActivatedRecord activatedRecord = new ActivatedRecord(size+1,procedureCall.getProcedureName(),TokenType.PROCEDURE);
+        callStack.push(activatedRecord);
+        List<Object> actualParam = new LinkedList<>();
+        for (ASTNode astNode : procedureCall.getParams()) {
+            actualParam.add(visit(astNode));
+        }
+
+        int i = 0;
+        for (VarDeclaration declaration : ((ProcedureSymbol) symbol).getParams()) { //形参转换为实参
+            activatedRecord.put(declaration.getId().getId(),actualParam.get(i));
+            i++;
+        }
+        visit(((ProcedureSymbol)symbol).getBody());
+        callStack.pop();
+        return null;
+    }
+    public Object visitProcedure(Procedure procedure){
+
+        SymbolTable scopedSymbolTable = new SymbolTable();
+        scopedSymbolTable.setParent(currentSymbolTable);
+        currentSymbolTable = scopedSymbolTable;
+        ProcedureSymbol procedureSymbol = new ProcedureSymbol(procedure.getId().getId());
+        procedureSymbol.setBody(procedure.getBody());
+        procedureSymbol.setParams(procedure.getParams());
+        procedureSymbol.setVars(procedure.getVars());
+        currentSymbolTable.define(procedureSymbol);
+        return null;
     }
     public Object visitRealNode(RealNode num){
         return num.getValue();
     }
     public Object visitVarDeclaration(VarDeclaration varDeclaration){
          Symbol symbol = requireSymbol((String) varDeclaration.getType().getValue());
-         symbolTable.define(new VarSymbol(varDeclaration.getId().getId(), (BuiltinTypeSymbol) symbol));
+         currentSymbolTable.define(new VarSymbol(varDeclaration.getId().getId(), (BuiltinTypeSymbol) symbol));
          return null;
     }
     public Object requireValue(String name){
-        if(scope.containsVar("name")){
+        if(callStack.peek().contains("name")){
             throw error("var "+name +" is not initialized!");
         }
-        return scope.getVar(name);
+        return callStack.peek().get(name);
     }
     public Symbol requireSymbol(String name){
-        Symbol symbol = symbolTable.lookup(name);
+        Symbol symbol = currentSymbolTable.lookup(name);
         if(symbol == null){
             throw error("unexpected type:"+name);
         }
         return symbol;
     }
-    public PascalScope getScope(){
-        return scope;
-    }
+
     public static void main(String[] args){
         ExprParser parser = new ExprParser("1+2*3-1");
         ASTNode node = parser.expr();

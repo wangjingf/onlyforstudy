@@ -1,10 +1,12 @@
 package compiler.expr.symbol;
 
+import org.springframework.util.LinkedCaseInsensitiveMap;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SymbolTable {
-    Map<String, Symbol> symbols = new LinkedHashMap<>();
+    Map<String, Symbol> symbols = new LinkedCaseInsensitiveMap<>();
     SymbolTable parent;
     public SymbolTable(){
         symbols.put(BuiltinTypeSymbol.INTEGER.getName(),BuiltinTypeSymbol.INTEGER);

@@ -42,7 +42,9 @@ public class Lexer {
 
         advanceComment();
     }
-
+    public char current(){
+        return currentChar;
+    }
 
     public char peekChar() {
         int pos = index + 1;

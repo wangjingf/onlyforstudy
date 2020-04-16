@@ -1,12 +1,14 @@
 package compiler.expr;
 
+import org.springframework.util.LinkedCaseInsensitiveMap;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TokenHelper {
-    private static Map<String,TokenType> symbolTokens = new LinkedHashMap<>();
+    private static Map<String,TokenType> symbolTokens = new LinkedCaseInsensitiveMap<>();
 
-    private static Map<String,TokenType> keywordTokens = new LinkedHashMap<>();
+    private static Map<String,TokenType> keywordTokens = new LinkedCaseInsensitiveMap<>();
     static {
         for (TokenType tokenType : TokenType.values()) {
             if(tokenType.getName() != null){

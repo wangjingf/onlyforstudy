@@ -13,6 +13,7 @@ public enum TokenType {
     ,END("END")
     ,INTEGER
     ,PROGRAM("PROGRAM")
+    ,PROCEDURE("procedure")
     ,REAL
     ,IDENTIFIER
     ,VAR("VAR")
