@@ -5,7 +5,10 @@ import java.util.List;
 
 public class Procedure extends ASTNode{
     List<VarDeclaration> params = new LinkedList<>();
-    List<VarDeclaration> vars = new LinkedList<>();
+    /**
+     * 包含声明的procedure及变量信息
+     */
+    List<ASTNode> vars = new LinkedList<>();
     Identifier id;
     CompoundNode body;
 
@@ -39,11 +42,11 @@ public class Procedure extends ASTNode{
         this.body = body;
     }
 
-    public List<VarDeclaration> getVars() {
+    public List<ASTNode> getVars() {
         return vars;
     }
 
-    public void setVars(List<VarDeclaration> vars) {
+    public void setVars(List<ASTNode> vars) {
         this.vars = vars;
     }
 }

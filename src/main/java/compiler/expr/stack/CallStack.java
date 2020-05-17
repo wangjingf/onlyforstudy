@@ -12,7 +12,7 @@ public class CallStack {
    List<ActivatedRecord> list = new ArrayList<>();
    public void pop(){
        ActivatedRecord activatedRecord = list.get(list.size() - 1);
-       logger.info("currentVar:"+activatedRecord.getMembers().toString());
+       logger.info("nestLever is "+ list.size()+" currentVar:"+activatedRecord.getMembers().toString());
         list.remove(list.size()-1);
    }
    public ActivatedRecord peek(){

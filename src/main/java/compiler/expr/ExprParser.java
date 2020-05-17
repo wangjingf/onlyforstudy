@@ -18,8 +18,8 @@ import java.util.List;
  *  statement -> assignOp | var declaration | expr |empty | compoundStatement| procedureCall
  *  assignOp -> variable = expr
  *  variable -> id;
- *
- *  produreCall -> id(expr(,expr)*|empty)
+ *  ifStatement 
+ *  procedureCall -> id(expr(,expr)*|empty)
  *  var declation -> var (paramList:variable)*; | procedureDeclaration
  *  procedureDeclaration -> produce id(produceParamList);vardeclaration begin statement end;
  *  produceParams -> produceParam(,procureParam)*|empty
@@ -108,10 +108,7 @@ public class ExprParser {
         }
         eatToken(TokenType.RIGHT_PARA);
         eatToken(TokenType.SEMI);
-        List<VarDeclaration> vars = new LinkedList<>();
-        if(currentToken.getTokenType() == TokenType.VAR){
-            vars.addAll(varDeclarations());
-        }
+        List<ASTNode> vars = declarations();;
         CompoundNode body = compoundStatement();
         eatToken(TokenType.SEMI);
         Procedure procedure = new Procedure(varDeclarations, identifier, body);

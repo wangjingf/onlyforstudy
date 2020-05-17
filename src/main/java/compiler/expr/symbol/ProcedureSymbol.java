@@ -13,7 +13,7 @@ public class ProcedureSymbol extends Symbol {
     /**
      * 程序内部声明的变量
      */
-    List<VarDeclaration> vars = new LinkedList<>();
+    List<ASTNode> vars = new LinkedList<>();
     public ProcedureSymbol(String name) {
         super(name);
     }
@@ -34,15 +34,15 @@ public class ProcedureSymbol extends Symbol {
         this.params = params;
     }
 
-    public List<VarDeclaration> getVars() {
+    public List<ASTNode> getVars() {
         return vars;
     }
 
-    public void setVars(List<VarDeclaration> vars) {
+    public void setVars(List<ASTNode> vars) {
         this.vars = vars;
     }
-    public List<VarDeclaration> getAllVars(){
-        List<VarDeclaration> ret = new LinkedList<>();
+    public List<ASTNode> getAllVars(){
+        List<ASTNode> ret = new LinkedList<>();
         ret.addAll(vars);
         ret.addAll(params);
         return ret;

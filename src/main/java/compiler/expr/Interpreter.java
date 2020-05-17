@@ -80,14 +80,22 @@ public class Interpreter {
         callStack.pop();
         return ret;
     }
+    void defineVarSymbol(VarDeclaration declaration){
+        BuiltinTypeSymbol typeSymbol = (BuiltinTypeSymbol) requireSymbol((String) declaration.getType().getValue());
+        currentSymbolTable.define(new VarSymbol(declaration.getId().getId(),typeSymbol ));
+    }
     public Object visitProcedureCall(ProcedureCall procedureCall){
         Symbol symbol = currentSymbolTable.lookup(procedureCall.getProcedureName());
         if(!(symbol instanceof ProcedureSymbol)){
             throw error("expected produceSymbol but is "+symbol);
         }
-        for (VarDeclaration declaration : ((ProcedureSymbol) symbol).getAllVars()) {
-            BuiltinTypeSymbol typeSymbol = (BuiltinTypeSymbol) requireSymbol((String) declaration.getType().getValue());
-            currentSymbolTable.define(new VarSymbol(declaration.getId().getId(),typeSymbol ));
+        for (ASTNode declaration : ((ProcedureSymbol) symbol).getAllVars()) {
+            if(declaration instanceof VarDeclaration){//定义内部变量
+               defineVarSymbol((VarDeclaration) declaration);
+            }else if(declaration instanceof Procedure){
+                defineProcedureSymbol((Procedure) declaration);
+            }
+
         }
         int size = callStack.size();
         ActivatedRecord activatedRecord = new ActivatedRecord(size+1,procedureCall.getProcedureName(),TokenType.PROCEDURE);
@@ -106,16 +114,19 @@ public class Interpreter {
         callStack.pop();
         return null;
     }
-    public Object visitProcedure(Procedure procedure){
-
-        SymbolTable scopedSymbolTable = new SymbolTable();
-        scopedSymbolTable.setParent(currentSymbolTable);
-        currentSymbolTable = scopedSymbolTable;
+    void defineProcedureSymbol(Procedure procedure){
         ProcedureSymbol procedureSymbol = new ProcedureSymbol(procedure.getId().getId());
         procedureSymbol.setBody(procedure.getBody());
         procedureSymbol.setParams(procedure.getParams());
         procedureSymbol.setVars(procedure.getVars());
         currentSymbolTable.define(procedureSymbol);
+    }
+    public Object visitProcedure(Procedure procedure){
+
+        SymbolTable scopedSymbolTable = new SymbolTable();
+        scopedSymbolTable.setParent(currentSymbolTable);
+        currentSymbolTable = scopedSymbolTable;
+        defineProcedureSymbol(procedure);
         return null;
     }
     public Object visitRealNode(RealNode num){
