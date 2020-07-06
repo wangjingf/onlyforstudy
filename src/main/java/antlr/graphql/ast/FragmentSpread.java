@@ -4,7 +4,7 @@ import antlr.graphql.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentSpread extends Node {
+public class FragmentSpread extends Selection {
     String fragmentName;
     List<Directive> directives = new ArrayList<>();
 

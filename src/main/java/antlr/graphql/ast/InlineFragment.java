@@ -4,7 +4,7 @@ import antlr.graphql.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InlineFragment extends Node {
+public class InlineFragment extends Selection {
     String typeCondition = null;
     List<Directive> directives = new ArrayList<>();
     SelectionSet selectionSet = null;

@@ -353,32 +353,85 @@ public class AstBuildVisitor implements GraphqlVisitor<Node> {
 
     @Override
     public Node visitTypeSystemDefinition(GraphqlParser.TypeSystemDefinitionContext ctx) {
-        return null;
+        if(ctx.schemaDefinition() != null){
+            return visitSchemaDefinition(ctx.schemaDefinition());
+        }else if(ctx.typeDefinition() != null){
+            return visitTypeDefinition(ctx.typeDefinition());
+        }else if(ctx.typeExtensionDefinition() != null){
+            return visitTypeExtensionDefinition(ctx.typeExtensionDefinition());
+        }else{
+            return visitDirectiveDefinition(ctx.directiveDefinition());
+        }
     }
 
     @Override
     public Node visitSchemaDefinition(GraphqlParser.SchemaDefinitionContext ctx) {
-        return null;
+        SchemaDefinition schemaDefinition = new SchemaDefinition();
+        if(ctx.directives() != null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                schemaDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        for (GraphqlParser.OperationTypeDefinitionContext opCtx : ctx.operationTypeDefinition()) {
+            schemaDefinition.getOperationTypeDefinitions().add((OperationTypeDefinition) visitOperationTypeDefinition(opCtx));
+        }
+        return schemaDefinition;
     }
 
     @Override
     public Node visitOperationTypeDefinition(GraphqlParser.OperationTypeDefinitionContext ctx) {
-        return null;
+        OperationTypeDefinition definition = new OperationTypeDefinition();
+        definition.setTypeName(ctx.typeName().toString());
+        definition.setOperation(Operation.valueOf(ctx.operationType().getText().toUpperCase()));
+        return definition;
     }
 
     @Override
     public Node visitTypeDefinition(GraphqlParser.TypeDefinitionContext ctx) {
-        return null;
+        if(ctx.scalarTypeDefinition() !=null){
+            return visitScalarTypeDefinition(ctx.scalarTypeDefinition());
+        }else if(ctx.objectTypeDefinition() != null){
+            return visitObjectTypeDefinition(ctx.objectTypeDefinition());
+        }else if(ctx.interfaceTypeDefinition() != null){
+            return visitInterfaceTypeDefinition(ctx.interfaceTypeDefinition());
+        }else if(ctx.unionTypeDefinition() !=null){
+            return visitUnionTypeDefinition(ctx.unionTypeDefinition());
+        }else if(ctx.enumTypeDefinition() != null){
+            return visitEnumTypeDefinition(ctx.enumTypeDefinition());
+        }else{
+          return visitInputObjectTypeDefinition(ctx.inputObjectTypeDefinition());
+        }
     }
 
     @Override
     public Node visitScalarTypeDefinition(GraphqlParser.ScalarTypeDefinitionContext ctx) {
-        return null;
+        ScalarTypeDefinition scalarTypeDefinition = new ScalarTypeDefinition();
+        scalarTypeDefinition.setName(ctx.name().getText());
+        if(ctx.directives() != null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                scalarTypeDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        return scalarTypeDefinition;
     }
 
     @Override
     public Node visitObjectTypeDefinition(GraphqlParser.ObjectTypeDefinitionContext ctx) {
-        return null;
+        ObjectTypeDefinition objectTypeDefinition = new ObjectTypeDefinition();
+        objectTypeDefinition.setName(ctx.name().getText());
+        if(ctx.implementsInterfaces() != null){
+            for (GraphqlParser.TypeNameContext typeNameContext : ctx.implementsInterfaces().typeName()) {
+                objectTypeDefinition.getImplementsInterfaces().add(typeNameContext.name().getText());
+            }
+        }if(ctx.directives() != null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                objectTypeDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        for (GraphqlParser.FieldDefinitionContext fieldDefinitionContext : ctx.fieldDefinition()) {
+            objectTypeDefinition.getFieldDefinition().add((FieldDefinition) visitFieldDefinition(fieldDefinitionContext));
+        }
+        return objectTypeDefinition;
     }
 
     @Override
@@ -388,7 +441,21 @@ public class AstBuildVisitor implements GraphqlVisitor<Node> {
 
     @Override
     public Node visitFieldDefinition(GraphqlParser.FieldDefinitionContext ctx) {
-        return null;
+        FieldDefinition definition = new FieldDefinition();
+        definition.setName(ctx.name().getText());
+        if(ctx.argumentsDefinition()!=null){
+            for (GraphqlParser.InputValueDefinitionContext inputValueDefinitionContext : ctx.argumentsDefinition().inputValueDefinition()) {
+                definition.getArgumentsDefinition().add((InputValueDefinition) visitInputValueDefinition(inputValueDefinitionContext));
+            }
+        }
+
+        definition.setType((Type) visitType(ctx.type()));
+        if(ctx.directives() != null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                definition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        return definition;
     }
 
     @Override
@@ -398,17 +465,53 @@ public class AstBuildVisitor implements GraphqlVisitor<Node> {
 
     @Override
     public Node visitInputValueDefinition(GraphqlParser.InputValueDefinitionContext ctx) {
-        return null;
+        InputValueDefinition valueDefinition = new InputValueDefinition();
+        valueDefinition.setName(ctx.name().getText());
+        valueDefinition.setType((Type) visitType(ctx.type()));
+        if(ctx.defaultValue()!=null){
+            valueDefinition.setDefaultValue((Value) visitValue(ctx.defaultValue().value()));
+        }
+        if(ctx.directives() != null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                valueDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        return valueDefinition;
     }
 
     @Override
     public Node visitInterfaceTypeDefinition(GraphqlParser.InterfaceTypeDefinitionContext ctx) {
-        return null;
+       InterfaceTypeDefinition typeDefinition = new InterfaceTypeDefinition();
+       typeDefinition.setName(ctx.name().getText());
+       if(ctx.directives() != null){
+           for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+               typeDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+           }
+       }
+        for (GraphqlParser.FieldDefinitionContext fieldDefinitionContext : ctx.fieldDefinition()) {
+            typeDefinition.getDefinitions().add((FieldDefinition) visitFieldDefinition(fieldDefinitionContext));
+        }
+        return typeDefinition;
     }
 
     @Override
     public Node visitUnionTypeDefinition(GraphqlParser.UnionTypeDefinitionContext ctx) {
-        return null;
+        UnionTypeDefinition typeDefinition = new UnionTypeDefinition();
+        typeDefinition.setName(ctx.name().getText());
+        if(ctx.directives()!= null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                typeDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        GraphqlParser.UnionMembersContext unionMembersContext = ctx.unionMembers();
+        while(unionMembersContext!= null){
+            if(unionMembersContext.typeName() != null){
+                typeDefinition.getUnionMembers().add(new TypeName(unionMembersContext.typeName().getText()));
+                unionMembersContext = unionMembersContext.unionMembers();
+            }
+
+        }
+        return typeDefinition;
     }
 
     @Override
@@ -418,27 +521,66 @@ public class AstBuildVisitor implements GraphqlVisitor<Node> {
 
     @Override
     public Node visitEnumTypeDefinition(GraphqlParser.EnumTypeDefinitionContext ctx) {
-        return null;
+        EnumTypeDefinition typeDefinition = new EnumTypeDefinition();
+        typeDefinition.setName(ctx.name().getText());
+        if(ctx.directives() != null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                typeDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        for (GraphqlParser.EnumValueDefinitionContext enumValueDefinitionContext : ctx.enumValueDefinition()) {
+            typeDefinition.getEnumValueDefinitions().add((EnumValueDefinition) visitEnumValueDefinition(enumValueDefinitionContext));
+        }
+        return typeDefinition;
     }
 
     @Override
     public Node visitEnumValueDefinition(GraphqlParser.EnumValueDefinitionContext ctx) {
-        return null;
+        EnumValueDefinition enumValueDefinition = new EnumValueDefinition();
+        enumValueDefinition.setEnumValue(ctx.enumValue().name().getText());
+        if(ctx.directives() != null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                enumValueDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        return enumValueDefinition;
     }
 
     @Override
     public Node visitInputObjectTypeDefinition(GraphqlParser.InputObjectTypeDefinitionContext ctx) {
-        return null;
+        InputObjectTypeDefinition typeDefinition = new InputObjectTypeDefinition();
+        typeDefinition.setName(ctx.name().getText());
+        if(ctx.directives() != null){
+            for (GraphqlParser.DirectiveContext directiveContext : ctx.directives().directive()) {
+                typeDefinition.getDirectives().add((Directive) visitDirective(directiveContext));
+            }
+        }
+        for (GraphqlParser.InputValueDefinitionContext valueDefinitionContext : ctx.inputValueDefinition()) {
+            typeDefinition.getInputValueDefinition().add((InputValueDefinition) visitInputValueDefinition(valueDefinitionContext));
+        }
+        return typeDefinition;
     }
 
     @Override
     public Node visitTypeExtensionDefinition(GraphqlParser.TypeExtensionDefinitionContext ctx) {
-        return null;
+        TypeExtensionDefinition extensionDefinition = new TypeExtensionDefinition();
+        extensionDefinition.setObjectTypeDefinition((ObjectTypeDefinition) visitObjectTypeDefinition(ctx.objectTypeDefinition()));
+        return extensionDefinition;
     }
 
     @Override
     public Node visitDirectiveDefinition(GraphqlParser.DirectiveDefinitionContext ctx) {
-        return null;
+        DirectiveDefinition directiveDefinition = new DirectiveDefinition();
+        directiveDefinition.setName(ctx.name().getText());
+        for (GraphqlParser.InputValueDefinitionContext inputValueDefinitionContext : ctx.argumentsDefinition().inputValueDefinition()) {
+            directiveDefinition.getArgumentsDefinition().add((InputValueDefinition) visitInputValueDefinition(inputValueDefinitionContext));
+        }
+        GraphqlParser.DirectiveLocationsContext directiveLocationsContext = ctx.directiveLocations();
+        while (directiveLocationsContext.directiveLocation() != null){
+            directiveDefinition.getDirectiveLocations().add(directiveLocationsContext.directiveLocation().name().getText());
+            directiveLocationsContext = directiveLocationsContext.directiveLocations();
+        }
+        return directiveDefinition;
     }
 
     @Override

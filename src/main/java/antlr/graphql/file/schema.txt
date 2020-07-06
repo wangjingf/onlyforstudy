@@ -1,0 +1,21 @@
+type EntAuthUserRole{
+   sid : String
+   userId :  String
+   roleId:  String
+   enableTime : datetime
+   disableTime:  datetime
+   user:  EntAuthUser
+   role : EntAuthRole
+}
+type EntAuthUser{
+    sid:  String
+    userName:  String
+    userNick : String
+    userPass : String,
+    gender : Int
+}
+type EntAuthRole{
+  sid : String
+  name : String
+  statusId : Int
+}

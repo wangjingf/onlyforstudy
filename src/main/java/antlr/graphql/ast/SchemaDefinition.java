@@ -1,6 +1,26 @@
 package antlr.graphql.ast;
 import antlr.graphql.Node;
 
-public class SchemaDefinition extends Node {
-    
+import java.util.ArrayList;
+import java.util.List;
+
+public class SchemaDefinition extends TypeSystemDefinition {
+    List<Directive> directives = new ArrayList<>();
+    List<OperationTypeDefinition> operationTypeDefinitions = new ArrayList<>();
+
+    public List<Directive> getDirectives() {
+        return directives;
+    }
+
+    public void setDirectives(List<Directive> directives) {
+        this.directives = directives;
+    }
+
+    public List<OperationTypeDefinition> getOperationTypeDefinitions() {
+        return operationTypeDefinitions;
+    }
+
+    public void setOperationTypeDefinitions(List<OperationTypeDefinition> operationTypeDefinitions) {
+        this.operationTypeDefinitions = operationTypeDefinitions;
+    }
 }

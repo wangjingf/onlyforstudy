@@ -1,6 +1,26 @@
 package antlr.graphql.ast;
 import antlr.graphql.Node;
 
-public class ScalarTypeDefinition extends Node {
-    
+import java.util.ArrayList;
+import java.util.List;
+
+public class ScalarTypeDefinition extends TypeDefinition {
+    String name;
+    List<Directive> directives = new ArrayList<>();
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Directive> getDirectives() {
+        return directives;
+    }
+
+    public void setDirectives(List<Directive> directives) {
+        this.directives = directives;
+    }
 }
