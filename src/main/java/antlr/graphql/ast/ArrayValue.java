@@ -18,6 +18,9 @@ public class ArrayValue extends Value<List<Value>> {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+            acceptChild(visitor,values);
+        }
+        visitor.endVisit(this);
     }
 }

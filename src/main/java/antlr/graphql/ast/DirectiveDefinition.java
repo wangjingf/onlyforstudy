@@ -36,6 +36,9 @@ public class DirectiveDefinition extends Node {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+            acceptChild(visitor,argumentsDefinition);
+        }
+        visitor.endVisit(this);
     }
 }

@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -22,5 +23,14 @@ public class FragmentSpread extends Selection {
 
     public void setDirectives(List<Directive> directives) {
         this.directives = directives;
+    }
+
+    @Override
+    protected void accept0(GraphqlAstVisitor visitor) {
+
+        if(visitor.visit(this)){
+            acceptChild(visitor,directives);
+        }
+        visitor.endVisit(this);
     }
 }

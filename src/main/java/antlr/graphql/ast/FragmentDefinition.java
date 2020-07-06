@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -39,5 +40,14 @@ public class FragmentDefinition extends Definition {
 
     public void setSelectionSet(SelectionSet selectionSet) {
         this.selectionSet = selectionSet;
+    }
+
+    @Override
+    public void accept0(GraphqlAstVisitor visitor) {
+        if(visitor.visit(this)){
+            acceptChild(visitor,directives);
+            acceptChild(visitor,selectionSet);
+        }
+        visitor.endVisit(this);
     }
 }

@@ -45,6 +45,11 @@ public class InputValueDefinition extends Node {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+            acceptChild(visitor,type);
+            acceptChild(visitor,defaultValue);
+            acceptChild(visitor,directives);
+        }
+        visitor.endVisit(this);
     }
 }

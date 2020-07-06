@@ -1,11 +1,9 @@
 package antlr.graphql.ast;
 import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
+import io.study.exception.StdException;
 
-public class Definition extends Node {
+public abstract class Definition extends Node {
 
-    @Override
-    public void accept0(GraphqlAstVisitor visitor) {
 
-    }
 }

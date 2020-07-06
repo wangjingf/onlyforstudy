@@ -21,6 +21,8 @@ public class IntValue extends Value<Integer> {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+         }
+        visitor.endVisit(this);
     }
 }

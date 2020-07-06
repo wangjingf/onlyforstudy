@@ -1,6 +1,6 @@
 package antlr.graphql.ast;
 import antlr.graphql.Node;
 
-public class TypeDefinition extends TypeSystemDefinition {
+public abstract class TypeDefinition extends TypeSystemDefinition {
     
 }

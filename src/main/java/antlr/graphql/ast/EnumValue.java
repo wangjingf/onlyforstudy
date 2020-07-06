@@ -21,6 +21,8 @@ public class EnumValue extends Value<List<String>> {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+         }
+        visitor.endVisit(this);
     }
 }

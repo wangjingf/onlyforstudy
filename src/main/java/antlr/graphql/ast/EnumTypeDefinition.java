@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -31,5 +32,14 @@ public class EnumTypeDefinition extends TypeDefinition {
 
     public void setEnumValueDefinitions(List<EnumValueDefinition> enumValueDefinitions) {
         this.enumValueDefinitions = enumValueDefinitions;
+    }
+
+    @Override
+    protected void accept0(GraphqlAstVisitor visitor) {
+        if(visitor.visit(this)){
+            acceptChild(visitor,enumValueDefinitions);
+            acceptChild(visitor,directives);
+        }
+        visitor.endVisit(this);
     }
 }

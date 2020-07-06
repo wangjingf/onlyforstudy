@@ -18,6 +18,9 @@ public class SelectionSet extends Node {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+            acceptChild(visitor,selections);
+        }
+        visitor.endVisit(this);
     }
 }

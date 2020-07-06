@@ -24,6 +24,8 @@ public class OperationTypeDefinition extends Node {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+         }
+        visitor.endVisit(this);
     }
 }

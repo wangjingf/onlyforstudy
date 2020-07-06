@@ -1,5 +1,7 @@
 package antlr.graphql.ast;
 
+import antlr.g4.GraphqlAstVisitor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,5 +50,15 @@ public class OperationDefinition extends Definition {
 
     public void setDirectives(List<Directive> directives) {
         this.directives = directives;
+    }
+
+    @Override
+    protected void accept0(GraphqlAstVisitor visitor) {
+        if(visitor.visit(this)){
+            acceptChild(visitor,selectionSet);
+            acceptChild(visitor,variables);
+            acceptChild(visitor,directives);
+        }
+        visitor.endVisit(this);
     }
 }

@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -22,5 +23,14 @@ public class SchemaDefinition extends TypeSystemDefinition {
 
     public void setOperationTypeDefinitions(List<OperationTypeDefinition> operationTypeDefinitions) {
         this.operationTypeDefinitions = operationTypeDefinitions;
+    }
+
+    @Override
+    protected void accept0(GraphqlAstVisitor visitor) {
+        if(visitor.visit(this)){
+            acceptChild(visitor,directives);
+            acceptChild(visitor,operationTypeDefinitions);
+        }
+        visitor.endVisit(this);
     }
 }

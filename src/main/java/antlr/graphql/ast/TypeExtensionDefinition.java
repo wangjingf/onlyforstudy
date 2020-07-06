@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 public class TypeExtensionDefinition extends TypeSystemDefinition {
@@ -10,5 +11,13 @@ public class TypeExtensionDefinition extends TypeSystemDefinition {
 
     public void setObjectTypeDefinition(ObjectTypeDefinition objectTypeDefinition) {
         this.objectTypeDefinition = objectTypeDefinition;
+    }
+
+    @Override
+    protected void accept0(GraphqlAstVisitor visitor) {
+        if(visitor.visit(this)){
+            acceptChild(visitor,objectTypeDefinition);
+        }
+        visitor.endVisit(this);
     }
 }

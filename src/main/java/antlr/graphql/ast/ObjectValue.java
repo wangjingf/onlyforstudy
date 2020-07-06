@@ -18,6 +18,9 @@ public class ObjectValue extends Value {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+            acceptChild(visitor,fields);
+        }
+        visitor.endVisit(this);
     }
 }

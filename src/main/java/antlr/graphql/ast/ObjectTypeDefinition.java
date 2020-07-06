@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -40,5 +41,14 @@ public class ObjectTypeDefinition extends TypeDefinition {
 
     public void setFieldDefinition(List<FieldDefinition> fieldDefinition) {
         this.fieldDefinition = fieldDefinition;
+    }
+
+    @Override
+    protected void accept0(GraphqlAstVisitor visitor) {
+        if(visitor.visit(this)){
+            acceptChild(visitor,directives);
+            acceptChild(visitor,fieldDefinition);
+        }
+        visitor.endVisit(this);
     }
 }

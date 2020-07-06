@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -49,5 +50,15 @@ public class Field extends Selection {
 
     public void setSelectionSet(SelectionSet selectionSet) {
         this.selectionSet = selectionSet;
+    }
+
+    @Override
+    protected void accept0(GraphqlAstVisitor visitor) {
+        if(visitor.visit(this)){
+            acceptChild(visitor,arguments);
+            acceptChild(visitor,directives);
+            acceptChild(visitor,selectionSet);
+        }
+        visitor.endVisit(this);
     }
 }

@@ -21,6 +21,9 @@ public class Document extends Node implements IVisitable<GraphqlAstVisitor> {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+            acceptChild(visitor,definitions);
+        }
+        visitor.endVisit(this);
     }
 }

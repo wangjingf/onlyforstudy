@@ -46,6 +46,11 @@ public class FieldDefinition extends Node {
 
     @Override
     public void accept0(GraphqlAstVisitor visitor) {
-
+        if(visitor.visit(this)){
+            acceptChild(visitor,type);
+            acceptChild(visitor,argumentsDefinition);
+            acceptChild(visitor,directives);
+        }
+        visitor.endVisit(this);
     }
 }
