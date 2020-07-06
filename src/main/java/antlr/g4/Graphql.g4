@@ -161,7 +161,8 @@ inputObjectTypeDefinition : INPUT name directives? '{' inputValueDefinition+ '}'
 
 typeExtensionDefinition : EXTEND objectTypeDefinition;
 
-directiveDefinition : DIRECTIVE '@' name argumentsDefinition? 'on' directiveLocations;
+directiveDefinition :
+ DIRECTIVE '@' name argumentsDefinition? 'on' directiveLocations;
 
 directiveLocation : name;
 

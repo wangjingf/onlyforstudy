@@ -1,5 +1,7 @@
 package antlr.graphql.ast;
 
+import antlr.g4.GraphqlAstVisitor;
+
 public class VariableReference extends Value<String> {
     String name;
 
@@ -22,6 +24,11 @@ public class VariableReference extends Value<String> {
 
     @Override
     public void setValue(String value) {
+
+    }
+
+    @Override
+    public void accept0(GraphqlAstVisitor visitor) {
 
     }
 }

@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -13,5 +14,10 @@ public class ArrayValue extends Value<List<Value>> {
 
     public void setValue(List<Value> values) {
         this.values = values;
+    }
+
+    @Override
+    public void accept0(GraphqlAstVisitor visitor) {
+
     }
 }

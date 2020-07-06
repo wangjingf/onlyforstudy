@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -22,5 +23,10 @@ public class EnumValueDefinition extends Node {
 
     public void setDirectives(List<Directive> directives) {
         this.directives = directives;
+    }
+
+    @Override
+    public void accept0(GraphqlAstVisitor visitor) {
+
     }
 }

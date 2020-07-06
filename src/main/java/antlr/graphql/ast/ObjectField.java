@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 public class ObjectField extends Node {
@@ -19,5 +20,10 @@ public class ObjectField extends Node {
 
     public void setValue(Value value) {
         this.value = value;
+    }
+
+    @Override
+    public void accept0(GraphqlAstVisitor visitor) {
+
     }
 }

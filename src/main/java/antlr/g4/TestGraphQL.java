@@ -6,13 +6,17 @@ import antlr.g4.expr.ExprParser;
 import antlr.g4.graphql.GraphqlLexer;
 import antlr.g4.graphql.GraphqlParser;
 import antlr.graphql.AstBuildVisitor;
+import antlr.graphql.DateFetcher;
+import antlr.graphql.GraphQlParser;
 import antlr.graphql.ast.Document;
+import io.study.helper.IoHelper;
 import junit.framework.TestCase;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -63,6 +67,26 @@ public class TestGraphQL extends TestCase {
         GraphqlParser parser = new GraphqlParser(tokens);
        // ParseTree tree =  parser.document();
        Document document = (Document) visitor.visitDocument(parser.document());
+        DateFetcher fetcher = new DateFetcher();
+        fetcher.fetchData(document);
+    }
+    public String readSchema(String fileName){
+        String path = "D:\\wjf\\workspace\\onlyforstudy\\src\\main\\java\\antlr\\graphql\\file";
+        File file = new File(path,fileName);
+        return IoHelper.toString(file);
+    }
+
+        public void testTokens(){
+            String type = readSchema("schema.txt");
+            GraphQlParser parser = new GraphQlParser(type);
+            parser.dumpToken();
+        }
+    public void testSchema(){
+        String type = readSchema("schema.txt");
+        GraphQlParser parser = new GraphQlParser(type);
+        Document doc = parser.parseDocument();
 
     }
+
+
 }

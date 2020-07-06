@@ -10,7 +10,7 @@ import java.util.List;
  *  基本推导公式
  *  E->E+T|E-T|T => E->T(+T)* | T(-T)*
  *  T->T*F|T/F|F => T->F(*F)* | T->F(/F)*
- *  F->int|(expr)
+ *  F->int|(e)
  *  更换为：E改名为expr,T改名为term,F为名为factor
  *  program -> PROGRAM id;(var declaration) compoundStatement dot
  *  compoundStatement -> begin statementList end

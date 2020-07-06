@@ -1,5 +1,7 @@
 package antlr.graphql.ast;
 
+import antlr.g4.GraphqlAstVisitor;
+
 public class BooleanValue extends Value<Boolean> {
     Boolean value;
 
@@ -15,5 +17,10 @@ public class BooleanValue extends Value<Boolean> {
     @Override
     public void setValue(Boolean value) {
         this.value = value;
+    }
+
+    @Override
+    public void accept0(GraphqlAstVisitor visitor) {
+
     }
 }

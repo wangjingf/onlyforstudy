@@ -1,4 +1,5 @@
 package antlr.graphql.ast;
+import antlr.g4.GraphqlAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.ArrayList;
@@ -31,5 +32,10 @@ public class DirectiveDefinition extends Node {
 
     public void setDirectiveLocations(List<String> directiveLocations) {
         this.directiveLocations = directiveLocations;
+    }
+
+    @Override
+    public void accept0(GraphqlAstVisitor visitor) {
+
     }
 }

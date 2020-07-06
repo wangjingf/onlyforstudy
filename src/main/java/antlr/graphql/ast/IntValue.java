@@ -1,5 +1,7 @@
 package antlr.graphql.ast;
 
+import antlr.g4.GraphqlAstVisitor;
+
 public class IntValue extends Value<Integer> {
     Integer value;
 
@@ -15,5 +17,10 @@ public class IntValue extends Value<Integer> {
     @Override
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    @Override
+    public void accept0(GraphqlAstVisitor visitor) {
+
     }
 }
