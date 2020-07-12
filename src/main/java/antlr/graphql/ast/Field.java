@@ -1,8 +1,11 @@
 package antlr.graphql.ast;
-import antlr.g4.GraphqlAstVisitor;
-import antlr.graphql.Node;
+import antlr.g4.GraphQLAstVisitor;
+import antlr.graphql.schema.TypeDefinitions;
+ import antlr.graphql.schema.entity.ObjectType;
+import antlr.graphql.schema.entity.FieldInfo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Field extends Selection {
@@ -53,7 +56,7 @@ public class Field extends Selection {
     }
 
     @Override
-    protected void accept0(GraphqlAstVisitor visitor) {
+    protected void accept0(GraphQLAstVisitor visitor) {
         if(visitor.visit(this)){
             acceptChild(visitor,arguments);
             acceptChild(visitor,directives);
@@ -61,4 +64,33 @@ public class Field extends Selection {
         }
         visitor.endVisit(this);
     }
+
+
+
+    public List<FieldInfo> toField(ObjectType parent, TypeDefinitions definitions) {
+        FieldInfo field = new FieldInfo();
+        field.setAlias(getAlias());
+        field.setName(getName());
+        field.setType(parent.getField(getName()).getType());
+        for (Argument argument : getArguments()) {
+            InputValueDefinition definition = new InputValueDefinition();
+            definition.setDefaultValue(argument.getValue());
+            definition.setName(argument.getName());
+            field.getArguments().add(definition);
+        }
+        field.setDirectives(getDirectives());
+        if(selectionSet != null){
+            ObjectType o = definitions.getObjectType(parent.getField(getName()).getType().getPrimitiveTypeName());
+            for (Field child : selectionSet.getAllFields(definitions)) {
+                List<FieldInfo> fieldInfos = child.toField(o, definitions);
+                for (FieldInfo fieldInfo : fieldInfos) {
+                  field.getChildFields().put(fieldInfo.getName(),fieldInfo);
+                }
+            }
+
+        }
+
+        return Collections.singletonList(field);
+    }
+
 }

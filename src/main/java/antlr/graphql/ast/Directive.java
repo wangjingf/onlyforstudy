@@ -1,10 +1,11 @@
 package antlr.graphql.ast;
-import antlr.g4.GraphqlAstVisitor;
+import antlr.g4.GraphQLAstVisitor;
 import antlr.graphql.Node;
 
 import java.util.List;
+import java.util.Map;
 
-public class Directive extends Node {
+public abstract class Directive extends Node {
     String name;
     List<Argument> arguments;
 
@@ -25,10 +26,14 @@ public class Directive extends Node {
     }
 
     @Override
-    public void accept0(GraphqlAstVisitor visitor) {
+    public void accept0(GraphQLAstVisitor visitor) {
         if(visitor.visit(this)){
             acceptChild(visitor,arguments);
         }
         visitor.endVisit(this);
     }
+   public boolean isValid(Map<String,Object> args){
+        return true;
+   }
+    public abstract void validate();
 }

@@ -1,6 +1,5 @@
 package antlr.graphql;
 
-import antlr.g4.graphql.GraphqlBaseListener;
 import antlr.g4.graphql.GraphqlParser;
 import antlr.g4.graphql.GraphqlVisitor;
 import antlr.graphql.ast.*;
@@ -40,7 +39,10 @@ public class AstBuildVisitor implements GraphqlVisitor<Node> {
     @Override
     public Node visitOperationDefinition(GraphqlParser.OperationDefinitionContext ctx) {
         OperationDefinition definition = new OperationDefinition();
-        definition.setOperation(Operation.valueOf(ctx.operationType().getText().toUpperCase()));//待处理
+        if(ctx.operationType() != null){
+            definition.setOperation(Operation.valueOf(ctx.operationType().getText().toUpperCase()));//待处理
+
+        }
         definition.setSelectionSet((SelectionSet) visitSelectionSet(ctx.selectionSet()));
         if(ctx.name() != null){
             definition.setName(ctx.name().getText());

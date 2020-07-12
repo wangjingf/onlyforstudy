@@ -3,9 +3,11 @@ package antlr.graphql;
 import io.study.util.StringHelper;
 
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class GraphAstHelper {
-    String template = "public boolean visit{{name}}({{name}} {{lowName}}){\n" +
+    static final String template = "public boolean visit({{name}} {{lowName}}){\n" +
             "  return true;\n" +
             "}\n" +
             "public void endVisit({{name}} {{lowName}}){\n" +
@@ -19,8 +21,12 @@ public class GraphAstHelper {
 
         File f = new File(path);
         for (File file : f.listFiles()) {
-            String name = StringHelper.lastPart(file.getName(),'.',false);
-           // System.out.println(template);
+            String name = StringHelper.firstPart(file.getName(),'.');
+            String lowName = StringHelper.decapitalize(name);
+            Map<String,Object> vars = new LinkedHashMap<>();
+            vars.put("name",name);
+            vars.put("lowName",lowName);
+           System.out.println(StringHelper.format(template,vars));
         }
     }
 }

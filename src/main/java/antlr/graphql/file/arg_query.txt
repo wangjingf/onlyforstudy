@@ -1,0 +1,6 @@
+{
+  userRoles{
+   user1:user(sid:1)
+   user2:user(sid:$id)
+ }
+}

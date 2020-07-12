@@ -1,6 +1,8 @@
 package antlr.graphql.schema.type;
 
-public class GraphQLScalarType {
+import antlr.graphql.ast.Type;
+
+public class GraphQLScalarType extends Type {
     String name;
     String description;
     Coercing coercing;
@@ -17,6 +19,11 @@ public class GraphQLScalarType {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getPrimitiveTypeName() {
+        return name;
     }
 
     public String getDescription() {

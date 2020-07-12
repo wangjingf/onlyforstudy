@@ -1,22 +1,14 @@
 package antlr.graphql.ast;
-import antlr.g4.GraphqlAstVisitor;
-import antlr.graphql.Node;
+import antlr.g4.GraphQLAstVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InputObjectTypeDefinition extends TypeDefinition {
-    String name;
     List<Directive> directives = new ArrayList<>();
     List<InputValueDefinition> inputValueDefinition = new ArrayList<>();
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public List<Directive> getDirectives() {
         return directives;
@@ -35,7 +27,7 @@ public class InputObjectTypeDefinition extends TypeDefinition {
     }
 
     @Override
-    protected void accept0(GraphqlAstVisitor visitor) {
+    protected void accept0(GraphQLAstVisitor visitor) {
         if(visitor.visit(this)){
             acceptChild(visitor,directives);
             acceptChild(visitor,inputValueDefinition);

@@ -1,6 +1,5 @@
 package antlr.graphql.ast;
-import antlr.g4.GraphqlAstVisitor;
-import antlr.graphql.Node;
+import antlr.g4.GraphQLAstVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ public class ObjectValue extends Value {
     }
 
     @Override
-    public void accept0(GraphqlAstVisitor visitor) {
+    public void accept0(GraphQLAstVisitor visitor) {
         if(visitor.visit(this)){
             acceptChild(visitor,fields);
         }

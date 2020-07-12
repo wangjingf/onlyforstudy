@@ -1,21 +1,32 @@
-type EntAuthUserRole{
+type UserRole{
    sid : String
    userId :  String
    roleId:  String
-   enableTime : datetime
-   disableTime:  datetime
-   user:  EntAuthUser
-   role : EntAuthRole
+   enableTime : Datetime
+   disableTime:  Datetime
+   user:  User
+   role : Role
 }
-type EntAuthUser{
+type User{
     sid:  String
     userName:  String
     userNick : String
     userPass : String,
     gender : Int
 }
-type EntAuthRole{
+type Role{
   sid : String
   name : String
   statusId : Int
+}
+type Query{
+   users : [User]
+   user(id:Int!):User
+   roles:[Role]
+   role(id:Int!):Role
+   userRoles:[UserRole]
+   userRole(id:Int!):UserRole
+}
+schema {
+    query :Query
 }

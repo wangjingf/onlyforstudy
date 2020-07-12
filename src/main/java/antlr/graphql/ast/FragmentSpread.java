@@ -1,6 +1,6 @@
 package antlr.graphql.ast;
-import antlr.g4.GraphqlAstVisitor;
-import antlr.graphql.Node;
+import antlr.g4.GraphQLAstVisitor;
+import antlr.graphql.schema.TypeDefinitions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +26,20 @@ public class FragmentSpread extends Selection {
     }
 
     @Override
-    protected void accept0(GraphqlAstVisitor visitor) {
+    protected void accept0(GraphQLAstVisitor visitor) {
 
         if(visitor.visit(this)){
             acceptChild(visitor,directives);
         }
         visitor.endVisit(this);
+    }
+
+    public List<Field> getFields(TypeDefinitions definitions){
+        FragmentDefinition frag = definitions.getFragment(getFragmentName());
+        List<Field> allFields = frag.getSelectionSet().getAllFields(definitions);
+        for (Field field : allFields) { // 将frag上的字段放到directive上
+            field.getDirectives().addAll(getDirectives());
+        }
+        return allFields;
     }
 }
