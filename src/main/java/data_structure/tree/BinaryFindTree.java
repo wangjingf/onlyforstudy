@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 二叉查找树
+ * @param <T>
+ */
 public class BinaryFindTree<T extends Comparable> {
     BinaryNode<T> root = null;
 
@@ -18,7 +22,9 @@ public class BinaryFindTree<T extends Comparable> {
             return ;
         }
         insert(root,e);
+
     }
+
     private void insert(BinaryNode<T> node,T e){
         int i = e.compareTo(node.getElement());
         if(i > 0){// 应该在右边插入
@@ -97,7 +103,7 @@ public class BinaryFindTree<T extends Comparable> {
         }else if(i < 0){
             node.left = remove(node.left,e);
         }else { // 找到要移除的节点了
-            if(node.getLeft() != null && node.getRight()!=null){//2节点都不为空，需要找到右边值最小的节点返回。
+            if(node.getLeft() != null && node.getRight()!=null){//2节点都 不为空，需要找到右边值最小的节点返回。
                 BinaryNode<T> minNode = removeMin(node.getRight());
                 minNode.setLeft(node.getLeft());
                 minNode.setRight(node.getRight());
