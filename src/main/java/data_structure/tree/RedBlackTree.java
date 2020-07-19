@@ -1,8 +1,10 @@
 package data_structure.tree;
 
+import io.study.exception.StdException;
 import io.study.lang.Guard;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -50,6 +52,7 @@ public class RedBlackTree<T extends Comparable> {
             return;
         }
         insert(root,e);
+        ensureIsRedBlackTree();
     }
 
 
@@ -116,7 +119,7 @@ public class RedBlackTree<T extends Comparable> {
             }else{
                 insert(parent.getRight(),e);
             }
-        }else{
+        }else if(i < 0){
             if(parent.getLeft() == null){
                 RedBlackTreeNode node = new RedBlackTreeNode(e);
                 parent.setLeft(node);
@@ -170,8 +173,8 @@ public class RedBlackTree<T extends Comparable> {
     }
     private void traverse(RedBlackTreeNode<T> node,List<RedBlackTreeNode> list){
         if(node == null) return;
-        traverse(node.getLeft(),list);
         list.add(node);
+        traverse(node.getLeft(),list);
         traverse(node.getRight(),list);
     }
      RedBlackTreeNode rotateWithRightChildNoColor(RedBlackTreeNode node){
@@ -188,13 +191,55 @@ public class RedBlackTree<T extends Comparable> {
         p.setRight(g);
         return p;
     }
-
-
+    public int size(){
+        if(root == null){
+            return 0;
+        }
+        List<RedBlackTreeNode> nodes = new ArrayList<>();
+        traverse(root,nodes);
+        return nodes.size();
+    }
+    /**
+     *  判断当前树是不是还是红黑树,若不是，则抛出异常
+     * @return
+     */
+    public boolean ensureIsRedBlackTree(){
+        if(root == null){
+            return true;
+        }else if(root.isRed()){
+            throw new StdException("root is black");
+        }
+        List<Integer> levels = new LinkedList<>();
+        traverse(root,1,levels);
+        int level = levels.get(0);
+        for (Integer integer : levels) {
+            if(integer != level){
+                throw new StdException("not a red black tree");
+            }
+        }
+        return true;
+    }
+    void traverse(RedBlackTreeNode node,int level,List<Integer> levels){
+        if(node == null){
+            levels.add(level);
+            return ;
+        };
+        if(isRed(node) && (isRed(node.getLeft()) || isRed(node.getRight()))){
+            throw new StdException("invalid red black tree");
+        }
+        if(node.isRed()){
+            traverse(node.getLeft(),level,levels);
+            traverse(node.getRight(),level,levels);
+        }else{
+            traverse(node.getLeft(),level+1,levels);
+            traverse(node.getRight(),level+1,levels);
+        }
+    }
     int compare(T e,RedBlackTreeNode node){
         if(node == MIN_NODE){ //固定为最大值
             return 1;
         }else {
-            return e.compareTo(node);
+            return e.compareTo(node.getElement());
         }
     }
     boolean nullOrBlack(RedBlackTreeNode node){
@@ -204,16 +249,50 @@ public class RedBlackTree<T extends Comparable> {
         if(root == null){
             return;
         }
-        MIN_NODE.setRight(root);
-        p = MIN_NODE;
-        remove(p,e);
-        root.toBlack();
+        p = root;
+        t = null;
+        x = null;
+        if(nullOrBlack(root.getLeft()) && nullOrBlack(root.getRight()) ){//|| isRed(root.getLeft()) && isRed(root.getRight())
+            root.toRed();
+            remove(p,e);
+        }else{
+            removeWithBlackRoot(p,e);
+        }
+        if(root != null){
+            root.toBlack();
+        }
+
+        ensureIsRedBlackTree();
     }
 
     RedBlackTreeNode p; //父元素
     RedBlackTreeNode x;//当前搜索的方向对应的元素
     RedBlackTreeNode t;//x 的兄弟元素
 
+    /**
+     * 寻找非叶子节点的前驱或者后继
+     * @param matchNode
+     * @return
+     */
+     T findPrevOrNextElm(RedBlackTreeNode matchNode){
+        if(matchNode.isLeaf()){
+            throw new StdException("invalid node");
+        }else if(matchNode.getRight()!=null){ //移除最右边的最小节点
+            RedBlackTreeNode newNode = matchNode.getRight();
+            while (newNode.getLeft() != null){
+                newNode = newNode.getLeft();
+            }
+           return  (T) newNode.getElement();
+
+        }else {//移除左边的最大节点
+            RedBlackTreeNode newNode = matchNode.getLeft();
+            while (newNode.getRight() != null){
+                newNode = newNode.getRight();
+            }
+           return  (T) newNode.getElement();
+
+        }
+    }
     /**
      * matchNode必须是红色的
      * @param matchNode
@@ -222,16 +301,21 @@ public class RedBlackTree<T extends Comparable> {
     void removeMatchNode(RedBlackTreeNode matchNode,T e){
         Guard.assertTrue(matchNode.isRed(),"match_node_must_be_red");
         if(matchNode.isLeaf() ){
+            if(matchNode.getParent() == null) {
+                root = null;
+                return ;
+            }
             matchNode.removeFromParent();
+        }else if(matchNode.getLeft()==null && matchNode.getRight()!= null && matchNode.getRight().getRight()==null){ //只有一个右子节点
+            resetNode(matchNode.getParent(),matchNode.getRight(),false);
+        }else if(matchNode.getRight()==null && matchNode.getLeft()!= null && matchNode.getLeft().getLeft()==null){//只有一个左子节点
+            resetNode(matchNode.getParent(),matchNode.getLeft(),true);
         }else if(matchNode.getRight()!=null){ //移除最右边的最小节点
-            RedBlackTreeNode newNode = matchNode;
-            while (newNode.getRight() != null){
-                newNode = newNode.getRight();
+            RedBlackTreeNode newNode = matchNode.getRight();
+            while (newNode.getLeft() != null){
+                newNode = newNode.getLeft();
             }
             T newValue = (T) newNode.getElement();
-            if(newNode.getLeft() != null){ //左节点为空
-                newValue = (T) newNode.getLeft().getElement();
-            }
             remove(matchNode,newValue);
             matchNode.setElement(newValue);
         }else if(p.getLeft() != null){//移除左边的最大节点
@@ -252,21 +336,30 @@ public class RedBlackTree<T extends Comparable> {
      */
     public void  remove(RedBlackTreeNode<T> node,T e){
         Guard.assertTrue(node.isRed(),"remove_node_must_be_red");
+        Guard.assertTrue(node.getElement() == p.getElement(),"element must be same");
         int result = compare(e,p);//寻找节点
         if(result > 0){
             x = p.getRight();
+
             t = p.getLeft();
         }else if(result < 0){
             x = p.getLeft();
             t = p.getRight();
         }else{
              removeMatchNode(p,e);
+             return;
+        }
+        if(x == null){ //要移除的元素不存在
+            return;
         }
         RedBlackTreeNode parent = p.getParent();
-        boolean isLeft = parent.getLeft() == p;
+        boolean isLeft = false;
+        if(parent != null && parent.getLeft() == p){
+            isLeft = true;
+        }
 
-        if(nullOrBlack(x.getLeft()) && nullOrBlack(x.getRight()) ){//t的左右节点都是黑色
-            if(nullOrBlack(t) || isBlack(t.getLeft()) && isBlack(t.getRight())  ){// t节点2个儿子
+        if(nullOrBlack(x.getLeft()) && nullOrBlack(x.getRight()) ){//x的左右节点都是黑色
+            if(t== null || nullOrBlack(t) && nullOrBlack(t.getLeft()) && nullOrBlack(t.getRight())  ){// t节点2个儿子都为黑色
                 p.toBlack();
                 toRed(t);
                 toRed(x);
@@ -277,24 +370,49 @@ public class RedBlackTree<T extends Comparable> {
                 boolean tIsRightOfP = p.getRight() == t;
                 if(isRed(t.getLeft())){
                     if(tIsRightOfP){ //t是p的右节点
+                        /**
+                         *            R(p)
+                         *       x         t
+                         *    x1  x2    R(t1) t2
+                         *
+                         */
                         p.toBlack();
                         x.toRed();
-                        t.getLeft().toRed();
                         p.setRight(rotateWithLeftChildNoColor(t));
                         newRoot = rotateWithRightChildNoColor(p);
                     }else{
+                        /**
+                         *             R(p)
+                         *        t          x
+                         *    R(t1)  t2    x1 x2
+                         *
+                         */
                         p.toBlack();
+                        t.getLeft().toBlack();//t1变黑
                         t.toRed();
                         x.toRed();
                         newRoot = rotateWithLeftChildNoColor(p);
                     }
                 }else {
+                    /**
+                     *            R(p)
+                     *       x         t
+                     *    x1  x2    t1 R(t2)
+                     *
+                     */
                     if(tIsRightOfP){
                         t.toRed();
-                        t.getRight().toBlack();
+                        toBlack(t.getRight());;
                         p.toBlack();
-                        newRoot  = rotateWithRightChildNoColor(t);
+                        x.toRed();
+                        newRoot  = rotateWithRightChildNoColor(p);
                     }else{
+                        /**
+                         *             R(p)
+                         *        t          x
+                         *    t1  R(t2)    x1 x2
+                         *
+                         */
                         x.toRed();
                         p.toBlack();
                         p.setLeft(rotateWithRightChildNoColor(t));
@@ -304,40 +422,80 @@ public class RedBlackTree<T extends Comparable> {
 
                 p = x;
                 resetNode(parent,newRoot,isLeft);
-                remove(x,e);;
+                remove(x,e);
             }
         }else{ //x节点里有一个为红色
             p = x;
-            parent = p.getParent();
-             isLeft = parent.getLeft() == p;
-             result = compare(e, p);
-             if(result > 0){ //落到右节点
-                 if(isRed(p.getRight())){
-                     p = x.getRight();
-                     remove(p,e);
-                 }else if(isRed(p.getLeft())){
-                     p.toRed();
-                     p.getLeft().toBlack();
-                     RedBlackTreeNode child = rotateWithLeftChildNoColor(p);
-                     resetNode(parent,child,isLeft);
-                     remove(child,e);
-                 }
-             }else if(result < 0){
-                 if(isRed(p.getLeft())){
-                     p = x.getLeft();
-                     remove(p,e);
-                 }else if(isRed(p.getRight())){
-                     p.toRed();
-                     p.getRight().toBlack();
-                     RedBlackTreeNode child = rotateWithLeftChildNoColor(p);
-                     resetNode(parent,child,isLeft);
-                     remove(child,e);
-                 }
-             }else{
-                 removeMatchNode(p,e);
-             }
+            removeWithBlackRoot(p,e);
         }
 
+    }
+
+    /**
+     * 根节点是黑色的，且两个子节点有一个是红色的
+     * @param node
+     * @param e
+     */
+    void removeWithBlackRoot(RedBlackTreeNode node,T e){
+        Guard.assertTrue(p.getElement() == node.getElement(),"node must be same");
+        RedBlackTreeNode parent = p.getParent();
+        boolean isLeft = false;
+        if(parent != null && parent.getLeft() == p){
+            isLeft = true;
+        }
+        int result = compare(e, p);
+        if(result > 0){ //落到右节点
+            /**
+             *             p
+             *        t          R(x)
+             *    t1  t2    x1 x2
+             *
+             */
+            if(isRed(p.getRight())){ // x是红色的，直接移除即可
+                p = p.getRight();
+                remove(p,e);
+            }else if(isRed(p.getLeft())){ //x是黑色的,旋转使x的父变成红色
+                /**
+                 *             p
+                 *        R(t)      x
+                 *    t1   t2    x1 x2
+                 *
+                 */
+                p.toRed();
+                p.getLeft().toBlack();
+                RedBlackTreeNode child = rotateWithLeftChildNoColor(p);
+                resetNode(parent,child,isLeft);
+                remove(p,e);
+            }
+        }else if(result < 0){
+            /**
+             *             p
+             *       R(x)        t
+             *    x1   x2    t1  t2
+             *
+             */
+            if(isRed(p.getLeft())){
+                p = p.getLeft();
+                remove(p,e);
+            }else if(isRed(p.getRight())){
+                /**
+                 *             p
+                 *        x       R(t)
+                 *    x1   x2    t1  t2
+                 *
+                 */
+                p.toRed();
+                p.getRight().toBlack();
+                RedBlackTreeNode child = rotateWithRightChildNoColor(p);
+                resetNode(parent,child,isLeft);
+                remove(p,e);
+            }
+        }else{ //x是要移除的节点，x是黑色且x有子节点是红色
+           e =findPrevOrNextElm(p); //找到前驱或者后继节点,再次进入循环
+            RedBlackTreeNode temp = p;
+            removeWithBlackRoot(p,e);
+            temp.setElement(e);
+        }
     }
     void toBlack(RedBlackTreeNode node){
         if(node != null) node.toBlack();
@@ -352,6 +510,9 @@ public class RedBlackTree<T extends Comparable> {
         return contains(root,e);
     }
     private boolean contains(RedBlackTreeNode<T> node,T e){
+        if(node == null){
+            return false;
+        }
         int result = node.getElement().compareTo(e);
         if(result > 0){
             return contains(node.getLeft(),e);
@@ -361,14 +522,26 @@ public class RedBlackTree<T extends Comparable> {
             return true;
         }
     }
+
     public static void main(String[] args){
-         Integer[] arr = new Integer[]{10,85,15};//,70,20,60,30,50,65,80,90,40,5,55,45.
+         Integer[] arr = new Integer[]{10,85,15,70,10,60,30,50,80,80,90,40,5,54,45};//;10,85,15,70,20,60,30,50,65,80,90,40,5,55,45};
         RedBlackTree tree = new RedBlackTree();
         for (Integer integer : arr) {
             tree.insert(integer);
         }
         tree.dump();
-
+        int size = tree.size();
+        for (int i = size-1; i >=0 ; i--) {
+            System.out.println();
+            Guard.assertTrue(size == i+1,"size not true");
+            int elm = arr[i];
+            tree.remove(elm);
+            if(tree.contains(elm)){
+                throw new StdException("err_remove");
+            }
+            tree.dump();
+            size--;
+        }
     }
 
 }
