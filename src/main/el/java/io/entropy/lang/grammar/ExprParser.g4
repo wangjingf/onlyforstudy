@@ -18,6 +18,7 @@ statement
     | variableStatement
     | emptyStatement
     | expressionStatement
+    | labelledStatement
     | ifStatement
     | iterationStatement
     | continueStatement
@@ -67,11 +68,13 @@ ifStatement
 iterationStatement
     : Do statement While '(' expressionSequence ')' eos                                                                       # DoStatement
     | While '(' expressionSequence ')' statement                                                                              # WhileStatement
-    | For '(' (expressionSequence | variableDeclarationList)? ';' expressionSequence? ';' expressionSequence? ')' statement   # ForStatement
-    | For '(' (singleExpression | variableDeclarationList) In expressionSequence ')' statement                                # ForInStatement
+    | For '(' (forInitCondition | variableDeclarationList)? ';' expressionSequence? ';' forNextCondition? ')' statement   # ForStatement
     // strange, 'of' is an identifier. and this.p("of") not work in sometime.
     | For  '(' (singleExpression | variableDeclarationList) identifier{this.p("of")}? expressionSequence ')' statement  # ForOfStatement
     ;
+
+forInitCondition:expressionSequence;
+forNextCondition:expressionSequence;
 
 varModifier  // let, const - ECMAScript 6
     : Var
@@ -90,7 +93,9 @@ returnStatement
     ;
 
 
-
+labelledStatement
+    : identifier ':' statement
+    ;
 switchStatement
     : Switch '(' expressionSequence ')' caseBlock
     ;
@@ -164,7 +169,7 @@ elementList
     ;
 
 arrayElement
-    : Ellipsis? singleExpression
+    :  singleExpression
     ;
 
 propertyAssignment
@@ -208,10 +213,8 @@ singleExpression
     | '!' singleExpression                                                  # NotExpression
     | singleExpression ('*' | '/' | '%') singleExpression                   # MultiplicativeExpression
     | singleExpression ('+' | '-') singleExpression                         # AdditiveExpression
-    | singleExpression '??' singleExpression                                # CoalesceExpression
     | singleExpression ('<<' | '>>' | '>>>') singleExpression               # BitShiftExpression
     | singleExpression ('<' | '>' | '<=' | '>=') singleExpression           # RelationalExpression
-    | singleExpression In singleExpression                                  # InExpression
     | singleExpression ('==' | '!=' ) singleExpression                     # EqualityExpression
     | singleExpression '&' singleExpression                                 # BitAndExpression
     | singleExpression '^' singleExpression                                 # BitXOrExpression

@@ -1,4 +1,4 @@
-package io.entropy.lang.base;
+package io.entropy.lang.parser;
 
 import org.antlr.v4.runtime.*;
 
