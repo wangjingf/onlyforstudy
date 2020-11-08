@@ -17,19 +17,19 @@ public class StdException extends RuntimeException {
     public StdException(String message) {
         super(message == null ? "app.err_fail" : message);
         this.errorNo = -1;
-        this.params = Collections.emptyMap();
+        this.params = new HashMap<>();
     }
 
     public StdException(String message, Throwable e) {
         super(message, e);
 
-        this.params = Collections.emptyMap();
+        this.params = new HashMap<>();
     }
 
     public StdException(String var1, boolean var2, boolean var3) {
         super(var1, (Throwable) null, var2, var3);
 
-        this.params = Collections.emptyMap();
+        this.params = new HashMap<>();
     }
 
     public boolean isTraced() {
@@ -133,8 +133,8 @@ public class StdException extends RuntimeException {
         return super.getMessage();
     }
 
-    public Object getParam(String var1) {
-        return this.params.get(var1);
+    public Object getParam(String name) {
+        return this.params.get(name);
     }
 
     public Map<String, Object> getParams() {

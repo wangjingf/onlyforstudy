@@ -31,6 +31,9 @@ public class TestCountDownLatch {
 		new TestCountDownLatch().startThread();
 		latch.await();//阻塞直到count为0,count is 0 the status is fixed
 		System.out.println(System.currentTimeMillis() - now);
+
+
+
 	}
 
 }
