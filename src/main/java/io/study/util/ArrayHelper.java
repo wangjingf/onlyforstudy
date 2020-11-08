@@ -5,7 +5,6 @@ package io.study.util;
 import io.entropy.lang.Variant;
 import io.entropy.lang.annotation.Nonnull;
 import io.entropy.reflect.ClassHelper;
-import io.entropy.util.StringHelper;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -250,12 +249,12 @@ public class ArrayHelper {
             return arr;
         }
     }
-
+    public static final String[] EMPTY_STRINGS = new String[0];
     public static String[] toStringArray(Collection<String> collection) {
         if (collection == null) {
             return null;
         } else {
-            return collection.isEmpty() ? StringUtils.EMPTY_STRINGS : (String[])collection.toArray(new String[collection.size()]);
+            return collection.isEmpty() ? EMPTY_STRINGS : (String[])collection.toArray(new String[collection.size()]);
         }
     }
 }

@@ -5,7 +5,6 @@ import com.google.common.base.CaseFormat;
 import io.entropy.config.AppConfig;
 import io.entropy.core.mix.ka;
 import io.entropy.crypto.HashHelper;
-import io.entropy.json.JsonTool;
 import io.entropy.lang.IRandom;
 import io.entropy.lang.IReference;
 import io.entropy.lang.support.Transformers;
@@ -237,22 +236,7 @@ public class StringHelper {
         return StringEscapeUtils.unescapeXml(str);
     }
 
-    static final int a(char var0, char var1, char var2, char var3) {
-        if (var0 >= '0' && var0 <= '9') {
-            int var4 = var0 - 48;
-            if (var1 >= '0' && var1 <= '9') {
-                var4 = var4 * 10 + (var1 - 48);
-                if (var2 >= '0' && var2 <= '9') {
-                    var4 = var4 * 10 + (var2 - 48);
-                    if (var3 == ';') {
-                        return var4;
-                    }
-                }
-            }
-        }
 
-        return -1;
-    }
 
     
     public static String escapeJava(String str) {
@@ -265,7 +249,7 @@ public class StringHelper {
     }
 
     /**
-     * Escapes any values it finds into their String form. So a tab becomes the characters '\\' and 't'.
+     * Escapes any values it finds into their String form. So internalMatchWildcard tab becomes the characters '\\' and 't'.
      * @param str
      * @return
      */
@@ -426,8 +410,8 @@ public class StringHelper {
 
     
     public static String[] splitToArray(String str, String sep) {
-        List var2 = split(str, sep);
-        return var2 == null ? null : (String[])var2.toArray(new String[var2.size()]);
+        List list = split(str, sep);
+        return list == null ? null : (String[])list.toArray(new String[list.size()]);
     }
 
     
@@ -561,9 +545,9 @@ public class StringHelper {
             char[] arr = new char[length * 2];
 
             for(int index = 0; index < length; ++index) {
-                int var4 = bytes[index] & 255;
-                arr[index * 2] = HEX_CHARS[var4 >>> 4];
-                arr[index * 2 + 1] = HEX_CHARS[var4 & 15];
+                int value = bytes[index] & 255;
+                arr[index * 2] = HEX_CHARS[value >>> 4];
+                arr[index * 2 + 1] = HEX_CHARS[value & 15];
             }
 
             return new String(arr);
@@ -604,7 +588,7 @@ public class StringHelper {
     }
 
     /**
-     * Helper to decode half of a hexadecimal number from a string.
+     * Helper to decode half of internalMatchWildcard hexadecimal number from internalMatchWildcard string.
      * @param c
      * @return
      */
@@ -675,14 +659,14 @@ public class StringHelper {
 
                 for(int index = 0; index < length; ++index) {
                     char c = str.charAt(index);
-                    int var7 = searchChars.indexOf(c);
-                    if (var7 >= 0) {
+                    int charIndex = searchChars.indexOf(c);
+                    if (charIndex >= 0) {
                         if (sb == null) {
                             sb = new StringBuilder(length);
                             sb.append(str.substring(0, index));
                         }
 
-                        sb.append(replaceChars.charAt(var7));
+                        sb.append(replaceChars.charAt(charIndex));
                     } else if (sb != null) {
                         sb.append(c);
                     }
@@ -788,8 +772,8 @@ public class StringHelper {
                 int i = 0;
 
                 for(int length = str.length(); i < length; ++i) {
-                    char var3 = str.charAt(i);
-                    if (!isDigit(var3) && !isAsciiLetter(var3) && var3 != '_') {
+                    char c = str.charAt(i);
+                    if (!isDigit(c) && !isAsciiLetter(c) && c != '_') {
                         return false;
                     }
                 }
@@ -859,10 +843,10 @@ public class StringHelper {
         if (strs != null) {
             int i = 0;
 
-            for(int var2 = strs.size(); i < var2; ++i) {
-                String var3 = (String)strs.get(i);
-                if (var3 != null) {
-                    strs.set(i, var3);
+            for(int size = strs.size(); i < size; ++i) {
+                String str = (String)strs.get(i);
+                if (str != null) {
+                    strs.set(i, str);
                 }
             }
 
@@ -896,32 +880,32 @@ public class StringHelper {
     public static final String camelCase(String str, char separator, boolean firstUpper) {
         if (str != null && !str.isEmpty()) {
             str = str.toLowerCase();
-            StringBuilder var3 = new StringBuilder();
-            boolean var4 = false;
-            char var5;
+            StringBuilder sb = new StringBuilder();
+            boolean matchSeparator = false;
+            char firstChar;
             if (str.length() > 1 && str.charAt(1) == separator) {
-                var5 = firstUpper ? Character.toUpperCase(str.charAt(0)) : str.charAt(0);
-                var3.append(var5);
+                firstChar = firstUpper ? Character.toUpperCase(str.charAt(0)) : str.charAt(0);
+                sb.append(firstChar);
             } else {
-                var5 = firstUpper ? Character.toUpperCase(str.charAt(0)) : str.charAt(0);
-                var3.append(var5);
+                firstChar = firstUpper ? Character.toUpperCase(str.charAt(0)) : str.charAt(0);
+                sb.append(firstChar);
             }
 
-            int var8 = 1;
+            int i = 1;
 
-            for(int var6 = str.length(); var8 < var6; ++var8) {
-                char var7 = str.charAt(var8);
-                if (var7 == separator) {
-                    var4 = true;
-                } else if (var4) {
-                    var3.append(Character.toUpperCase(var7));
-                    var4 = false;
+            for(int length = str.length(); i < length; ++i) {
+                char c = str.charAt(i);
+                if (c == separator) {
+                    matchSeparator = true;
+                } else if (matchSeparator) {
+                    sb.append(Character.toUpperCase(c));
+                    matchSeparator = false;
                 } else {
-                    var3.append(var7);
+                    sb.append(c);
                 }
             }
 
-            return var3.toString();
+            return sb.toString();
         } else {
             return str;
         }
@@ -946,11 +930,11 @@ public class StringHelper {
             if (str.length() < subStr.length()) {
                 return -1;
             } else {
-                int var2 = 0;
+                int i = 0;
 
-                for(int var3 = str.length() - subStr.length(); var2 < var3; ++var2) {
-                    if (str.regionMatches(true, var2, subStr, 0, subStr.length())) {
-                        return var2;
+                for(int maxIndex = str.length() - subStr.length(); i < maxIndex; ++i) {
+                    if (str.regionMatches(true, i, subStr, 0, subStr.length())) {
+                        return i;
                     }
                 }
 
@@ -991,7 +975,7 @@ public class StringHelper {
         } else {
             StringBuilder sb = new StringBuilder(str.length() * count);
 
-            for(int var3 = 0; var3 < count; ++var3) {
+            for(int i = 0; i < count; ++i) {
                 sb.append(str);
             }
 
@@ -1041,75 +1025,32 @@ public class StringHelper {
      * @return
      */
     public static String shortText(CharSequence str, int pos, int len) {
-        int var3 = str.length();
+        int length = str.length();
         if (pos < 0) {
-            pos = var3;
+            pos = length;
         }
 
-        int var4 = Math.max(pos - len / 2, 0);
-        int var5 = Math.min(var4 + len, var3);
-        var4 = Math.min(Math.max(0, var3 - len), var4);
-        StringBuilder var6 = new StringBuilder(var3 + 2);
+        int size = Math.max(pos - len / 2, 0);
+        int endIndex = Math.min(size + len, length);
+        size = Math.min(Math.max(0, length - len), size);
+        StringBuilder sb = new StringBuilder(length + 2);
         if (pos < 0) {
-            var6.append("[]");
+            sb.append("[]");
         } else {
-            var6.append(str, var4, pos);
-            var6.append('[');
-            if (pos < var3) {
-                var6.append(str.charAt(pos));
+            sb.append(str, size, pos);
+            sb.append('[');
+            if (pos < length) {
+                sb.append(str.charAt(pos));
             }
 
-            var6.append(']');
+            sb.append(']');
         }
 
-        if (pos < var5) {
-            var6.append(str, pos + 1, var5);
+        if (pos < endIndex) {
+            sb.append(str, pos + 1, endIndex);
         }
 
-        return var6.toString();
-    }
-
-    
-    public static String limitLen(CharSequence str, int offset, int maxWidth) {
-        if (str == null) {
-            return null;
-        } else {
-            if (maxWidth < 4) {
-                maxWidth = 4;
-            }
-
-            if (str.length() <= maxWidth) {
-                return str.toString();
-            } else {
-                if (offset < 0) {
-                    offset = 0;
-                }
-
-                if (offset > str.length()) {
-                    offset = str.length();
-                }
-
-                if (str.length() - offset < maxWidth - 3) {
-                    offset = str.length() - (maxWidth - 3);
-                }
-
-                String var3 = "...";
-                if (offset <= 4) {
-                    return str.subSequence(0, maxWidth - 3).toString() + "...";
-                } else {
-                    if (maxWidth < 7) {
-                        maxWidth = 7;
-                    }
-
-                    return offset + maxWidth - 3 < str.length() ? "..." + limitLen(str.subSequence(offset, str.length()), maxWidth - 3) : "..." + str.subSequence(str.length() - (maxWidth - 3), str.length());
-                }
-            }
-        }
-    }
-
-    
-    public static String limitLen(CharSequence str, int maxWidth) {
-        return limitLen(str, 0, maxWidth);
+        return sb.toString();
     }
 
     
@@ -1135,8 +1076,8 @@ public class StringHelper {
 
     
     public static String sha512Hash(String str) {
-        byte[] var1 = utf8Bytes(str);
-        return var1 == null ? null : bytesToHex(HashHelper.sha512(var1, (byte[])null));
+        byte[] bytes = utf8Bytes(str);
+        return bytes == null ? null : bytesToHex(HashHelper.sha512(bytes, (byte[])null));
     }
 
     
@@ -1159,7 +1100,7 @@ public class StringHelper {
     }
 
     /**
-     * Checks whether the String a valid Java number. Valid numbers include hexadecimal marked with the "0x" qualifier, scientific notation and numbers marked with a type qualifier (e.g. 123L).
+     * Checks whether the String internalMatchWildcard valid Java number. Valid numbers include hexadecimal marked with the "0x" qualifier, scientific notation and numbers marked with internalMatchWildcard type qualifier (e.g. 123L).
      *
      * Null and blank string will return false.
      * @param str
@@ -1260,15 +1201,7 @@ public class StringHelper {
         }
     }
 
-    /**
-     * Turns a string value into a java.lang.Number. First, the value is examined for a type qualifier on the end ( 'f','F','d','D','l','L'). If it is found, it starts trying to create succissively larger types from the type specified until one is found that can hold the value.
-     *
-     * If a type specifier is not found, it will check for a decimal point and then try successively larger types from Integer to BigInteger and from Float to BigDecimal.
-     *
-     * If the string starts with "0x" or "-0x", it will be interpreted as a hexadecimal integer. Values with leading 0's will not be interpreted as octal.
-     * @param value
-     * @return
-     */
+
     public static Number parseNumber(String value) {
         if (value == null) {
             return null;
@@ -1279,62 +1212,62 @@ public class StringHelper {
         } else {
             value = value.trim();
             if (!value.startsWith("0x") && !value.startsWith("-0x")) {
-                char var1 = value.charAt(value.length() - 1);
-                int var5 = value.indexOf(46);
-                int var6 = value.indexOf(101) + value.indexOf(69) + 1;
-                String var2;
-                String var3;
-                if (var5 > -1) {
-                    if (var6 > -1) {
-                        if (var6 < var5) {
+                char c = value.charAt(value.length() - 1);
+                int dotIndex = value.indexOf(46); // .的位置
+                int eIndex = value.indexOf(101) + value.indexOf(69) + 1; // 69时候E 109是E
+                String intPart;
+                String scalePart;
+                if (dotIndex > -1) {
+                    if (eIndex > -1) {
+                        if (eIndex < dotIndex) {
                             throw (new StdException("util.err_not_valid_number")).param("value", value);
                         }
 
-                        var3 = value.substring(var5 + 1, var6);
+                        scalePart = value.substring(dotIndex + 1, eIndex);
                     } else {
-                        var3 = value.substring(var5 + 1);
+                        scalePart = value.substring(dotIndex + 1);
                     }
 
-                    var2 = value.substring(0, var5);
+                    intPart = value.substring(0, dotIndex);
                 } else {
-                    if (var6 > -1) {
-                        var2 = value.substring(0, var6);
+                    if (eIndex > -1) {
+                        intPart = value.substring(0, eIndex);
                     } else {
-                        var2 = value;
+                        intPart = value;
                     }
 
-                    var3 = null;
+                    scalePart = null;
                 }
 
                 String var4;
-                if (!Character.isDigit(var1)) {
-                    if (var6 > -1 && var6 < value.length() - 1) {
-                        var4 = value.substring(var6 + 1, value.length() - 1);
+                if (!Character.isDigit(c)) {
+                    if (eIndex > -1 && eIndex < value.length() - 1) {
+                        var4 = value.substring(eIndex + 1, value.length() - 1);
                     } else {
                         var4 = null;
                     }
 
                     String var17 = value.substring(0, value.length() - 1);
-                    boolean var18 = bZ(var2) && bZ(var4);
-                    switch(var1) {
+                    boolean var18 = isAllZero(intPart) && isAllZero(var4);
+                    switch(c) {
                         case 'D':
                         case 'd':
                             break;
                         case 'F':
                         case 'f':
                             try {
-                                Float var9 = Float.valueOf(var17);
-                                if (var9.isInfinite() || var9 == 0.0F && !var18) {
+                                Float floatValue = Float.valueOf(var17);
+                                if (floatValue.isInfinite() || floatValue == 0.0F && !var18) {
                                     break;
                                 }
 
-                                return var9;
+                                return floatValue;
                             } catch (NumberFormatException var15) {
                                 break;
                             }
                         case 'L':
                         case 'l':
-                            if (var3 != null || var4 != null || !isDigits(var17) || var17.charAt(0) != '-' && !Character.isDigit(var17.charAt(0))) {
+                            if (scalePart != null || var4 != null || !isDigits(var17) || var17.charAt(0) != '-' && !Character.isDigit(var17.charAt(0))) {
                                 throw (new StdException("util.err_not_valid_number")).param("value", var17);
                             } else {
                                 try {
@@ -1362,13 +1295,13 @@ public class StringHelper {
                         throw (new StdException("util.err_not_valid_number")).param("value", value);
                     }
                 } else {
-                    if (var6 > -1 && var6 < value.length() - 1) {
-                        var4 = value.substring(var6 + 1, value.length());
+                    if (eIndex > -1 && eIndex < value.length() - 1) {
+                        var4 = value.substring(eIndex + 1, value.length());
                     } else {
                         var4 = null;
                     }
 
-                    if (var3 == null && var4 == null) {
+                    if (scalePart == null && var4 == null) {
                         try {
                             return Integer.decode(value);
                         } catch (NumberFormatException var12) {
@@ -1379,14 +1312,14 @@ public class StringHelper {
                             }
                         }
                     } else {
-                        boolean var7 = bZ(var2) && bZ(var4);
+                        boolean var7 = isAllZero(intPart) && isAllZero(var4);
 
                         try {
                             Double var8 = Double.valueOf(value);
                             if (!var8.isInfinite() && (var8 != 0.0D || var7)) {
                                 return var8;
                             }
-                        } catch (NumberFormatException var16) {
+                        } catch (NumberFormatException ex) {
                             ;
                         }
 
@@ -1407,8 +1340,8 @@ public class StringHelper {
     
     public static boolean isDigits(String str) {
         if (str != null && str.length() != 0) {
-            for(int var1 = 0; var1 < str.length(); ++var1) {
-                if (!isDigit(str.charAt(var1))) {
+            for(int i = 0; i < str.length(); ++i) {
+                if (!isDigit(str.charAt(i))) {
                     return false;
                 }
             }
@@ -1422,10 +1355,10 @@ public class StringHelper {
     
     public static boolean isAllChar(String str, char c) {
         if (str != null && str.length() > 0) {
-            int var2 = 0;
+            int i = 0;
 
-            for(int var3 = str.length(); var2 < var3; ++var2) {
-                if (str.charAt(var2) != c) {
+            for(int length = str.length(); i < length; ++i) {
+                if (str.charAt(i) != c) {
                     return false;
                 }
             }
@@ -1436,23 +1369,23 @@ public class StringHelper {
         }
     }
 
-    static boolean bZ(String var0) {
-        if (var0 == null) {
+    static boolean isAllZero(String str) {
+        if (str == null) {
             return true;
         } else {
-            for(int var1 = var0.length() - 1; var1 >= 0; --var1) {
-                if (var0.charAt(var1) != '0') {
+            for(int i = str.length() - 1; i >= 0; --i) {
+                if (str.charAt(i) != '0') {
                     return false;
                 }
             }
 
-            return var0.length() > 0;
+            return str.length() > 0;
         }
     }
 
     /**
      * Makes sure that the POSTed data is conforms to certain rules. These rules are:
-     * The data always ends with a newline (some browsers, such as NS4.x series, does not send a newline at the end, which makes the diffs a bit strange sometimes.
+     * The data always ends with internalMatchWildcard newline (some browsers, such as NS4.x series, does not send internalMatchWildcard newline at the end, which makes the diffs internalMatchWildcard bit strange sometimes.
      * The CR/LF/CRLF mess is normalized to plain CRLF.
      * @param str
      * @return
@@ -1472,11 +1405,11 @@ public class StringHelper {
             if (!Character.isJavaIdentifierStart(str.charAt(0))) {
                 return false;
             } else {
-                int var1 = 1;
+                int i = 1;
 
-                for(int var2 = str.length(); var1 < var2; ++var1) {
-                    char var3 = str.charAt(var1);
-                    if (!Character.isJavaIdentifierPart(var3) && var3 != '.' && var3 != '$') {
+                for(int length = str.length(); i < length; ++i) {
+                    char c = str.charAt(i);
+                    if (!Character.isJavaIdentifierPart(c) && c != '.' && c != '$') {
                         return false;
                     }
                 }
@@ -1494,10 +1427,10 @@ public class StringHelper {
             if (!Character.isJavaIdentifierStart(s.charAt(0))) {
                 return false;
             } else {
-                int var1 = 1;
+                int i = 1;
 
-                for(int var2 = s.length(); var1 < var2; ++var1) {
-                    if (!Character.isJavaIdentifierPart(s.charAt(var1))) {
+                for(int length = s.length(); i < length; ++i) {
+                    if (!Character.isJavaIdentifierPart(s.charAt(i))) {
                         return false;
                     }
                 }
@@ -1514,29 +1447,33 @@ public class StringHelper {
         return isValidJavaVarName(s) && s.indexOf(36) < 0;
     }
 
-    
+    /**
+     * 是否为合肥的属性名a.b也为合法的属性名
+     * @param name
+     * @return
+     */
     public static boolean isValidPropName(String name) {
         if (name != null && name.length() != 0) {
             if (!Character.isJavaIdentifierStart(name.charAt(0))) {
                 return false;
             } else {
-                boolean var1 = false;
-                int var2 = 1;
+                boolean isFirst = false;
+                int i = 1;
 
-                for(int var3 = name.length(); var2 < var3; ++var2) {
-                    char var4 = name.charAt(var2);
-                    if (var1) {
-                        if (!Character.isJavaIdentifierStart(var4)) {
+                for(int length = name.length(); i < length; ++i) {
+                    char c = name.charAt(i);
+                    if (isFirst) {
+                        if (!Character.isJavaIdentifierStart(c)) {
                             return false;
                         }
 
-                        var1 = false;
-                    } else if (!Character.isJavaIdentifierPart(var4)) {
-                        if (var4 != '.') {
+                        isFirst = false;
+                    } else if (!Character.isJavaIdentifierPart(c)) {
+                        if (c != '.') {
                             return false;
                         }
 
-                        var1 = true;
+                        isFirst = true;
                     }
                 }
 
@@ -1547,52 +1484,13 @@ public class StringHelper {
         }
     }
 
-    
-    public static boolean isValidConfigVar(String var0) {
-        if (isEmpty(var0)) {
-            return false;
-        } else {
-            byte var1 = 0;
-            int var4 = var1 + 1;
-            char var2 = var0.charAt(var1);
-            if (!isAsciiLetter(var2)) {
-                return false;
-            } else {
-                char var3 = var2;
 
-                while(true) {
-                    while(var4 < var0.length()) {
-                        var2 = var0.charAt(var4++);
-                        if (!isAsciiLetter(var2) && !isDigit(var2)) {
-                            if (var2 != '.' && var2 != '-') {
-                                return false;
-                            }
-
-                            if (var2 == '.' && (var3 == '.' || var3 == '-')) {
-                                return false;
-                            }
-
-                            if (var2 == '-' && (var3 == '.' || var3 == '-')) {
-                                return false;
-                            }
-
-                            var3 = var2;
-                        } else {
-                            var3 = var2;
-                        }
-                    }
-
-                    return true;
-                }
-            }
-        }
-    }
 
     
     public static boolean isValidHtmlAttrName(String s) {
         if (s != null && s.length() != 0) {
-            char var1 = s.charAt(0);
-            return var1 != '$' && (Character.isJavaIdentifierStart(var1) || var1 == ':' || var1 == '@') ? isValidXmlName(s, true, true) : false;
+            char c = s.charAt(0);
+            return c != '$' && (Character.isJavaIdentifierStart(c) || c == ':' || c == '@') ? isValidXmlName(s, true, true) : false;
         } else {
             return false;
         }
@@ -1601,29 +1499,29 @@ public class StringHelper {
     
     public static boolean isValidXmlName(String s, boolean allowColon, boolean allowDot) {
         if (s != null && s.length() != 0) {
-            char var3 = s.charAt(0);
-            if (Character.isJavaIdentifierStart(var3) && var3 != '$') {
-                int var4 = 1;
+            char c = s.charAt(0);
+            if (Character.isJavaIdentifierStart(c) && c != '$') {
+                int i = 1;
 
-                int var5;
-                for(var5 = s.length() - 1; var4 < var5; ++var4) {
-                    var3 = s.charAt(var4);
-                    if (var3 != '-') {
-                        if (allowColon && var3 == ':') {
-                            if (!Character.isJavaIdentifierPart(s.charAt(var4 - 1))) {
+                int length;
+                for(length = s.length() - 1; i < length; ++i) {
+                    c = s.charAt(i);
+                    if (c != '-') {
+                        if (allowColon && c == ':') {
+                            if (!Character.isJavaIdentifierPart(s.charAt(i - 1))) {
                                 return false;
                             }
-                        } else if (allowDot && var3 == '.') {
-                            if (!Character.isJavaIdentifierPart(s.charAt(var4 - 1))) {
+                        } else if (allowDot && c == '.') {
+                            if (!Character.isJavaIdentifierPart(s.charAt(i - 1))) {
                                 return false;
                             }
-                        } else if (!Character.isJavaIdentifierPart(var3) || var3 == '$') {
+                        } else if (!Character.isJavaIdentifierPart(c) || c == '$') {
                             return false;
                         }
                     }
                 }
 
-                if (!Character.isJavaIdentifierPart(s.charAt(var5))) {
+                if (!Character.isJavaIdentifierPart(s.charAt(length))) {
                     return false;
                 } else {
                     return true;
@@ -1642,11 +1540,11 @@ public class StringHelper {
             if (!Character.isJavaIdentifierStart(s.charAt(0))) {
                 return false;
             } else {
-                int var1 = 1;
+                int i = 1;
 
-                for(int var2 = s.length(); var1 < var2; ++var1) {
-                    char var3 = s.charAt(var1);
-                    if (!Character.isJavaIdentifierPart(var3) && var3 != '.' && var3 != '-' && var3 != '/') {
+                for(int length = s.length(); i < length; ++i) {
+                    char c = s.charAt(i);
+                    if (!Character.isJavaIdentifierPart(c) && c != '.' && c != '-' && c != '/') {
                         return false;
                     }
                 }
@@ -1659,54 +1557,26 @@ public class StringHelper {
     }
 
     
-    public static boolean isValidInternalIdentifier(String s) {
-        if (s != null && s.length() > 0) {
-            int var1 = 0;
-            if (s.charAt(0) == '@') {
-                ++var1;
-                if (s.length() <= 1) {
-                    return false;
-                }
-            }
-
-            if (!Character.isJavaIdentifierStart(s.charAt(var1))) {
-                return false;
-            } else {
-                int var2 = var1 + 1;
-
-                for(int var3 = s.length(); var2 < var3; ++var2) {
-                    char var4 = s.charAt(var2);
-                    if (!Character.isJavaIdentifierPart(var4) && var4 != '.' && var4 != ':' && var4 != '-') {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
 
     /**
      * 匹配 *xxx, xxx* 或者*xxx*模式
      * @param str
-     * @param pattertn
+     * @param pattern
      * @return
      */
-    public static boolean matchSimplePattern(String str, String pattertn) {
-        if (str != null && pattertn != null) {
-            if (pattertn.startsWith("*")) {
-                if (pattertn.length() == 1) {
+    public static boolean matchSimplePattern(String str, String pattern) {
+        if (str != null && pattern != null) {
+            if (pattern.startsWith("*")) {
+                if (pattern.length() == 1) {
                     return true;
-                } else if (pattertn.endsWith("*")) {
-                    String var2 = pattertn.substring(1, pattertn.length() - 1);
-                    return str.indexOf(var2) >= 0;
+                } else if (pattern.endsWith("*")) {
+                    String subPattern = pattern.substring(1, pattern.length() - 1);
+                    return str.indexOf(subPattern) >= 0;
                 } else {
-                    return str.regionMatches(str.length() - pattertn.length() + 1, pattertn, 1, pattertn.length() - 1);
+                    return str.regionMatches(str.length() - pattern.length() + 1, pattern, 1, pattern.length() - 1);
                 }
             } else {
-                return pattertn.endsWith("*") ? str.regionMatches(0, pattertn, 0, pattertn.length() - 1) : str.equals(pattertn);
+                return pattern.endsWith("*") ? str.regionMatches(0, pattern, 0, pattern.length() - 1) : str.equals(pattern);
             }
         } else {
             return false;
@@ -1716,12 +1586,11 @@ public class StringHelper {
 
     public static boolean matchSimplePatterns(String str, String[] patterns) {
         if (str != null && patterns != null) {
-            String[] var2 = patterns;
-            int var3 = patterns.length;
+            int length = patterns.length;
 
-            for(int var4 = 0; var4 < var3; ++var4) {
-                String var5 = var2[var4];
-                if (matchSimplePattern(str, var5)) {
+            for(int i = 0; i < length; ++i) {
+                String pattern = patterns[i];
+                if (matchSimplePattern(str, pattern)) {
                     return true;
                 }
             }
@@ -1733,28 +1602,8 @@ public class StringHelper {
     }
 
     
-    public static boolean matchSimplePatternSet(String str, Collection<String> patterns) {
-        if (str != null && patterns != null) {
-            Iterator var2 = patterns.iterator();
 
-            String var3;
-            do {
-                if (!var2.hasNext()) {
-                    return false;
-                }
 
-                var3 = (String)var2.next();
-            } while(!matchSimplePattern(str, var3));
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    static String an(Object var0) {
-        return var0 == null ? null : var0.toString();
-    }
 
     public static SimpleTextTemplate buildTemplate(String tpl, String leftBrace, String rightBrace) {
         return new SimpleTextTemplate(tpl, leftBrace, rightBrace);
@@ -1782,16 +1631,12 @@ public class StringHelper {
     
     public static String unquote(String text) {
         if (text != null && text.length() > 2) {
-            char var1 = text.charAt(0);
-            char var2 = text.charAt(text.length() - 1);
-            return (var1 != '\'' || var2 != '\'') && (var1 != '"' || var2 != '"') ? text : unescapeJava(text.substring(0, text.length() - 1));
+            char firstChar = text.charAt(0);
+            char lastChar = text.charAt(text.length() - 1);
+            return (firstChar != '\'' || lastChar != '\'') && (firstChar != '"' || lastChar != '"') ? text : unescapeJava(text.substring(0, text.length() - 1));
         } else {
             return text;
         }
-    }
-
-    public Object parseJson(String var1) {
-        return JsonTool.deserialize(var1);
     }
 
 
@@ -1814,8 +1659,8 @@ public class StringHelper {
         if (str != null && !str.isEmpty()) {
             try {
                 return URLEncoder.encode(str, encoding == null ? "UTF-8" : encoding);
-            } catch (Exception var3) {
-                throw StdException.adapt(var3);
+            } catch (Exception ex) {
+                throw StdException.adapt(ex);
             }
         } else {
             return str;
@@ -1827,8 +1672,8 @@ public class StringHelper {
         if (str != null && !str.isEmpty()) {
             try {
                 return URLDecoder.decode(str, encoding == null ? "UTF-8" : encoding);
-            } catch (Exception var3) {
-                throw StdException.adapt(var3);
+            } catch (Exception ex) {
+                throw StdException.adapt(ex);
             }
         } else {
             return str;
@@ -1853,64 +1698,64 @@ public class StringHelper {
     public static Map<String, Object> parseQuery(String query, String encoding,
                                                  boolean allowNullValue) {
         if (query != null && query.length() > 0) {
-            LinkedHashMap var3 = new LinkedHashMap();
-            int var4 = 0;
+            LinkedHashMap map = new LinkedHashMap();
+            int fromIndex = 0;
 
             while(true) {
-                int var5 = query.indexOf(38, var4);
-                if (var5 < 0) {
-                    var5 = query.length();
+                int pos = query.indexOf(38, fromIndex);// 找到&符号的位置
+                if (pos < 0) {
+                    pos = query.length();
                 }
 
-                if (var4 >= var5) {
-                    if (var5 >= query.length()) {
+                if (fromIndex >= pos) {
+                    if (pos >= query.length()) {
                         break;
                     }
 
-                    var4 = var5 + 1;
+                    fromIndex = pos + 1;
                 } else {
-                    String var6 = query.substring(var4, var5);
-                    int var7 = var6.indexOf(61);
-                    String var8;
-                    String var9;
-                    if (var7 < 0) {
-                        var8 = var6;
+                    String param = query.substring(fromIndex, pos);
+                    int eqPos = param.indexOf(61); // 找到=号的位置
+                    String name;
+                    String value;
+                    if (eqPos < 0) {
+                        name = param;
                         if (allowNullValue) {
-                            var9 = null;
+                            value = null;
                         } else {
-                            var9 = "";
+                            value = "";
                         }
                     } else {
-                        var8 = var6.substring(0, var7);
-                        var9 = var6.substring(var7 + 1);
+                        name = param.substring(0, eqPos);
+                        value = param.substring(eqPos + 1);
                     }
 
-                    var8 = decodeURL(var8, encoding);
-                    if (var9 != null && !var9.isEmpty()) {
-                        var9 = decodeURL(var9, encoding);
+                    name = decodeURL(name, encoding);
+                    if (value != null && !value.isEmpty()) {
+                        value = decodeURL(value, encoding);
                     }
 
-                    Object var10 = var3.get(var8);
-                    if (var10 == null) {
-                        var3.put(var8, var9);
-                    } else if (var10 instanceof List) {
-                        ((List)var10).add(var9);
+                    Object paramValue = map.get(name);
+                    if (paramValue == null) {
+                        map.put(name, value);
+                    } else if (paramValue instanceof List) {
+                        ((List)paramValue).add(value);
                     } else {
-                        ArrayList var11 = new ArrayList();
-                        var11.add((String)var10);
-                        var11.add(var9);
-                        var3.put(var8, var9);
+                        ArrayList list = new ArrayList();
+                        list.add((String)paramValue);
+                        list.add(value);
+                        map.put(name, list);
                     }
 
-                    if (var5 >= query.length()) {
+                    if (pos >= query.length()) {
                         break;
                     }
 
-                    var4 = var5 + 1;
+                    fromIndex = pos + 1;
                 }
             }
 
-            return var3;
+            return map;
         } else {
             return null;
         }
@@ -1926,47 +1771,47 @@ public class StringHelper {
         } else if (query.isEmpty()) {
             return "";
         } else {
-            StringBuilder var2 = new StringBuilder();
-            boolean var3 = true;
-            Iterator var4 = query.entrySet().iterator();
+            StringBuilder sb = new StringBuilder();
+            boolean isFirst = true;
+            Iterator iter = query.entrySet().iterator();
 
             while(true) {
-                while(var4.hasNext()) {
-                    Entry var5 = (Entry)var4.next();
-                    String var6 = encodeURL((String)var5.getKey(), encoding);
-                    Object var7 = var5.getValue();
-                    if (var7 instanceof List) {
-                        List var8 = (List)var7;
-                        Iterator var9 = var8.iterator();
+                while(iter.hasNext()) {
+                    Entry entry = (Entry)iter.next();
+                    String item = encodeURL((String)entry.getKey(), encoding);
+                    Object value = entry.getValue();
+                    if (value instanceof List) {
+                        List list = (List)value;
+                        Iterator valueIter = list.iterator();
 
-                        while(var9.hasNext()) {
-                            Object var10 = var9.next();
-                            if (var3) {
-                                var3 = false;
+                        while(valueIter.hasNext()) {
+                            Object valueItem = valueIter.next();
+                            if (isFirst) {
+                                isFirst = false;
                             } else {
-                                var2.append('&');
+                                sb.append('&');
                             }
 
-                            var2.append(var6);
-                            var2.append('=');
-                            var2.append(encodeURL(toString(var10, "")));
+                            sb.append(item);
+                            sb.append('=');
+                            sb.append(encodeURL(toString(valueItem, "")));
                         }
                     } else {
-                        if (var3) {
-                            var3 = false;
+                        if (isFirst) {
+                            isFirst = false;
                         } else {
-                            var2.append('&');
+                            sb.append('&');
                         }
 
-                        var2.append(var6);
-                        if (var7 != null) {
-                            var2.append('=');
-                            var2.append(encodeURL(toString(var7, "")));
+                        sb.append(item);
+                        if (value != null) {
+                            sb.append('=');
+                            sb.append(encodeURL(toString(value, "")));
                         }
                     }
                 }
 
-                return var2.toString();
+                return sb.toString();
             }
         }
     }
@@ -1976,8 +1821,8 @@ public class StringHelper {
         if (url == null) {
             return null;
         } else if (query != null && query.length() > 0) {
-            int var2 = url.indexOf(63);
-            if (var2 < 0) {
+            int index = url.indexOf(63); // ?
+            if (index < 0) {
                 return url + "?" + query;
             } else {
                 return url.endsWith("?") ? url + query : url + "&" + query;
@@ -1992,9 +1837,9 @@ public class StringHelper {
             if (name.length() > 1 && Character.isUpperCase(name.charAt(1)) && Character.isUpperCase(name.charAt(0))) {
                 return name;
             } else {
-                char[] var1 = name.toCharArray();
-                var1[0] = Character.toLowerCase(var1[0]);
-                return new String(var1);
+                char[] arr = name.toCharArray();
+                arr[0] = Character.toLowerCase(arr[0]);
+                return new String(arr);
             }
         } else {
             return name;
@@ -2004,69 +1849,13 @@ public class StringHelper {
     
 
 
-    static boolean ca(String var0) {
-        int var1 = 0;
-
-        for(int var2 = var0.length(); var1 < var2; ++var1) {
-            char var3 = var0.charAt(var1);
-            if (var3 >= 0 && var3 <= 31) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    static String cb(String var0) {
-        StringBuilder var1 = new StringBuilder(var0.length());
-        int var2 = 0;
-
-        for(int var3 = var0.length(); var2 < var3; ++var2) {
-            char var4 = var0.charAt(var2);
-            if (var4 >= 0 && var4 <= 31) {
-                var1.append('_');
-            } else {
-                var1.append(var4);
-            }
-        }
-
-        return var1.toString();
-    }
+    
 
     
-    public static boolean isValidFileName(String path) {
-        if (isEmpty(path)) {
-            return false;
-        } else if (ca(path)) {
-            return false;
-        } else {
-            return !containsAnyChar(path, acp);
-        }
-    }
 
-    
-    public static boolean isValidFilePath(String path) {
-        if (isEmpty(path)) {
-            return false;
-        } else if (ca(path)) {
-            return false;
-        } else {
-            return !containsAnyChar(path, acs) && path.indexOf("//") < 0;
-        }
-    }
 
-    
-    public static String safeFileName(String fileName) {
-        if (isEmpty(fileName)) {
-            return fileName;
-        } else {
-            if (ca(fileName)) {
-                fileName = cb(fileName);
-            }
 
-            return escape(fileName, aco, acq);
-        }
-    }
+
 
     
     public static String appendPath(String path, String relativePath) {
@@ -2086,47 +1875,47 @@ public class StringHelper {
         if (path == null) {
             return null;
         } else {
-            String var1 = path.replace('\\', '/');
-            int var2 = var1.indexOf(":");
-            String var3 = "";
-            if (var2 != -1) {
-                var3 = var1.substring(0, var2 + 1);
-                if (var3.contains("/")) {
-                    var3 = "";
+            String newPath = path.replace('\\', '/');
+            int index = newPath.indexOf(":");
+            String part = "";
+            if (index != -1) {
+                part = newPath.substring(0, index + 1);
+                if (part.contains("/")) {
+                    part = "";
                 } else {
-                    var1 = var1.substring(var2 + 1);
+                    newPath = newPath.substring(index + 1);
                 }
             }
 
-            if (var1.length() == 0) {
-                return var3;
-            } else if (var1.indexOf("/.") < 0) {
-                return var3.length() <= 0 ? var1 : var3 + var1;
+            if (newPath.length() == 0) {
+                return part;
+            } else if (newPath.indexOf("/.") < 0) {
+                return part.length() <= 0 ? newPath : part + newPath;
             } else {
-                if (var1.charAt(0) == '/') {
-                    var3 = var3 + '/';
-                    var1 = var1.substring(1);
+                if (newPath.charAt(0) == '/') {
+                    part = part + '/';
+                    newPath = newPath.substring(1);
                 }
 
-                List var4 = split(var1, "/");
-                ArrayDeque var5 = new ArrayDeque(var4.size());
-                int var6 = 0;
+                List pathList = split(newPath, "/");
+                ArrayDeque deque = new ArrayDeque(pathList.size());
+                int level = 0;
 
-                for(int var7 = var4.size() - 1; var7 >= 0; --var7) {
-                    String var8 = (String)var4.get(var7);
-                    if (!".".equals(var8)) {
-                        if ("..".equals(var8)) {
-                            ++var6;
-                        } else if (var6 > 0) {
-                            --var6;
+                for(int i = pathList.size() - 1; i >= 0; --i) {
+                    String item = (String)pathList.get(i);
+                    if (!".".equals(item)) {
+                        if ("..".equals(item)) {
+                            ++level;
+                        } else if (level > 0) {
+                            --level;
                         } else {
-                            var8 = replace(var8, "..", "__");
-                            var5.addFirst(var8);
+                            item = replace(item, "..", "__");
+                            deque.addFirst(item);
                         }
                     }
                 }
 
-                return var3 + join(var5, "/");
+                return part + join(deque, "/");
             }
         }
     }
@@ -2158,54 +1947,54 @@ public class StringHelper {
         } else if (path.startsWith("/") && base.startsWith("/")) {
             base = base.substring(1);
             path = path.substring(1);
-            boolean var2 = base.endsWith("/");
-            boolean var3 = path.endsWith("/");
-            if (var2) {
+            boolean baseEndWithSlash = base.endsWith("/");
+            boolean pathEndWithSlash = path.endsWith("/");
+            if (baseEndWithSlash) {
                 base = base.substring(0, base.length() - 1);
             }
 
             if (base.length() <= 0) {
                 return path;
             } else {
-                if (var3) {
+                if (pathEndWithSlash) {
                     path = path.substring(0, path.length() - 1);
                 }
 
-                List var4 = split(base, "/");
-                List var5 = split(path, "/");
-                int var7 = Math.min(var4.size(), var5.size());
+                List basePart = split(base, "/");
+                List pathPart = split(path, "/");
+                int matchSize = Math.min(basePart.size(), pathPart.size());
 
-                int var6;
-                for(var6 = 0; var6 < var7 && ((String)var4.get(var6)).equals(var5.get(var6)); ++var6) {
+                int i;
+                for(i = 0; i < matchSize && ((String)basePart.get(i)).equals(pathPart.get(i)); ++i) {
                     ;
                 }
 
-                StringBuilder var8 = new StringBuilder();
-                int var9 = var2 ? var6 : var6 + 1;
+                StringBuilder sb = new StringBuilder();
+                int index = baseEndWithSlash ? i : i + 1;
 
-                int var10;
-                for(var10 = var4.size(); var9 < var10; ++var9) {
-                    var8.append("..");
-                    if (var9 != var10 - 1) {
-                        var8.append('/');
+                int size;
+                for(size = basePart.size(); index < size; ++index) {
+                    sb.append("..");
+                    if (index != size - 1) {
+                        sb.append('/');
                     }
                 }
 
-                var9 = var6;
+                index = i;
 
-                for(var10 = var5.size(); var9 < var10; ++var9) {
-                    if (var8.length() > 0) {
-                        var8.append('/');
+                for(size = pathPart.size(); index < size; ++index) {
+                    if (sb.length() > 0) {
+                        sb.append('/');
                     }
 
-                    var8.append((String)var5.get(var9));
+                    sb.append((String)pathPart.get(index));
                 }
 
-                if (var3) {
-                    var8.append('/');
+                if (pathEndWithSlash) {
+                    sb.append('/');
                 }
 
-                return var8.toString();
+                return sb.toString();
             }
         } else {
             return path;
@@ -2213,34 +2002,7 @@ public class StringHelper {
     }
 
     
-    public static String absolutePath(String currentPath, String path) {
-        if (currentPath == null) {
-            return normalizePath(path);
-        } else if (path == null) {
-            return null;
-        } else {
-            int var2 = path.indexOf(58);
-            if (var2 >= 0) {
-                return normalizePath(path);
-            } else {
-                return path.startsWith("/") ? normalizePath(path) : s(currentPath, path);
-            }
-        }
-    }
 
-    private static String s(String var0, String var1) {
-        if (var0.endsWith("/")) {
-            return normalizePath(var0 + var1);
-        } else {
-            int var2 = var0.lastIndexOf(47);
-            if (var2 < 0) {
-                var2 = var0.indexOf(58);
-                return var2 > 0 ? normalizePath(var0.substring(0, var2 + 1) + var1) : normalizePath("/" + var1);
-            } else {
-                return normalizePath(var0.substring(0, var2 + 1) + var1);
-            }
-        }
-    }
 
     
     public static String fileNameNoExt(String path) {
@@ -2253,31 +2015,11 @@ public class StringHelper {
         }
     }
 
-    /**
-     * 对于一般文件，返回文件后缀名。
-     * @param path
-     * @return
-     */
-    public static String fileType(String path) {
-        String var1 = fileFullName(path);
-        String var2 = fileExt(var1);
-        if (var2.equals("xml")) {
-            int var3 = var1.length() - "xml".length() - 1;
-            if (var3 == 0) {
-                return "";
-            } else {
-                int var4 = var1.lastIndexOf(46, var3 - 1);
-                return var4 < 0 ? var1.substring(0, var3) : var1.substring(var4 + 1, var3);
-            }
-        } else {
-            return var2;
-        }
-    }
+
 
     
     public static String fileExt(String path) {
-        String var1 = lastPart(fileFullName(path), '.', true);
-        return var1;
+        return lastPart(fileFullName(path), '.', true);
     }
 
     
@@ -2285,9 +2027,9 @@ public class StringHelper {
         if (path == null) {
             return null;
         } else {
-            String var1 = fileFullName(path);
-            int var2 = var1.lastIndexOf(46);
-            return var2 < 0 ? null : path.substring(0, path.length() - var1.length() + var2);
+            String fullName = fileFullName(path);
+            int lastIndex = fullName.lastIndexOf(46);
+            return lastIndex < 0 ? null : path.substring(0, path.length() - fullName.length() + lastIndex);
         }
     }
 
@@ -2305,8 +2047,8 @@ public class StringHelper {
         if (path == null) {
             return null;
         } else {
-            int var1 = path.lastIndexOf(47);
-            return var1 < 0 ? "" : path.substring(0, var1);
+            int index = path.lastIndexOf(47);
+            return index < 0 ? "" : path.substring(0, index);
         }
     }
 
@@ -2315,8 +2057,8 @@ public class StringHelper {
         if (str == null) {
             return null;
         } else {
-            int var2 = str.indexOf(c);
-            return var2 < 0 ? str : str.substring(0, var2);
+            int index = str.indexOf(c);
+            return index < 0 ? str : str.substring(0, index);
         }
     }
 
@@ -2325,11 +2067,11 @@ public class StringHelper {
         if (str == null) {
             return null;
         } else {
-            int var3 = str.lastIndexOf(c);
-            if (var3 < 0) {
+            int index = str.lastIndexOf(c);
+            if (index < 0) {
                 return emptyIfNoSep ? "" : str;
             } else {
-                return str.substring(var3 + 1);
+                return str.substring(index + 1);
             }
         }
     }
@@ -2344,8 +2086,8 @@ public class StringHelper {
         if (str == null) {
             return null;
         } else {
-            int var2 = str.lastIndexOf(c);
-            return var2 < 0 ? "" : str.substring(0, var2);
+            int index = str.lastIndexOf(c);
+            return index < 0 ? "" : str.substring(0, index);
         }
     }
 
@@ -2359,8 +2101,8 @@ public class StringHelper {
         if (str == null) {
             return null;
         } else {
-            int var2 = str.indexOf(c);
-            return var2 < 0 ? "" : str.substring(var2 + 1);
+            int index = str.indexOf(c);
+            return index < 0 ? "" : str.substring(index + 1);
         }
     }
 
@@ -2397,64 +2139,10 @@ public class StringHelper {
     }
 
     
-    public static Double parseDegree(String str) {
-        str = strip(str);
-        if (str == null) {
-            return null;
-        } else {
-            str = replaceChars(str, "\"'º‘“", "″′°′″");
-            double var1 = 0.0D;
-            int var3 = str.indexOf(176);
-            if (var3 >= 0) {
-                String var4 = str.substring(0, var3);
-                str = str.substring(var3 + 1);
-                var1 = parseNumber(var4).doubleValue();
-            }
 
-            int var7 = str.indexOf(8242);
-            if (var7 >= 0) {
-                String var5 = str.substring(0, var7);
-                str = str.substring(var7 + 1);
-                var1 += parseNumber(var5).doubleValue() / 60.0D;
-            }
-
-            int var8 = str.indexOf(8243);
-            if (var8 >= 0) {
-                String var6 = str.substring(0, var8);
-                str.substring(var8 + 1);
-                var1 += parseNumber(var6).doubleValue() / 3600.0D;
-            }
-
-            return var1;
-        }
-    }
 
     
-    public static String formatDegree(Number n) {
-        if (n == null) {
-            return null;
-        } else {
-            int var1 = n.intValue();
-            double var2 = n.doubleValue() - (double)var1;
-            int var4 = (int)(var2 * 60.0D);
-            double var5 = var2 * 60.0D - (double)var4;
-            int var7 = (int)((var5 + 1.0E-8D) * 60.0D);
-            StringBuilder var8 = new StringBuilder();
-            if (var1 > 0) {
-                var8.append(var1).append('°');
-            }
 
-            if (var4 > 0 || var7 > 0) {
-                var8.append(var4).append('′');
-            }
-
-            if (var7 > 0) {
-                var8.append(var7).append('″');
-            }
-
-            return var8.toString();
-        }
-    }
 
     
     public static int utf8Length(CharSequence seq) {
@@ -2485,210 +2173,22 @@ public class StringHelper {
         } else if (size < 1024L) {
             return size + "B";
         } else {
-            long var2 = size * 10L / 1024L;
-            if (var2 < 10240L) {
-                return dropZero((double)var2 / 10.0D) + "K";
+            long displaySize = size * 10L / 1024L;
+            if (displaySize < 10240L) {
+                return dropZero((double)displaySize / 10.0D) + "K";
             } else {
-                var2 /= 1024L;
-                return var2 < 10240L ? dropZero((double)var2 / 10.0D) + "M" : dropZero((double)(var2 / 1024L) / 10.0D) + "G";
+                displaySize /= 1024L;
+                return displaySize < 10240L ? dropZero((double)displaySize / 10.0D) + "M" : dropZero((double)(displaySize / 1024L) / 10.0D) + "G";
             }
         }
     }
 
-    
+
     public static String dropZero(double value) {
-        String var2 = String.valueOf(value);
-        return var2.endsWith(".0") ? var2.substring(0, var2.length() - 2) : var2;
+        String str = String.valueOf(value);
+        return str.endsWith(".0") ? str.substring(0, str.length() - 2) : str;
     }
 
-    
-    public static boolean matchPath(String path, String pattern) {
-        List var2 = splitOn(path, '/');
-        List var3 = splitOn(pattern, '/');
-        return c(var2, var3);
-    }
-
-    private static boolean c(List<String> var0, List<String> var1) {
-        int var2 = 0;
-        int var3 = var1.size() - 1;
-        int var4 = 0;
-
-        int var5;
-        String var6;
-        for(var5 = var0.size() - 1; var2 <= var3 && var4 <= var5; ++var4) {
-            var6 = (String)var1.get(var2);
-            if (var6.equals("**")) {
-                break;
-            }
-
-            if (!matchWildcard((CharSequence)var0.get(var4), var6)) {
-                return false;
-            }
-
-            ++var2;
-        }
-
-        int var14;
-        if (var4 > var5) {
-            for(var14 = var2; var14 <= var3; ++var14) {
-                if (!((String)var1.get(var14)).equals("**")) {
-                    return false;
-                }
-            }
-
-            return true;
-        } else if (var2 > var3) {
-            return false;
-        } else {
-            while(var2 <= var3 && var4 <= var5) {
-                var6 = (String)var1.get(var3);
-                if (var6.equals("**")) {
-                    break;
-                }
-
-                if (!matchWildcard((CharSequence)var0.get(var5), var6)) {
-                    return false;
-                }
-
-                --var3;
-                --var5;
-            }
-
-            if (var4 > var5) {
-                for(var14 = var2; var14 <= var3; ++var14) {
-                    if (!((String)var1.get(var14)).equals("**")) {
-                        return false;
-                    }
-                }
-
-                return true;
-            } else {
-                while(var2 != var3 && var4 <= var5) {
-                    var14 = -1;
-
-                    int var7;
-                    for(var7 = var2 + 1; var7 <= var3; ++var7) {
-                        if (((String)var1.get(var7)).equals("**")) {
-                            var14 = var7;
-                            break;
-                        }
-                    }
-
-                    if (var14 == var2 + 1) {
-                        ++var2;
-                    } else {
-                        var7 = var14 - var2 - 1;
-                        int var8 = var5 - var4 + 1;
-                        int var9 = -1;
-                        int var10 = 0;
-
-                        label106:
-                        while(var10 <= var8 - var7) {
-                            for(int var11 = 0; var11 < var7; ++var11) {
-                                String var12 = (String)var1.get(var2 + var11 + 1);
-                                String var13 = (String)var0.get(var4 + var10 + var11);
-                                if (!matchWildcard(var13, var12)) {
-                                    ++var10;
-                                    continue label106;
-                                }
-                            }
-
-                            var9 = var4 + var10;
-                            break;
-                        }
-
-                        if (var9 == -1) {
-                            return false;
-                        }
-
-                        var2 = var14;
-                        var4 = var9 + var7;
-                    }
-                }
-
-                for(var14 = var2; var14 <= var3; ++var14) {
-                    if (!((String)var1.get(var14)).equals("**")) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        }
-    }
-
-    
-    public static boolean matchWildcard(CharSequence string, CharSequence pattern) {
-        return a(string, pattern, 0, 0);
-    }
-
-    private static boolean a(CharSequence var0, CharSequence var1, int var2, int var3) {
-        int var4 = var1.length();
-        if (var4 == 1 && var1.charAt(0) == '*') {
-            return true;
-        } else {
-            int var5 = var0.length();
-            boolean var6 = false;
-
-            while(var2 < var5) {
-                if (var3 >= var4) {
-                    return false;
-                }
-
-                char var7 = var1.charAt(var3);
-                if (!var6) {
-                    if (var7 == '\\') {
-                        ++var3;
-                        var6 = true;
-                        continue;
-                    }
-
-                    if (var7 == '?') {
-                        ++var2;
-                        ++var3;
-                        continue;
-                    }
-
-                    if (var7 == '*') {
-                        char var8 = 0;
-                        if (var3 + 1 < var4) {
-                            var8 = var1.charAt(var3 + 1);
-                        }
-
-                        if (var8 != '*') {
-                            ++var3;
-
-                            for(int var9 = var0.length(); var9 >= var2; --var9) {
-                                if (a(var0, var1, var9, var3)) {
-                                    return true;
-                                }
-                            }
-
-                            return false;
-                        }
-
-                        ++var3;
-                        continue;
-                    }
-                } else {
-                    var6 = false;
-                }
-
-                if (var7 != var0.charAt(var2)) {
-                    return false;
-                }
-
-                ++var2;
-                ++var3;
-            }
-
-            while(var3 < var4 && var1.charAt(var3) == '*') {
-                ++var3;
-            }
-
-            return var3 >= var4;
-        }
-    }
 
     public static String trimSuffix(String str, String suffix) {
         return str.endsWith(suffix) ? str.substring(0, str.length() - suffix.length()) : str;
@@ -2717,19 +2217,19 @@ public class StringHelper {
         if (num == null) {
             return null;
         } else {
-            Class var1 = num.getClass();
-            if (var1 != Integer.class && var1 != Long.class && var1 != BigInteger.class) {
-                if (var1 == BigDecimal.class) {
-                    BigDecimal var2 = (BigDecimal)num;
-                    if (var2.scale() < 20) {
-                        return var2.toString();
+            Class type = num.getClass();
+            if (type != Integer.class && type != Long.class && type != BigInteger.class) {
+                if (type == BigDecimal.class) {
+                    BigDecimal value = (BigDecimal)num;
+                    if (value.scale() < 20) {
+                        return value.toString();
                     }
                 }
 
-                NumberFormat var3 = NumberFormat.getInstance();
-                var3.setMaximumFractionDigits(20);
-                var3.setGroupingUsed(false);
-                return var3.format(num.doubleValue());
+                NumberFormat format = NumberFormat.getInstance();
+                format.setMaximumFractionDigits(20);
+                format.setGroupingUsed(false);
+                return format.format(num.doubleValue());
             } else {
                 return num.toString();
             }
@@ -2740,11 +2240,11 @@ public class StringHelper {
         if (s == null) {
             return null;
         } else if (s instanceof String) {
-            String var1 = s.toString();
-            if (var1.isEmpty()) {
+            String strValue = s.toString();
+            if (strValue.isEmpty()) {
                 return "";
             } else {
-                return var1.charAt(0) == '\'' ? "'" + var1 : var1;
+                return strValue.charAt(0) == '\'' ? "'" + strValue : strValue;
             }
         } else if (s instanceof Long) {
             return "$" + s;
@@ -2755,13 +2255,13 @@ public class StringHelper {
 
     public static Serializable decodeHeaderValue(String s) {
         if (s != null && s.length() > 0) {
-            char var1 = s.charAt(0);
-            if (var1 == '$') {
+            char c = s.charAt(0);
+            if (c == '$') {
                 return Long.parseLong(s.substring(1));
-            } else if (var1 == '#') {
+            } else if (c == '#') {
                 return BytesObject.decodeHex(s.substring(1));
             } else {
-                return var1 == '\'' ? s.substring(1) : s;
+                return c == '\'' ? s.substring(1) : s;
             }
         } else {
             return s;
@@ -2790,23 +2290,23 @@ public class StringHelper {
         if (str == null) {
             return null;
         } else {
-            StringTokenizer var4 = new StringTokenizer(str, delimiters);
-            ArrayList var5 = new ArrayList();
+            StringTokenizer tokenizer = new StringTokenizer(str, delimiters);
+            ArrayList list = new ArrayList();
 
             while(true) {
-                String var6;
+                String token;
                 do {
-                    if (!var4.hasMoreTokens()) {
-                        return toStringArray(var5);
+                    if (!tokenizer.hasMoreTokens()) {
+                        return toStringArray(list);
                     }
 
-                    var6 = var4.nextToken();
+                    token = tokenizer.nextToken();
                     if (trimTokens) {
-                        var6 = var6.trim();
+                        token = token.trim();
                     }
-                } while(ignoreEmptyTokens && var6.length() <= 0);
+                } while(ignoreEmptyTokens && token.length() <= 0);
 
-                var5.add(var6);
+                list.add(token);
             }
         }
     }
