@@ -1,11 +1,12 @@
 package io.study.util;
 
-import io.entropy.config.AppConfig;
-import io.entropy.exceptions.EntropyException;
 import io.entropy.lang.Guard;
-import io.entropy.lang.IRandom;
-import io.entropy.lang.util.DefaultSecureRandom;
-import io.entropy.lang.util.DefaultThreadLocalRandom;
+
+import io.study.exception.StdException;
+import io.study.lang.IRandom;
+import io.study.lang.util.DefaultSecureRandom;
+import io.study.lang.util.DefaultThreadLocalRandom;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class MathHelper implements Serializable {
     private static final long serialVersionUID = -2676798062638468488L;
-    public static final int DEFAULT_COMPARE_PRECISION = AppConfig.var("math.default_compare_precision").toInt(12);
+    public static final int DEFAULT_COMPARE_PRECISION = 12;
     public static final Double DEFAULT_COMPARE_GAP;
     private static final int BOOLEAN = 0;
     private static final int BYTE = 1;
@@ -150,7 +151,7 @@ public class MathHelper implements Serializable {
                             break;
                         }
 
-                        throw (new EntropyException("utils.err_compareWithConversion_fail")).param("v1", value1).param("v2", value2);
+                        throw (new StdException("utils.err_compareWithConversion_fail")).param("v1", value1).param("v2", value2);
                     }
 
                     return value1 == value2 ? 0 : 1;

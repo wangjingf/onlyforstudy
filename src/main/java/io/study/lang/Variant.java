@@ -1,10 +1,11 @@
 package io.study.lang;
 
  
+import io.entropy.json.JsonTool;
 import io.study.exception.StdException;
 import io.study.lang.type.ObjectTypes;
 import io.study.util.MathHelper;
-import io.study.util.StringUtils;
+import io.study.util.StringHelper;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -87,7 +88,7 @@ public abstract class Variant implements IVariant {
     }
 
     public String toStripedString() {
-        String strValue = StringUtils.strip(this.toString());
+        String strValue = StringHelper.strip(this.toString());
         return strValue;
     }
 
@@ -285,7 +286,7 @@ public abstract class Variant implements IVariant {
         } else if (value instanceof Number) {
             return (Number)value;
         } else {
-            return (Number)(value instanceof String ? StringUtils.parseNumber(value.toString()) : this.toDouble());
+            return (Number)(value instanceof String ? StringHelper.parseNumber(value.toString()) : this.toDouble());
         }
     }
 
@@ -296,7 +297,7 @@ public abstract class Variant implements IVariant {
         } else if (value instanceof Number) {
             return (Number)value;
         } else {
-            return (Number)(value instanceof String ? StringUtils.parseNumber(value.toString()) : this.toDouble());
+            return (Number)(value instanceof String ? StringHelper.parseNumber(value.toString()) : this.toDouble());
         }
     }
 
@@ -368,7 +369,7 @@ public abstract class Variant implements IVariant {
             return (List)value;
         } else {
             String strValue = this.toString();
-            return strValue == null ? null : StringUtils.stripedSplit(strValue, ",");
+            return strValue == null ? null : StringHelper.stripedSplit(strValue, ",");
         }
     }
 
@@ -380,7 +381,7 @@ public abstract class Variant implements IVariant {
             return (Set)value;
         } else {
             String strValue = this.toString();
-            return strValue == null ? null : new LinkedHashSet(StringUtils.stripedSplit(strValue, ","));
+            return strValue == null ? null : new LinkedHashSet(StringHelper.stripedSplit(strValue, ","));
         }
     }
 
@@ -552,12 +553,12 @@ public abstract class Variant implements IVariant {
 
     public String formatDate(String pattern) {
         Date var2 = this.toDate();
-        return StringUtils.formatDate(var2, pattern);
+        return StringHelper.formatDate(var2, pattern);
     }
 
     public String formatNumber(String pattern) {
         Number numberValue = this.toNumber();
-        return StringUtils.formatNumber(numberValue, pattern);
+        return StringHelper.formatNumber(numberValue, pattern);
     }
 
     public Object i0(Object defaultValue) {

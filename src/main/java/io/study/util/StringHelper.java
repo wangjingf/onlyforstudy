@@ -1,17 +1,9 @@
 package io.study.util;
  
 
-import com.google.common.base.CaseFormat;
-import io.entropy.config.AppConfig;
-import io.entropy.core.mix.ka;
-import io.entropy.crypto.HashHelper;
-import io.entropy.lang.IRandom;
-import io.entropy.lang.IReference;
-import io.entropy.lang.support.Transformers;
-import io.entropy.lang.util.BytesObject;
-import io.entropy.text.code.Utf8;
-import io.entropy.text.tpl.SimpleTextTemplate;
+
 import io.study.exception.StdException;
+import io.study.lang.IRandom;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import java.io.IOException;
@@ -24,6 +16,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -46,8 +39,7 @@ public class StringHelper {
     public static final byte[] EMPTY_BYTES = new byte[0];
     public static final String[] EMPTY_STRINGS = new String[0];
     public static final String EMPTY_STRING = "";
-    static final IReference<Integer> abR = AppConfig.varRef("util.string_max_repeat_len", 1024);
-    static final IReference<Integer> abS = AppConfig.varRef("util.string_max_pad_len", 1024);
+
     static final char[] CRLF = new char[]{'\r', '\n'};
     static final char[] HTML_ESCAPED = new char[]{'<', '>', '&', ' ', '"', '\'', '\r', '\n'};
     static final String[] HTML_TO_ESCAPED = new String[]{"&lt;", "&gt;", "&amp;", "&#160;", "&quot;", "&apos;", "", "<br/>"};
@@ -67,14 +59,9 @@ public class StringHelper {
     static final Pattern HTML_PAGA_TAG_PATTERN = Pattern.compile("<p.*?>");
     static final Pattern HTML_BR_TAG_PETTERN = Pattern.compile("<br\\s*/?>");
     static final Pattern HTML_OPEN_PETTERN = Pattern.compile("<.*?>");
-    static final String[] acm = new String[]{"", "\r\n"};
-    static final String[] acn = new String[]{"", "\n"};
-    static final char[] aco = new char[]{'/', '\\', ':', '*', '?', '"', '<', '>', '|', '\u0000'};
-    static final String acp;
-    static final String[] acq;
-    static final char[] acr;
-    static final String acs;
-    private static final String act = "**";
+    static final String[] WINDOWS_CRLF = new String[]{"", "\r\n"};
+
+
 
     public StringHelper() {
     }
@@ -614,9 +601,7 @@ public class StringHelper {
 
     
     public static String leftPad(String str, int len, char padChar) {
-        if (len > (Integer)abS.get()) {
-            throw (new StdException("util.err_string_pad_len_is_too_large")).param("len", len);
-        } else if (str.length() >= len) {
+        if (str.length() >= len) {
             return str;
         } else {
             StringBuilder sb = new StringBuilder(len);
@@ -633,9 +618,7 @@ public class StringHelper {
 
     
     public static String rightPad(String str, int len, char padChar) {
-        if (len > (Integer)abS.get()) {
-            throw (new StdException("util.err_string_pad_len_is_too_large")).param("len", len);
-        } else if (str.length() >= len) {
+        if (str.length() >= len) {
             return str;
         } else {
             StringBuilder sb = new StringBuilder(len);
@@ -786,9 +769,7 @@ public class StringHelper {
     }
 
     public static String random(int n, String allowChars) {
-        if (n > (Integer)abR.get()) {
-            throw (new StdException("util.err_string_random_count_too_large")).param("count", n);
-        } else {
+
             char[] arr = new char[n];
             IRandom random = MathHelper.random();
             int charLength = allowChars.length();
@@ -798,7 +779,7 @@ public class StringHelper {
             }
 
             return new String(arr);
-        }
+
     }
 
     public static String generateUUID() {
@@ -863,13 +844,7 @@ public class StringHelper {
         return str != null && str.length() > 0 ? Character.toLowerCase(str.charAt(0)) + str.substring(1) : str;
     }
 
-    public static String camelCaseToUnderscore(String str, boolean lower) {
-        return str == null ? null : CaseFormat.LOWER_CAMEL.to(lower ? CaseFormat.LOWER_UNDERSCORE : CaseFormat.UPPER_UNDERSCORE, str);
-    }
 
-    public static String camelCaseToHyphen(String str) {
-        return str == null ? null : CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, str);
-    }
 
     
     public static final String camelCase(String str, boolean firstUpper) {
@@ -970,9 +945,7 @@ public class StringHelper {
 
     
     public static String repeat(String str, int count) {
-        if (count > (Integer)abR.get()) {
-            throw (new StdException("util.err_string_repeat_count_too_large")).param("count", count);
-        } else {
+
             StringBuilder sb = new StringBuilder(str.length() * count);
 
             for(int i = 0; i < count; ++i) {
@@ -980,7 +953,7 @@ public class StringHelper {
             }
 
             return sb.toString();
-        }
+
     }
 
     
@@ -1063,22 +1036,6 @@ public class StringHelper {
     }
 
     
-    public static String md5Hash(String str) {
-        byte[] bytes = utf8Bytes(str);
-        return bytes == null ? null : bytesToHex(HashHelper.md5(bytes));
-    }
-
-    
-    public static String sha256Hash(String str) {
-        byte[] bytes = utf8Bytes(str);
-        return bytes == null ? null : bytesToHex(HashHelper.sha256(bytes, (byte[])null));
-    }
-
-    
-    public static String sha512Hash(String str) {
-        byte[] bytes = utf8Bytes(str);
-        return bytes == null ? null : bytesToHex(HashHelper.sha512(bytes, (byte[])null));
-    }
 
     
     public static String encodeBase64(byte[] bytes) {
@@ -1100,105 +1057,112 @@ public class StringHelper {
     }
 
     /**
-     * Checks whether the String internalMatchWildcard valid Java number. Valid numbers include hexadecimal marked with the "0x" qualifier, scientific notation and numbers marked with internalMatchWildcard type qualifier (e.g. 123L).
+     * <p>Checks whether the String a valid Java number.</p>
      *
-     * Null and blank string will return false.
-     * @param str
-     * @return
+     * <p>Valid numbers include hexadecimal marked with the <code>0x</code>
+     * qualifier, scientific notation and numbers marked with a type
+     * qualifier (e.g. 123L).</p>
+     *
+     * <p><code>Null</code> and empty String will return
+     * <code>false</code>.</p>
+     *
+     * @param str  the <code>String</code> to check
+     * @return <code>true</code> if the string is a correctly formatted number
      */
-    public static boolean isNumber(CharSequence str) {
-        if (str != null && str.length() != 0) {
-            int var1 = str.length();
-            boolean var2 = false;
-            boolean var3 = false;
-            boolean var4 = false;
-            boolean var5 = false;
-            int var6 = str.charAt(0) == '-' ? 1 : 0;
-            int var7;
-            char var8;
-            if (var1 > var6 + 1 && str.charAt(var6) == '0' && str.charAt(var6 + 1) == 'x') {
-                var7 = var6 + 2;
-                if (var7 == var1) {
-                    return false;
-                } else {
-                    while(var7 < var1) {
-                        var8 = str.charAt(var7);
-                        if ((var8 < '0' || var8 > '9') && (var8 < 'a' || var8 > 'f') && (var8 < 'A' || var8 > 'F')) {
-                            return false;
-                        }
-
-                        ++var7;
-                    }
-
-                    return true;
-                }
-            } else {
-                --var1;
-
-                for(var7 = var6; var7 < var1 || var7 < var1 + 1 && var4 && !var5; ++var7) {
-                    var8 = str.charAt(var7);
-                    if (var8 >= '0' && var8 <= '9') {
-                        var5 = true;
-                        var4 = false;
-                    } else if (var8 == '.') {
-                        if (var3 || var2) {
-                            return false;
-                        }
-
-                        var3 = true;
-                    } else if (var8 != 'e' && var8 != 'E') {
-                        if (var8 != '+' && var8 != '-') {
-                            return false;
-                        }
-
-                        if (!var4) {
-                            return false;
-                        }
-
-                        var4 = false;
-                        var5 = false;
-                    } else {
-                        if (var2) {
-                            return false;
-                        }
-
-                        if (!var5) {
-                            return false;
-                        }
-
-                        var2 = true;
-                        var4 = true;
-                    }
-                }
-
-                if (var7 < str.length()) {
-                    var8 = str.charAt(var7);
-                    if (var8 >= '0' && var8 <= '9') {
-                        return true;
-                    }
-
-                    if (var8 == 'e' || var8 == 'E') {
-                        return false;
-                    }
-
-                    if (!var4 && (var8 == 'd' || var8 == 'D' || var8 == 'f' || var8 == 'F')) {
-                        return var5;
-                    }
-
-                    if (var8 == 'l' || var8 == 'L') {
-                        return var5 && !var2;
-                    }
-
-                    if (var8 == '.') {
-                        return !var3 && var5 && !var4;
-                    }
-                }
-
-                return false;
-            }
-        } else {
+    public static boolean isNumber(String str) {
+        if (StringUtils.isEmpty(str)) {
             return false;
         }
+        char[] chars = str.toCharArray();
+        int sz = chars.length;
+        boolean hasExp = false;
+        boolean hasDecPoint = false;
+        boolean allowSigns = false;
+        boolean foundDigit = false;
+        // deal with any possible sign up front
+        int start = (chars[0] == '-') ? 1 : 0;
+        if (sz > start + 1) {
+            if (chars[start] == '0' && chars[start + 1] == 'x') {
+                int i = start + 2;
+                if (i == sz) {
+                    return false; // str == "0x"
+                }
+                // checking hex (it can't be anything else)
+                for (; i < chars.length; i++) {
+                    if ((chars[i] < '0' || chars[i] > '9')
+                            && (chars[i] < 'a' || chars[i] > 'f')
+                            && (chars[i] < 'A' || chars[i] > 'F')) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        sz--; // don't want to loop to the last char, check it afterwords
+        // for type qualifiers
+        int i = start;
+        // loop to the next to last char or to the last char if we need another digit to
+        // make a valid number (e.g. chars[0..5] = "1234E")
+        while (i < sz || (i < sz + 1 && allowSigns && !foundDigit)) {
+            if (chars[i] >= '0' && chars[i] <= '9') {
+                foundDigit = true;
+                allowSigns = false;
+
+            } else if (chars[i] == '.') {
+                if (hasDecPoint || hasExp) {
+                    // two decimal points or dec in exponent
+                    return false;
+                }
+                hasDecPoint = true;
+            } else if (chars[i] == 'e' || chars[i] == 'E') {
+                // we've already taken care of hex.
+                if (hasExp) {
+                    // two E's
+                    return false;
+                }
+                if (!foundDigit) {
+                    return false;
+                }
+                hasExp = true;
+                allowSigns = true;
+            } else if (chars[i] == '+' || chars[i] == '-') {
+                if (!allowSigns) {
+                    return false;
+                }
+                allowSigns = false;
+                foundDigit = false; // we need a digit after the E
+            } else {
+                return false;
+            }
+            i++;
+        }
+        if (i < chars.length) {
+            if (chars[i] >= '0' && chars[i] <= '9') {
+                // no type qualifier, OK
+                return true;
+            }
+            if (chars[i] == 'e' || chars[i] == 'E') {
+                // can't have an E at the last byte
+                return false;
+            }
+            if (!allowSigns
+                    && (chars[i] == 'd'
+                    || chars[i] == 'D'
+                    || chars[i] == 'f'
+                    || chars[i] == 'F')) {
+                return foundDigit;
+            }
+            if (chars[i] == 'l'
+                    || chars[i] == 'L') {
+                // not allowing L with an exponent
+                return foundDigit && !hasExp;
+            }
+            // last character is illegal
+            return false;
+        }
+        // allowSigns is true iff the val ends in 'E'
+        // found digit it to make sure weird stuff like '.' and '1E-' doesn't pass
+        return !allowSigns && foundDigit;
     }
 
 
@@ -1239,16 +1203,16 @@ public class StringHelper {
                     scalePart = null;
                 }
 
-                String var4;
+                String powerPart;
                 if (!Character.isDigit(c)) {
                     if (eIndex > -1 && eIndex < value.length() - 1) {
-                        var4 = value.substring(eIndex + 1, value.length() - 1);
+                        powerPart = value.substring(eIndex + 1, value.length() - 1);
                     } else {
-                        var4 = null;
+                        powerPart = null;
                     }
 
-                    String var17 = value.substring(0, value.length() - 1);
-                    boolean var18 = isAllZero(intPart) && isAllZero(var4);
+                    String strValue = value.substring(0, value.length() - 1);
+                    boolean isZero = isAllZero(intPart) && isAllZero(powerPart);
                     switch(c) {
                         case 'D':
                         case 'd':
@@ -1256,24 +1220,24 @@ public class StringHelper {
                         case 'F':
                         case 'f':
                             try {
-                                Float floatValue = Float.valueOf(var17);
-                                if (floatValue.isInfinite() || floatValue == 0.0F && !var18) {
+                                Float floatValue = Float.valueOf(strValue);
+                                if (floatValue.isInfinite() || floatValue == 0.0F && !isZero) {
                                     break;
                                 }
 
                                 return floatValue;
-                            } catch (NumberFormatException var15) {
+                            } catch (NumberFormatException ex) {
                                 break;
                             }
                         case 'L':
                         case 'l':
-                            if (scalePart != null || var4 != null || !isDigits(var17) || var17.charAt(0) != '-' && !Character.isDigit(var17.charAt(0))) {
-                                throw (new StdException("util.err_not_valid_number")).param("value", var17);
+                            if (scalePart != null || powerPart != null || !isDigits(strValue) || strValue.charAt(0) != '-' && !Character.isDigit(strValue.charAt(0))) {
+                                throw (new StdException("util.err_not_valid_number")).param("value", strValue);
                             } else {
                                 try {
-                                    return Long.valueOf(var17);
-                                } catch (NumberFormatException var11) {
-                                    return new BigInteger(var17);
+                                    return Long.valueOf(strValue);
+                                } catch (NumberFormatException ex) {
+                                    return new BigInteger(strValue);
                                 }
                             }
                         default:
@@ -1281,43 +1245,43 @@ public class StringHelper {
                     }
 
                     try {
-                        Double var19 = Double.valueOf(var17);
-                        if (!var19.isInfinite() && ((double)var19.floatValue() != 0.0D || var18)) {
-                            return var19;
+                        Double doubleValue = Double.valueOf(strValue);
+                        if (!doubleValue.isInfinite() && ((double)doubleValue.floatValue() != 0.0D || isZero)) {
+                            return doubleValue;
                         }
-                    } catch (NumberFormatException var14) {
+                    } catch (NumberFormatException ex) {
                         ;
                     }
 
                     try {
-                        return new BigDecimal(var17);
-                    } catch (NumberFormatException var13) {
+                        return new BigDecimal(strValue);
+                    } catch (NumberFormatException ex) {
                         throw (new StdException("util.err_not_valid_number")).param("value", value);
                     }
                 } else {
                     if (eIndex > -1 && eIndex < value.length() - 1) {
-                        var4 = value.substring(eIndex + 1, value.length());
+                        powerPart = value.substring(eIndex + 1, value.length());
                     } else {
-                        var4 = null;
+                        powerPart = null;
                     }
 
-                    if (scalePart == null && var4 == null) {
+                    if (scalePart == null && powerPart == null) {
                         try {
                             return Integer.decode(value);
-                        } catch (NumberFormatException var12) {
+                        } catch (NumberFormatException ex) {
                             try {
                                 return Long.valueOf(value);
-                            } catch (NumberFormatException var10) {
+                            } catch (NumberFormatException e) {
                                 return new BigInteger(value);
                             }
                         }
                     } else {
-                        boolean var7 = isAllZero(intPart) && isAllZero(var4);
+                        boolean isAllZero = isAllZero(intPart) && isAllZero(powerPart);
 
                         try {
-                            Double var8 = Double.valueOf(value);
-                            if (!var8.isInfinite() && (var8 != 0.0D || var7)) {
-                                return var8;
+                            Double doubleValue = Double.valueOf(value);
+                            if (!doubleValue.isInfinite() && (doubleValue != 0.0D || isAllZero)) {
+                                return doubleValue;
                             }
                         } catch (NumberFormatException ex) {
                             ;
@@ -1391,12 +1355,12 @@ public class StringHelper {
      * @return
      */
     public static String normalizeCRLF(String str) {
-        return escape(str, CRLF, acm);
+        return escape(str, CRLF, WINDOWS_CRLF);
     }
 
     
     public static String normalizeLF(String str) {
-        return escape(str, CRLF, acm);
+        return escape(str, CRLF, WINDOWS_CRLF);
     }
 
     
@@ -1605,23 +1569,7 @@ public class StringHelper {
 
 
 
-    public static SimpleTextTemplate buildTemplate(String tpl, String leftBrace, String rightBrace) {
-        return new SimpleTextTemplate(tpl, leftBrace, rightBrace);
-    }
 
-    public static String renderTemplate(String tpl, String leftBrace, String rightBrace, Function<Object, Object> transformer) {
-        return tpl != null && tpl.length() != 0 ? buildTemplate(tpl, leftBrace, rightBrace).render(Transformers.forFunction(transformer)) : "";
-    }
-
-    /**
-     * 将模板文本中的{varName}形式的部分替换为varName对应的变量值
-     * @param template
-     * @param vars
-     * @return
-     */
-    public static String renderTemplate(String template, Map<String, Object> vars) {
-        return template != null && template.length() != 0 ? buildTemplate(template, "{", "}").render(Transformers.forMap(vars)) : "";
-    }
 
     
     public static String quote(String text) {
@@ -2145,9 +2093,7 @@ public class StringHelper {
 
 
     
-    public static int utf8Length(CharSequence seq) {
-        return seq == null ? 0 : Utf8.encodedLength(seq);
-    }
+
 
     
     public static long parseFileSizeString(String str) {
@@ -2201,7 +2147,8 @@ public class StringHelper {
     }
 
     public static String formatDate(Date date, String pattern) {
-        return date == null ? null : ka.cc(pattern).format(date);
+        SimpleDateFormat format = new SimpleDateFormat(pattern);
+        return date == null ? null : format.format(date);
     }
 
     public static String formatNumber(Number num, String pattern) {
@@ -2236,37 +2183,7 @@ public class StringHelper {
         }
     }
 
-    public static String encodeHeaderValue(Serializable s) {
-        if (s == null) {
-            return null;
-        } else if (s instanceof String) {
-            String strValue = s.toString();
-            if (strValue.isEmpty()) {
-                return "";
-            } else {
-                return strValue.charAt(0) == '\'' ? "'" + strValue : strValue;
-            }
-        } else if (s instanceof Long) {
-            return "$" + s;
-        } else {
-            return s instanceof BytesObject ? "#" + ((BytesObject)s).hex() : s.toString();
-        }
-    }
 
-    public static Serializable decodeHeaderValue(String s) {
-        if (s != null && s.length() > 0) {
-            char c = s.charAt(0);
-            if (c == '$') {
-                return Long.parseLong(s.substring(1));
-            } else if (c == '#') {
-                return BytesObject.decodeHex(s.substring(1));
-            } else {
-                return c == '\'' ? s.substring(1) : s;
-            }
-        } else {
-            return s;
-        }
-    }
 
     /**
      * 获取xml的头
@@ -2317,11 +2234,6 @@ public class StringHelper {
 
 
 
-    static {
-        acp = new String(aco);
-        acq = new String[]{"_", "_", "_", "_", "_", "_", "_", "_", "_", "_"};
-        acr = new char[]{'\\', ':', '*', '?', '"', '<', '>', '|', '\u0000'};
-        acs = new String(acr);
-    }
+
 }
 
