@@ -1,7 +1,7 @@
 package data_structure.acm.poj.leetcode;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
