@@ -1,26 +1,23 @@
 package io.study.gateway.config;
 
 import io.study.gateway.balance.BalancePolicy;
+import io.study.gateway.proxy.ProxyProtocol;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProxyConfig {
     BalancePolicy policy;
-    String proxyProtocol;
-    String proxyAddr;
-    Map<String/*uri*/,ApiConfig> config = new ConcurrentHashMap<>();
+    ProxyProtocol proxyProtocol;
 
-    public ApiConfig resolveApi(String uri) {
-        return config.get(uri);
+    Map<String/*uri*/,ApiConfig> apiConfig = new ConcurrentHashMap<>();
+
+    public ApiConfig getApiConfig(String uri) {
+        return apiConfig.get(uri);
     }
 
-    public String getProxyAddr() {
-        return proxyAddr;
-    }
-
-    public void setProxyAddr(String proxyAddr) {
-        this.proxyAddr = proxyAddr;
+    public void setApiConfig(String uri,ApiConfig cfg){
+        apiConfig.put(uri,cfg);
     }
 
     public BalancePolicy getPolicy() {
@@ -31,19 +28,13 @@ public class ProxyConfig {
         this.policy = policy;
     }
 
-    public String getProxyProtocol() {
+    public ProxyProtocol getProxyProtocol() {
         return proxyProtocol;
     }
 
-    public void setProxyProtocol(String proxyProtocol) {
+    public void setProxyProtocol(ProxyProtocol proxyProtocol) {
         this.proxyProtocol = proxyProtocol;
     }
 
-    public Map<String, ApiConfig> getConfig() {
-        return config;
-    }
 
-    public void setConfig(Map<String, ApiConfig> config) {
-        this.config = config;
-    }
 }

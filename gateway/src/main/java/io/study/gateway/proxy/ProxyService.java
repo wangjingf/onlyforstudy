@@ -29,13 +29,14 @@ public class ProxyService {
     ChannelHandlerContext serverCtx;
     IRegistry registry;
 
-    ProxyFactory factory = null;
+    ProxyFactory factory = new ProxyFactory();
 
     List<IFilter> filters = new ArrayList<>();
     Map<ProxyConfig, LoadBalanceContext> balanceContextMap = new ConcurrentHashMap<>();
 
-    public ProxyService(ChannelHandlerContext serverCtx) {
+    public ProxyService(IRegistry registry,ChannelHandlerContext serverCtx) {
         this.serverCtx = serverCtx;
+        this.registry = registry;
     }
 
     void notFound() {
@@ -67,14 +68,14 @@ public class ProxyService {
         if (uri.indexOf("/") != -1) {
             uri = StringHelper.firstPart(uri, '/');
         }
-        ProxyConfig proxyConfig = registry.resolveTarget(uri);
+        ProxyConfig proxyConfig = registry.getConfig(uri);
         ProxyContext proxyContext = new ProxyContext();
         proxyContext.setProxyConfig(proxyConfig);
         proxyContext.setRequest(context.getRequest());
         for (IFilter filter : filters) {
             filter.filter(context);
         }
-        ProxyInvoker invoker = factory.createProxyInvoker(proxyConfig);
+        ProxyInvoker invoker = factory.createProxyInvoker(proxyContext);
         invoker.invoke(new ProxyContext());
         //限流
         //鉴权

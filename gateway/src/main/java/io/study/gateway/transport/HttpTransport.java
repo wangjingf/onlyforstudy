@@ -17,6 +17,10 @@ import java.util.concurrent.ThreadFactory;
 
 public class HttpTransport {
     private static final EventLoopGroup EVENT_LOOP_GROUP = eventLoopGroup(Constants.DEFAULT_IO_THREADS, "NettyClientWorker");
+    SocketAddress address = null;
+    public HttpTransport(SocketAddress address) {
+        this.address = address;
+    }
 
     public static EventLoopGroup eventLoopGroup(int threads, String threadFactoryName) {
         ThreadFactory threadFactory = new DefaultThreadFactory(threadFactoryName, true);
@@ -30,7 +34,9 @@ public class HttpTransport {
     }
     public void proxy(ProxyContext ctx){
         Bootstrap bootstrap = new Bootstrap();
-        String destUri = ctx.getRequest().getUri();
+        String reqUri = ctx.getRequest().uri();
+        String destUri = ctx.getProxyConfig().getApiConfig(reqUri).getDestUri();
+        //String destUri = ctx.getRequest().uri();
         bootstrap.group(EVENT_LOOP_GROUP).channel(NioSocketChannel.class).handler(new ChannelInitializer<Channel>() {
 
             @Override
@@ -40,7 +46,7 @@ public class HttpTransport {
                 ch.pipeline().addLast(new ClientHandler(destUri,ctx, ctx.getRequest()));
             }
         });
-
+        bootstrap.connect(address);
     }
 
     public static class ClientHandler extends ChannelInboundHandlerAdapter {

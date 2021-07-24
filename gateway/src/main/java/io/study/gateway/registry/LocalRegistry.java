@@ -8,7 +8,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocalRegistry implements IRegistry {
     Map<String,ProxyConfig> registry = new ConcurrentHashMap<>();
     @Override
-    public ProxyConfig resolveTarget(String uri) {
+    public ProxyConfig getConfig(String uri) {
         return registry.get(uri);
     }
+
+    public void register(String uri,ProxyConfig proxyConfig){
+        registry.put(uri,proxyConfig);
+    }
+
 }

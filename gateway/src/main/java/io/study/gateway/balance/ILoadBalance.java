@@ -1,9 +1,10 @@
 package io.study.gateway.balance;
 
-import io.study.gateway.config.HostConfig;
+
+import io.study.gateway.invoker.ProxyInvoker;
 
 import java.util.List;
 
 public interface ILoadBalance {
-    public HostConfig select(List<HostConfig> hosts, LoadBalanceContext context);
+    public ProxyInvoker select(List<ProxyInvoker> invokers, LoadBalanceContext context);
 }
