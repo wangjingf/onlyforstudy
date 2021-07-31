@@ -13,8 +13,9 @@ import java.util.Map;
 
 public class ProxyResponseMap {
     public static final Map<String,FullHttpResponse> responseMap = new HashMap<>();
+    public static final Map<String,FullHttpResponse> responseMap1 = new HashMap<>();
     public static final Map<String,String> contentMap = new HashMap<>();
-    static FullHttpResponse newResponse(int status,String msg,String contentType){
+    public static FullHttpResponse newResponse(int status,String msg,String contentType){
         byte[] bytes = msg.getBytes(CharsetUtil.UTF_8);
         ByteBuf content = Unpooled.wrappedBuffer(bytes);
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),content);
@@ -27,7 +28,9 @@ public class ProxyResponseMap {
 
     }
     static{
-        responseMap.put("/json",newResponse(200,"{\"a\":1}","application/json"));
+        responseMap.put("/json",newResponse(200,"{\"a\":0}","application/json"));
         responseMap.put("/html",newResponse(200,"<!DOCTYPE html><html><body>312</body></html>","text/html"));
+        responseMap1.put("/json",newResponse(200,"{\"a\":1}","application/json"));
+        responseMap1.put("/html",newResponse(200,"<!DOCTYPE html><html><body>312</body></html>","text/html"));
     }
 }

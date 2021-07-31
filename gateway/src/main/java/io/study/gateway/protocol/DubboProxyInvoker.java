@@ -13,4 +13,9 @@ public class DubboProxyInvoker implements ProxyInvoker {
     public void invoke(ProxyContext context) {
         throw new RuntimeException("not support");
     }
+
+    @Override
+    public String getUrl() {
+        return null;
+    }
 }

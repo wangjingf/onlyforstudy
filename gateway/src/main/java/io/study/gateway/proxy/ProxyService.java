@@ -32,7 +32,6 @@ public class ProxyService {
     ProxyFactory factory = new ProxyFactory();
 
     List<IFilter> filters = new ArrayList<>();
-    Map<ProxyConfig, LoadBalanceContext> balanceContextMap = new ConcurrentHashMap<>();
 
     public ProxyService(IRegistry registry,ChannelHandlerContext serverCtx) {
         this.serverCtx = serverCtx;
@@ -59,24 +58,34 @@ public class ProxyService {
      * @param request
      */
     public void start(FullHttpRequest request) {
-        ProxyContext context = new ProxyContext();
-        String uri = context.getRequest().uri();
+        ProxyContext proxyContext = new ProxyContext();
+        proxyContext.setRequest(request.copy());
+
+        String uri = proxyContext.getRequest().uri();
         if (StringUtils.isEmpty(uri)) {
             notFound();
             return;
         }
+        String firstPart = null,lastPart = null;
         if (uri.indexOf("/") != -1) {
-            uri = StringHelper.firstPart(uri, '/');
+            uri = uri.substring(1);
+            firstPart = StringHelper.firstPart(uri, '/');
         }
-        ProxyConfig proxyConfig = registry.getConfig(uri);
-        ProxyContext proxyContext = new ProxyContext();
+        if (StringUtils.isEmpty(firstPart)) {
+            notFound();
+            return;
+        }
+        ProxyConfig proxyConfig = registry.getConfig(firstPart);
+
         proxyContext.setProxyConfig(proxyConfig);
-        proxyContext.setRequest(context.getRequest());
+        proxyContext.setServerCtx(this.serverCtx);
+
+        proxyContext.setRequest(proxyContext.getRequest());
         for (IFilter filter : filters) {
-            filter.filter(context);
+            filter.filter(proxyContext);
         }
         ProxyInvoker invoker = factory.createProxyInvoker(proxyContext);
-        invoker.invoke(new ProxyContext());
+        invoker.invoke(proxyContext);
         //限流
         //鉴权
         //协议转换

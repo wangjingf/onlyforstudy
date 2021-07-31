@@ -2,13 +2,25 @@ package io.study.gateway.balance;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LoadBalanceContext {
-    Map<String,Object> map = new HashMap<>();
-    public Object getAttr(String key){
-        return map.get(key);
+    String domain;
+    String path;
+
+    public String getDomain() {
+        return domain;
     }
-    public void setAttr(String key,Object val){
-        map.put(key,val);
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

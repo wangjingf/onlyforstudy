@@ -6,7 +6,9 @@ import java.net.SocketAddress;
 public class HostConfig {
     SocketAddress address = null;
     Integer weight;
-
+    public HostConfig(SocketAddress address){
+        this.address = address;
+    }
     public SocketAddress getAddress() {
         return address;
     }

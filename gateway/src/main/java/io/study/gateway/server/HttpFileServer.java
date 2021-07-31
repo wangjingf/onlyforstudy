@@ -116,7 +116,7 @@ public class HttpFileServer {
 			if(!requestUrl.startsWith("/file")){
 				redirectTo(ctx,"/file",request);
 			}else if(requestUrl.equals("/file")){
-				showDirectory(ctx,new File("E:/"),request);
+				showDirectory(ctx,new File("d:/"),request);
 			}else{
 				File file = new File("E:/"+requestUrl.substring("/file".length()));
 				if(file.isDirectory()){
