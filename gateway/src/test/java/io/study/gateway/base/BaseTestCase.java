@@ -1,21 +1,17 @@
-package io.study.gateway;
+package io.study.gateway.base;
 
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.study.gateway.balance.BalancePolicy;
-import io.study.gateway.base.BaseTestCase;
 import io.study.gateway.config.ApiConfig;
 import io.study.gateway.config.HostConfig;
 import io.study.gateway.config.ProxyConfig;
 import io.study.gateway.interceptor.IFilter;
-import io.study.gateway.interceptor.IFilterChain;
 import io.study.gateway.proxy.ProxyContext;
 import io.study.gateway.proxy.ProxyProtocol;
 import io.study.gateway.proxy.ProxyServer;
 import io.study.gateway.proxy.ProxyService;
-import io.study.gateway.registry.IRegistry;
 import io.study.gateway.registry.LocalRegistry;
 import io.study.gateway.server.ProxyResponseMap;
 import io.study.gateway.server.SimpleHttpServer;
@@ -26,20 +22,19 @@ import okhttp3.Response;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class TestProxy extends BaseTestCase {
+public class BaseTestCase extends TestCase {
     SimpleHttpServer server1 = null;
     SimpleHttpServer server2 = null;
     ProxyServer proxyServer = null;
     LocalRegistry registry = null;
     private OkHttpClient okHttpClient = new OkHttpClient();
-    private ApiConfig newApiConfig(String destUri){
+    private ApiConfig newApiConfig(){
         ApiConfig apiConfig = new ApiConfig();
 
-        apiConfig.setSrcUri(destUri);
-        apiConfig.setDestUri(destUri);
+        apiConfig.setSrcUri("/json");
+        apiConfig.setDestUri("/json");
         HostConfig hostConfig = new HostConfig(new InetSocketAddress("127.0.0.1",8070));
         HostConfig hostConfig1 = new HostConfig(new InetSocketAddress("127.0.0.1",8060));
         List<HostConfig> hosts = new ArrayList<>();
@@ -48,18 +43,16 @@ public class TestProxy extends BaseTestCase {
         apiConfig.setActiveAddresses(hosts);
         return apiConfig;
     }
-
     @Override
     public void setUp() throws Exception {
         registry = new LocalRegistry();
         ProxyConfig proxyConfig = new ProxyConfig();
         proxyConfig.setPolicy(BalancePolicy.LeastActive);
         proxyConfig.setProxyProtocol(ProxyProtocol.Http1_1);
-        proxyConfig.setApiConfig("/json",newApiConfig("/json"));
-        proxyConfig.setApiConfig("/html",newApiConfig("/html"));
+        proxyConfig.setApiConfig("/json",newApiConfig());
         registry.register("com.wjf.proxy",proxyConfig);
 
-        server1 = new SimpleHttpServer(8070,ProxyResponseMap.responseMap);
+        server1 = new SimpleHttpServer(8070, ProxyResponseMap.responseMap);
         server2 = new SimpleHttpServer(8060,ProxyResponseMap.responseMap1);
 
         ProxyService proxyService = new ProxyService(registry);
@@ -116,34 +109,14 @@ public class TestProxy extends BaseTestCase {
         try {
             Response response = okHttpClient.newCall(request).execute();
             String content = response.body().string();
-             return content;
+            return content;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
 
     }
-    private IFilter newAuthFilter(){
-        return new IFilter() {
-            @Override
-            public void filter(ProxyContext context, IFilterChain chain) {
-                String uri = context.getRequest().uri();
-                if("/com.wjf.proxy/json".equals(uri)){
-                    DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(401));
-                    response.headers().set(HttpHeaderNames.CONTENT_LENGTH,0);
-                    context.writeAndFlush(response);
-                }else{
-                    chain.doFilter(context);
-                }
-            }
-        };
-    }
-    public void testAuthFilter(){
-        proxyServer.addFilter(newAuthFilter());
-        /*String content = newReq(PROXY_JSON_URL);
-        System.out.println("content::"+content);*/
-        while(true);
-    }
+
     public void testLeastLoadBalance(){
         for (int i = 0; i < 20; i++) {
             String content = newReq(PROXY_JSON_URL);

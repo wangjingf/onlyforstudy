@@ -10,20 +10,27 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.study.gateway.interceptor.IFilter;
 import io.study.gateway.registry.IRegistry;
 
 public class ProxyServer {
     int port;
-    IRegistry registry;
-    public ProxyServer(IRegistry registry,int port){
-        this.registry =registry;
+
+    ProxyService proxyService = null;
+    public ProxyServer(ProxyService service,int port){
         this.port = port;
+        this.proxyService = service;
     }
+    public void addFilter(IFilter filter){
+        proxyService.addFilter(filter);
+    }
+
     public void start() throws InterruptedException{
         EventLoopGroup bossGroup = new NioEventLoopGroup();//accepterGroup
         EventLoopGroup workerGroup = new NioEventLoopGroup();//
         ServerBootstrap server =  new ServerBootstrap();
-        server.group(bossGroup, bossGroup).option(ChannelOption.SO_BACKLOG,1024).channel(NioServerSocketChannel.class)
+
+        server.group(bossGroup, bossGroup).option(ChannelOption.SO_REUSEADDR,true).option(ChannelOption.SO_BACKLOG,1024).channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
 
                     @Override
@@ -32,7 +39,7 @@ public class ProxyServer {
                         ch.pipeline().addLast("http-aggregator",new HttpObjectAggregator(65535));
                         ch.pipeline().addLast("http-encoder",new HttpResponseEncoder());
                         ch.pipeline().addLast("http-chunked",new ChunkedWriteHandler());
-                        ch.pipeline().addLast("proxyhandler", new ProxyHandler(registry));
+                        ch.pipeline().addLast("proxyhandler", new ProxyHandler(proxyService));
 
                     }
                 });
@@ -49,14 +56,14 @@ public class ProxyServer {
         }
     }
     static class ProxyHandler extends SimpleChannelInboundHandler<FullHttpRequest>{
-        IRegistry registry;
-        public ProxyHandler(IRegistry registry){
-            this.registry = registry;
+        ProxyService proxyService = null;
+        public ProxyHandler(ProxyService proxyService){
+            this.proxyService = proxyService;
         }
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-            ProxyService proxyService = new ProxyService(registry,ctx);
-            proxyService.start(msg);
+
+            proxyService.start(msg,ctx);
         }
     }
 }

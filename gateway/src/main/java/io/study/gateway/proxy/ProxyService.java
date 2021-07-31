@@ -12,6 +12,7 @@ import io.study.gateway.config.ProxyConfig;
 
 import io.study.gateway.interceptor.IFilter;
 
+import io.study.gateway.interceptor.impl.DefaultFilterChain;
 import io.study.gateway.invoker.ProxyInvoker;
 import io.study.gateway.registry.IRegistry;
 import org.apache.commons.lang.StringUtils;
@@ -23,23 +24,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProxyService {
     static final Logger logger = LoggerFactory.getLogger(ProxyService.class);
-    ChannelHandlerContext serverCtx;
-    IRegistry registry;
+     IRegistry registry;
 
     ProxyFactory factory = new ProxyFactory();
 
-    List<IFilter> filters = new ArrayList<>();
+    List<IFilter> filters = new CopyOnWriteArrayList<>();
 
-    public ProxyService(IRegistry registry,ChannelHandlerContext serverCtx) {
-        this.serverCtx = serverCtx;
+
+
+    public ProxyService(IRegistry registry) {
+
         this.registry = registry;
     }
 
-    void notFound() {
+    void notFound(ChannelHandlerContext serverCtx) {
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH,0);
         serverCtx.writeAndFlush(response).addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
@@ -51,19 +55,21 @@ public class ProxyService {
     }
 
 
-
+    public void addFilter(IFilter filter){
+        filters.add(filter);
+    }
     /**
      * 过滤并执行代理
      *
      * @param request
      */
-    public void start(FullHttpRequest request) {
+    public void start(FullHttpRequest request,ChannelHandlerContext serverCtx) {
         ProxyContext proxyContext = new ProxyContext();
         proxyContext.setRequest(request.copy());
 
         String uri = proxyContext.getRequest().uri();
         if (StringUtils.isEmpty(uri)) {
-            notFound();
+            notFound(serverCtx);
             return;
         }
         String firstPart = null,lastPart = null;
@@ -72,20 +78,22 @@ public class ProxyService {
             firstPart = StringHelper.firstPart(uri, '/');
         }
         if (StringUtils.isEmpty(firstPart)) {
-            notFound();
+            notFound(serverCtx);
             return;
         }
         ProxyConfig proxyConfig = registry.getConfig(firstPart);
 
         proxyContext.setProxyConfig(proxyConfig);
-        proxyContext.setServerCtx(this.serverCtx);
+        proxyContext.setServerCtx(serverCtx);
 
         proxyContext.setRequest(proxyContext.getRequest());
-        for (IFilter filter : filters) {
-            filter.filter(proxyContext);
-        }
-        ProxyInvoker invoker = factory.createProxyInvoker(proxyContext);
-        invoker.invoke(proxyContext);
+        DefaultFilterChain filterChain = new DefaultFilterChain(filters,context->{
+            ProxyInvoker invoker = factory.createProxyInvoker(proxyContext);
+             invoker.invoke(proxyContext);
+            return null;
+        });
+        filterChain.doFilter(proxyContext);
+
         //限流
         //鉴权
         //协议转换
