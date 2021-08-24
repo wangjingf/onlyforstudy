@@ -11,9 +11,9 @@ import java.net.SocketAddress;
 public class ProxyContext {
     ChannelHandlerContext serverCtx;
     ProxyConfig proxyConfig;
-    FullHttpRequest request = null;
-    String domain;
-    String path;
+    // 取消意味着消息不处理
+    boolean canceled;
+
     public ChannelFuture writeAndFlush(Object response){
        return serverCtx.writeAndFlush(response);
     }
@@ -28,24 +28,7 @@ public class ProxyContext {
         this.proxyConfig = proxyConfig;
     }
 
-    public FullHttpRequest getRequest() {
-        return request;
-    }
 
-    public void setRequest(FullHttpRequest request) {
-        this.request = request;
-        String uri = request.uri();
-        if(uri.startsWith("/")){
-            uri = uri.substring(1);
-        }
-        int slashIndex = uri.indexOf("/");
-        if(slashIndex == -1){
-            domain = uri;
-        }else{
-            domain = uri.substring(0,slashIndex);
-            path = uri.substring(slashIndex);
-        }
-    }
 
     public ChannelHandlerContext getServerCtx() {
         return serverCtx;
@@ -55,11 +38,11 @@ public class ProxyContext {
         this.serverCtx = serverCtx;
     }
 
-    public String getDomain() {
-        return domain;
+    public boolean isCanceled() {
+        return canceled;
     }
 
-    public String getPath() {
-        return path;
+    public void cancel(boolean canceled) {
+        this.canceled = canceled;
     }
 }

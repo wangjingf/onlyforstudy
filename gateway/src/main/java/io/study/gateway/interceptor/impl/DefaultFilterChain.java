@@ -1,10 +1,15 @@
 package io.study.gateway.interceptor.impl;
 
 
+import io.netty.util.concurrent.Promise;
 import io.study.gateway.interceptor.IFilter;
 import io.study.gateway.interceptor.IFilterChain;
+import io.study.gateway.message.http.HttpResponseInfo;
 import io.study.gateway.proxy.ProxyContext;
+import io.study.gateway.proxy.StreamContext;
+import org.apache.http.HttpResponse;
 
+import javax.xml.ws.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +24,18 @@ public class DefaultFilterChain implements IFilterChain {
         this.callback = callback;
     }
     @Override
-    public void doFilter(ProxyContext context) {
+    public Promise<HttpResponseInfo> doFilter(StreamContext context) {
         if(pos >=filters.size()){
-            callback.apply(context);
+            if(callback != null){
+                callback.apply(context);
+            }
+            Promise promise = context.getFromChannel().newPromise();
+            promise.setSuccess(context.getResponse());
+            return promise;
         }else{
             IFilter filter = filters.get(pos);
             pos++;
-            filter.filter(context,this);
+            return filter.filter(context,this);
         }
     }
 }

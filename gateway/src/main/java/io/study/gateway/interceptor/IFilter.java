@@ -1,11 +1,22 @@
 package io.study.gateway.interceptor;
 
 
-import io.study.gateway.proxy.ProxyContext;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.util.concurrent.Promise;
+import io.study.gateway.message.http.HttpMessageInfo;
+import io.study.gateway.message.http.HttpResponseInfo;
+import io.study.gateway.proxy.StreamContext;
+import org.apache.http.HttpResponse;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface IFilter {
-    public void filter(ProxyContext context, IFilterChain chain);
+   // 获取filter的名称，方便调试呢
+   default String name(){
+      return this.getClass().getSimpleName();
+   }
+   public Promise<HttpResponseInfo> filter(StreamContext context, IFilterChain filterChain);
+
 }

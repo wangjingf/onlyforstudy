@@ -25,4 +25,9 @@ public class HttpProxyInvoker implements ProxyInvoker {
     public String getUrl() {
         return address.toString();
     }
+
+    @Override
+    public SocketAddress getAddress() {
+        return null;
+    }
 }
