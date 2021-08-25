@@ -6,7 +6,7 @@ import com.codahale.metrics.MetricRegistry;
 public class StatService {
     MetricRegistry metricRegistry = new MetricRegistry();
 
-   public Meter newMeter(){
+   public Meter newMeter(String clientName){
        Meter meter1 = new Meter();
        metricRegistry.register("meter1", meter1);
 

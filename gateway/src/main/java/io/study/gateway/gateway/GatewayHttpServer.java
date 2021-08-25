@@ -10,8 +10,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import io.study.gateway.proxy.ProxyService;
-import io.study.gateway.registry.IRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,14 +1,19 @@
 package io.study.gateway.config;
 
+import io.study.gateway.balance.BalancePolicy;
+import io.study.gateway.proxy.ProxyProtocol;
+
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ApiConfig {
+    BalancePolicy policy;
+    ProxyProtocol proxyProtocol;
     List<HostConfig> targetAddress  = new CopyOnWriteArrayList<>();
-    List<HostConfig> activeAddresses = new CopyOnWriteArrayList<>();
     String srcUri;
     String destUri;
+    int timeout;
     //每秒限流多少，为空时不限流
     Integer limit;
 
@@ -44,11 +49,27 @@ public class ApiConfig {
         this.targetAddress = targetAddress;
     }
 
-    public List<HostConfig> getActiveAddresses() {
-        return activeAddresses;
+    public int getTimeout() {
+        return timeout;
     }
 
-    public void setActiveAddresses(List<HostConfig> activeAddresses) {
-        this.activeAddresses = activeAddresses;
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public BalancePolicy getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy(BalancePolicy policy) {
+        this.policy = policy;
+    }
+
+    public ProxyProtocol getProxyProtocol() {
+        return proxyProtocol;
+    }
+
+    public void setProxyProtocol(ProxyProtocol proxyProtocol) {
+        this.proxyProtocol = proxyProtocol;
     }
 }

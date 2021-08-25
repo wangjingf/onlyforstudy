@@ -8,7 +8,7 @@ import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponseDecoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.study.gateway.transport.HttpTransport;
+
 
 import java.net.SocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
