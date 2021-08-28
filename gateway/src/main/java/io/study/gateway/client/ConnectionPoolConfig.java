@@ -8,8 +8,9 @@ public class ConnectionPoolConfig {
     Integer tcpReceiveBufferSize;
     Integer nettyWriteBufferHighWaterMark;
     Integer nettyWriteBufferLowWaterMark;
-    boolean nettyAutoRead;
-    int maxConnectionCount = 20;
+    boolean nettyAutoRead = true;
+    int maxConnectionCount = 50;
+    int coreConnectionCount = 20;
 
     public Integer getConnectTimeout() {
         return connectTimeout;
@@ -81,5 +82,13 @@ public class ConnectionPoolConfig {
 
     public void setMaxConnectionCount(int maxConnectionCount) {
         this.maxConnectionCount = maxConnectionCount;
+    }
+
+    public int getCoreConnectionCount() {
+        return coreConnectionCount;
+    }
+
+    public void setCoreConnectionCount(int coreConnectionCount) {
+        this.coreConnectionCount = coreConnectionCount;
     }
 }

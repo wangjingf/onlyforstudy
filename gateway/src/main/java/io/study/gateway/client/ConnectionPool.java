@@ -4,8 +4,12 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Promise;
+import io.study.gateway.channel.OriginChannelInitializer;
+import io.study.gateway.config.GatewaySetting;
 import io.study.gateway.proxy.ProxyEndpoint;
 import io.study.gateway.proxy.StreamContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
 import java.util.Deque;
@@ -23,27 +27,32 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ConnectionPool {
    Deque<Channel> idleChannels = new ConcurrentLinkedDeque<>();
    Deque<Channel> activeChannels = new ConcurrentLinkedDeque<>();
-   EventLoop eventLoop = null;
    int coreConnectionSize;
    int maxConnectionSize;
-   ChannelInitializer channelInitializer;
+    OriginChannelInitializer channelInitializer;
+    static final Logger logger = LoggerFactory.getLogger(ConnectionPool.class);
    ReentrantLock mainLock = new ReentrantLock();
    AtomicInteger creatingCount = new AtomicInteger(0);
    AtomicBoolean active = new AtomicBoolean(true);
-    public ConnectionPool(ConnectionPoolConfig poolConfig,int coreSize,int maxConnectionSize){
+    public ConnectionPool(GatewaySetting gatewaySetting,ConnectionPoolConfig poolConfig, int coreSize, int maxConnectionSize){
         this.connPoolConfig = poolConfig;
         this.coreConnectionSize = coreSize;
         this.maxConnectionSize = maxConnectionSize;
+        channelInitializer = new OriginChannelInitializer(gatewaySetting);
     }
    ConnectionPoolConfig connPoolConfig;
    public Promise<PooledConnection> getActiveChannel(EventLoop eventLoop, StreamContext context) {
+       logger.info("connectionPool.begin_get_active_channel:idleSize={}",idleChannels.size());
        Channel channel  = null;
        Promise<PooledConnection> promise = eventLoop.newPromise();
        while ((channel = idleChannels.poll() )!= null){ // 移除连接
             if(isValidChannel(channel)){
+                logger.info("connectionPool.get_active_channel:uri={},address={}",context.getRequest().getRequest().uri(),channel.localAddress());
                 promise.setSuccess(new PooledConnection(this,channel));
                 return promise;
             }else{
+                logger.info("connectionPool.release_invalid_channel:url={},channel={}",context.getRequest().getRequest().uri(),channel.localAddress());
+                activeChannels.remove(channel);
                 channel.close();
             }
        }
@@ -52,10 +61,11 @@ public class ConnectionPool {
        if(idleCount + activeCount > connPoolConfig.getMaxConnectionCount()){
            promise.setFailure(new RuntimeException("connection overflow"));
        }
-       tryMakeNewConnection(promise,context);
+       tryMakeNewConnection(eventLoop,promise,context);
        return promise;
    }
-   public void tryMakeNewConnection(Promise<PooledConnection> promise,StreamContext context){
+   public void tryMakeNewConnection(EventLoop eventLoop,Promise<PooledConnection> promise,StreamContext context){
+       logger.info("connectionPool.try_make_new_connection:uri={},address={}",context.getRequest().getRequest().uri(),context.getTargetAddress());
        SocketAddress targetAddress = context.getTargetAddress();
        final Bootstrap bootstrap = new Bootstrap()
                .channel(NioSocketChannel.class)
@@ -76,10 +86,12 @@ public class ConnectionPool {
            @Override
            public void operationComplete(ChannelFuture future) throws Exception {
                if(future.isSuccess()){
+                   logger.info("connectionPool.make_new_connection_success:uri={},address={}",context.getRequest().getRequest().uri(),context.getTargetAddress());
                    activeChannels.add(future.channel());
                    createConnection(future,targetAddress,promise);
 
                }else{
+                   logger.error("connectionPool.make_new_connection_failure:uri={},address={}",context.getRequest().getRequest().uri(),context.getTargetAddress(),future.cause());
                    promise.setFailure(future.cause());
                }
                creatingCount.decrementAndGet();
@@ -105,8 +117,12 @@ public class ConnectionPool {
        return this.idleChannels.size() > this.coreConnectionSize;
     }
     public void passivate(Channel channel,boolean broken){
+        logger.info("connectionPool.passivate_channel:channel={},broken={}",channel.localAddress(),broken);
+        activeChannels.remove(channel);
        if(broken || isIdleFull() || isDestroying()){
+
            channel.close();
+           return;
        }
         mainLock.lock();
        try{
@@ -119,12 +135,12 @@ public class ConnectionPool {
        }finally {
           mainLock.unlock();
        }
-
     }
     public boolean isDestroying(){
-        return active.get();
+        return !active.get();
     }
     public void destroy(){
+        logger.info("connectionPool.destroy_pool");
         if(active.compareAndSet(true,false)){
             for (Channel activeChannel : activeChannels) {
                 activeChannel.close();

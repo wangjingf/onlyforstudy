@@ -1,10 +1,8 @@
 package io.study.gateway.balance.impl;
 
 import io.study.gateway.balance.AbstractLoadBalance;
-import io.study.gateway.balance.ILoadBalance;
-import io.study.gateway.balance.LoadBalanceContext;
-import io.study.gateway.invoker.INode;
-import io.study.gateway.invoker.ProxyInvoker;
+import io.study.gateway.config.INode;
+
 
 import java.util.List;
 import java.util.Map;
@@ -33,11 +31,12 @@ public class LeastActiveLoadBalance extends AbstractLoadBalance {
             }
         }
         // 这样设计可能也不合理
-        synchronized (selectedInvoker.getUrl()){
+        /*synchronized (selectedInvoker.getUrl()){
             activeCnt.put(selectedInvoker, leastCnt+1);
-        }
+        }*/
         return selectedInvoker;
     }
+
 
 
 }

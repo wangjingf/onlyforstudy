@@ -15,10 +15,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FilterLoader {
     ArrayList<IFilter> filters  = new ArrayList<>();
-     public void addList(IFilter filter){
+     public void addLast(IFilter filter){
          assert  filter != null;
          filters.add(filter);
      }
+    public void addFirst(IFilter filter){
+        assert  filter != null;
+        filters.add(0,filter);
+    }
      int findIndexByKey(String name){
          for (int i = 0; i < filters.size(); i++) {
              if(name.equals(filters.get(i).name())){

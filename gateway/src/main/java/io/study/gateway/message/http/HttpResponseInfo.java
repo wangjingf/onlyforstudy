@@ -1,12 +1,13 @@
 package io.study.gateway.message.http;
 
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
 
 public class HttpResponseInfo {
     HttpResponse response;
     boolean isSuccess;
     Throwable e;
-
+    HttpContent content;
     public HttpResponse getResponse() {
         return response;
     }
@@ -29,5 +30,13 @@ public class HttpResponseInfo {
 
     public void setE(Throwable e) {
         this.e = e;
+    }
+
+    public HttpContent getContent() {
+        return content;
+    }
+
+    public void setContent(HttpContent content) {
+        this.content = content;
     }
 }

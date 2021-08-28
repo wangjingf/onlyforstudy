@@ -1,11 +1,16 @@
 package io.study.gateway.registry;
 
 import io.study.gateway.channel.ChannelManager;
-import io.study.gateway.invoker.INode;
+import io.study.gateway.config.INode;
 
 import java.util.List;
 
 public class ZookeeperServerList implements IServerList{
+    public List<INode> servers;
+    public ZookeeperServerList(List<INode> servers) {
+        this.servers = servers;
+    }
+
     @Override
     public void start() {
 
@@ -23,12 +28,12 @@ public class ZookeeperServerList implements IServerList{
 
     @Override
     public List<INode> getServers() {
-        return null;
+        return servers;
     }
 
     @Override
     public List<INode> getActiveServers() {
-        return null;
+        return servers;
     }
 
     @Override
@@ -41,8 +46,14 @@ public class ZookeeperServerList implements IServerList{
 
     }
 
+
     @Override
     public void addEventListener(IServerUpdateListener listener) {
 
+    }
+    static class PingTask{
+        public boolean isHealth(){
+                return true;
+        }
     }
 }

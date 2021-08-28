@@ -1,7 +1,7 @@
 package io.study.gateway.registry;
 
 import io.study.gateway.channel.ChannelManager;
-import io.study.gateway.invoker.INode;
+import io.study.gateway.config.INode;
 
 import java.util.List;
 

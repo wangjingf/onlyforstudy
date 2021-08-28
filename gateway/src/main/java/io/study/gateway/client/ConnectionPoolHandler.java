@@ -8,16 +8,22 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
+import io.study.gateway.common.GatewayConstant;
+import io.study.gateway.proxy.ProxyEndpoint;
+import io.study.gateway.proxy.StreamContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConnectionPoolHandler extends ChannelInboundHandlerAdapter {
+
+    public ConnectionPoolHandler(){
+    }
     static final Logger logger = LoggerFactory.getLogger(ConnectionPoolHandler.class);
     static final AttributeKey RESPONSE_KEY = AttributeKey.valueOf("http_response");
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if(evt instanceof IdleStateEvent){
-            logger.info("gateway.close_connection_because_idle");
+            logger.info("connectionPool.close_connection_because_idle");
             closeConnection(ctx,true);
         }
         super.userEventTriggered(ctx, evt);
@@ -31,17 +37,18 @@ public class ConnectionPoolHandler extends ChannelInboundHandlerAdapter {
         if(msg instanceof LastHttpContent){
             HttpResponse response = (HttpResponse) ctx.channel().attr(RESPONSE_KEY).get();
             if(isCloseHeader(response)){
+                logger.info("connectionPool.close_channel_because_close_header");
                 closeConnection(ctx,true);
             }else{
+                logger.info("connectionPool.release_channel_on_request_end");
                 closeConnection(ctx,false);
             }
         }
-        super.channelRead(ctx, msg);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
+        logger.error("connectionPool.close_channel_because_exception",cause);
         closeConnection(ctx,true);
     }
 
@@ -55,6 +62,13 @@ public class ConnectionPoolHandler extends ChannelInboundHandlerAdapter {
      * @param ctx
      */
     void closeConnection(ChannelHandlerContext ctx,boolean forceClose){
-        ctx.close();
+        ProxyEndpoint endpoint = (ProxyEndpoint) ctx.channel().attr(GatewayConstant.KEY_PROXY_ENDPOINT).get();
+        StreamContext streamContext = endpoint.getContext();
+        if(forceClose){
+            streamContext.getToChannel().close();
+        }else{
+            streamContext.getToChannel().passivate();
+
+        }
     }
 }

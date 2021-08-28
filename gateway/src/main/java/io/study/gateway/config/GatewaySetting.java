@@ -1,5 +1,7 @@
 package io.study.gateway.config;
 
+import io.study.gateway.client.ConnectionPoolConfig;
+
 import java.net.InetSocketAddress;
 
 public class GatewaySetting {
@@ -8,7 +10,9 @@ public class GatewaySetting {
     int sslPort = 9999;
 
     int clientIdleTimeout = 60000;
-
+    /**
+     * 服务的连接超时事件：单位是毫秒
+     */
     int serverIdleTimeout = 60000;
 
     int connectTimeout = 30000;
@@ -34,6 +38,7 @@ public class GatewaySetting {
     int httpMaxHeaderSize = 8192;
     int httpMaxChunkSize = 8192;
 
+    ConnectionPoolConfig poolConfig = null;
 
 
     public int getIoRatio() {
@@ -199,5 +204,13 @@ public class GatewaySetting {
 
     public void setProxyToServerWorkerThreads(int proxyToServerWorkerThreads) {
         this.proxyToServerWorkerThreads = proxyToServerWorkerThreads;
+    }
+
+    public ConnectionPoolConfig getPoolConfig() {
+        return poolConfig;
+    }
+
+    public void setPoolConfig(ConnectionPoolConfig poolConfig) {
+        this.poolConfig = poolConfig;
     }
 }

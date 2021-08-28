@@ -3,14 +3,13 @@ package io.study.gateway.config;
 import io.study.gateway.balance.BalancePolicy;
 import io.study.gateway.proxy.ProxyProtocol;
 
-import java.net.SocketAddress;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ApiConfig {
     BalancePolicy policy;
     ProxyProtocol proxyProtocol;
-    List<HostConfig> targetAddress  = new CopyOnWriteArrayList<>();
+    List<INode> servers = new CopyOnWriteArrayList<>();
     String srcUri;
     String destUri;
     int timeout;
@@ -41,12 +40,12 @@ public class ApiConfig {
         this.limit = limit;
     }
 
-    public List<HostConfig> getTargetAddress() {
-        return targetAddress;
+    public List<INode> getServers() {
+        return servers;
     }
 
-    public void setTargetAddress(List<HostConfig> targetAddress) {
-        this.targetAddress = targetAddress;
+    public void setServers(List<INode> servers) {
+        this.servers = servers;
     }
 
     public int getTimeout() {

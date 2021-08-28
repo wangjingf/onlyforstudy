@@ -3,21 +3,22 @@ package io.study.gateway.proxy;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
+import io.study.gateway.client.PooledConnection;
 import io.study.gateway.message.http.HttpMessageInfo;
 
 import java.net.SocketAddress;
 
 public class StreamContext {
-    Channel toChannel;
+    PooledConnection toChannel;
     Channel fromChannel;
     SocketAddress targetAddress;
     HttpMessageInfo request;
     HttpResponse response;
-    public Channel getToChannel() {
+    public PooledConnection getToChannel() {
         return toChannel;
     }
 
-    public void setToChannel(Channel toChannel) {
+    public void setToChannel(PooledConnection toChannel) {
         this.toChannel = toChannel;
     }
 

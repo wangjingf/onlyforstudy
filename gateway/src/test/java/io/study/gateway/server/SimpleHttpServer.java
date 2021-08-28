@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 import java.util.Map;
@@ -31,13 +32,14 @@ public class SimpleHttpServer {
                         ch.pipeline().addLast("http-aggregator",new HttpObjectAggregator(65535));
                         ch.pipeline().addLast("http-encoder",new HttpResponseEncoder());
                         ch.pipeline().addLast("http-chunked",new ChunkedWriteHandler());
+                        ch.pipeline().addLast("loggerHandler",new LoggingHandler());
                         ch.pipeline().addLast("fileServerHandler",new HttpRequestHandler(responseMap));
 
                     }
                 });
         try {
             ChannelFuture future = server.bind(port).sync();
-            System.out.println("文件服务器启动了。。。。。。");
+            System.out.println("文件服务器启动了:port="+port);
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block

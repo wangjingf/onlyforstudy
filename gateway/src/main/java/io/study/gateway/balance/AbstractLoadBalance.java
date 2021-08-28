@@ -1,6 +1,7 @@
 package io.study.gateway.balance;
 
-import io.study.gateway.invoker.INode;
+import com.jd.vd.common.lang.Guard;
+import io.study.gateway.config.INode;
 import io.study.gateway.invoker.ProxyInvoker;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.List;
 public  abstract  class AbstractLoadBalance implements ILoadBalance {
     @Override
     public INode select(List<INode> invokers) {
-        assert invokers.size() > 0;
+
+        Guard.assertTrue(invokers.size() > 0,"balance.err_invokers_size_is_not_allow_empty");
         if(invokers.size() > 1){
             return doSelect(invokers);
         }

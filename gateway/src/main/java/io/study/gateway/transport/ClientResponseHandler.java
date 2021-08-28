@@ -17,6 +17,7 @@ import io.study.gateway.client.ClientTimeoutHandler;
 import io.study.gateway.client.CloseOnIdleHandler;
 import io.study.gateway.client.ConnectionPool;
 import io.study.gateway.client.PooledConnection;
+import io.study.gateway.common.GatewayConstant;
 import io.study.gateway.proxy.ProxyContext;
 import io.study.gateway.proxy.ProxyEndpoint;
 import org.slf4j.Logger;
@@ -38,23 +39,27 @@ public  class ClientResponseHandler extends ChannelInboundHandlerAdapter {
             }
         }
     };
-     ProxyEndpoint endpoint;
     private ArrayList<HttpContent> contents = new ArrayList<>();
-    public   ClientResponseHandler(ProxyEndpoint endpoint){
-        this.endpoint = endpoint;
+    public   ClientResponseHandler(){
     }
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-
+        logger.info("proxyClient.channelActive");
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ProxyEndpoint endpoint = (ProxyEndpoint) ctx.channel().attr(GatewayConstant.KEY_PROXY_ENDPOINT).get();
         //super.channelRead(ctx, msg);
-        logger.info("channel read msg::"+msg);
-        if (msg instanceof HttpResponse) {
+        logger.info("proxyClient.read_message_success:msg={}",msg);
+        //if (msg instanceof HttpResponse) {
+        if(msg instanceof HttpResponse){
             endpoint.responseFromOrigin((HttpResponse) msg);
+        }else if(msg instanceof HttpContent){
+            endpoint.responseFromOrigin((HttpContent) msg);
         }
+        ctx.fireChannelRead(msg);
+       // }
     }
 
     @Override
