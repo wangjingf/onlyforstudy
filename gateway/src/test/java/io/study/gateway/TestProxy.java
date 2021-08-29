@@ -1,5 +1,6 @@
 package io.study.gateway;
 
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.concurrent.Promise;
 import io.study.gateway.balance.BalancePolicy;
 import io.study.gateway.base.BaseTestCase;
@@ -8,6 +9,8 @@ import io.study.gateway.config.*;
 import io.study.gateway.interceptor.FilterLoader;
 import io.study.gateway.interceptor.IFilter;
 import io.study.gateway.interceptor.IFilterChain;
+import io.study.gateway.interceptor.impl.AuthFilter;
+import io.study.gateway.interceptor.impl.StatFilter;
 import io.study.gateway.message.http.HttpResponseInfo;
 import io.study.gateway.proxy.ProxyFilter;
 import io.study.gateway.proxy.ProxyProtocol;
@@ -68,6 +71,8 @@ public class TestProxy extends BaseTestCase {
         GatewaySetting gatewaySetting = gatewaySetting();
 
         ProxyFilter proxyFilter = new ProxyFilter(gatewaySetting,poolConfig,registry);
+         StatFilter statFilter = new StatFilter(registry);
+        filterLoader.addLast(statFilter);
         filterLoader.addLast(proxyFilter);
 
         proxyServer =  new ProxyServer(registry,gatewaySetting,filterLoader);
@@ -105,6 +110,7 @@ public class TestProxy extends BaseTestCase {
 
             }
         }).start();
+        registry.start();
         super.setUp();
     }
     final String PROXY_JSON_URL =  "http://localhost:5121/com.wjf.proxy/json";
@@ -136,7 +142,7 @@ public class TestProxy extends BaseTestCase {
         return new IFilter() {
 
             @Override
-            public Promise<HttpResponseInfo> filter(StreamContext context, IFilterChain filterChain) {
+            public Promise<FullHttpResponse> filter(StreamContext context, IFilterChain filterChain) {
                 return null;
             }
         };

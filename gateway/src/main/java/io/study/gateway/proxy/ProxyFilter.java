@@ -3,6 +3,7 @@ package io.study.gateway.proxy;
 import com.jd.vd.common.exception.BizException;
 import com.jd.vd.common.lang.Guard;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
@@ -42,7 +43,7 @@ public class ProxyFilter implements IFilter {
         this.registry = registry;
     }
     @Override
-    public Promise<HttpResponseInfo> filter( StreamContext context, IFilterChain filterChain) {
+    public Promise<FullHttpResponse> filter(StreamContext context, IFilterChain filterChain) {
         String uri = context.getRequest().uri();
         ApiConfig config = registry.getConfig(uri);
         logger.info("proxyfilter.receive_request:uri={}",uri);

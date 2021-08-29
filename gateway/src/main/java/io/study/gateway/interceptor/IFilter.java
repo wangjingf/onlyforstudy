@@ -1,6 +1,7 @@
 package io.study.gateway.interceptor;
 
 
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.concurrent.Promise;
@@ -20,6 +21,6 @@ public interface IFilter {
    default String name(){
       return this.getClass().getSimpleName();
    }
-   public Promise<HttpResponseInfo> filter(StreamContext context, IFilterChain filterChain);
+   public Promise<FullHttpResponse> filter(StreamContext context, IFilterChain filterChain);
 
 }

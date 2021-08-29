@@ -1,6 +1,7 @@
 package io.study.gateway.interceptor.impl;
 
 
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.concurrent.Promise;
 import io.study.gateway.interceptor.IFilter;
 import io.study.gateway.interceptor.IFilterChain;
@@ -20,7 +21,7 @@ public class DefaultFilterChain implements IFilterChain {
         this.callback = callback;
     }
     @Override
-    public Promise<HttpResponseInfo> doFilter(StreamContext context) {
+    public Promise<FullHttpResponse> doFilter(StreamContext context) {
         if(pos >=filters.size()){
             if(callback != null){
                 callback.apply(context);
