@@ -47,11 +47,11 @@ public class ConnectionPool {
        Promise<PooledConnection> promise = eventLoop.newPromise();
        while ((channel = idleChannels.poll() )!= null){ // 移除连接
             if(isValidChannel(channel)){
-                logger.info("connectionPool.get_active_channel:uri={},address={}",context.getRequest().getRequest().uri(),channel.localAddress());
+                logger.info("connectionPool.get_active_channel:uri={},address={}",context.getRequest().uri(),channel.localAddress());
                 promise.setSuccess(new PooledConnection(this,channel));
                 return promise;
             }else{
-                logger.info("connectionPool.release_invalid_channel:url={},channel={}",context.getRequest().getRequest().uri(),channel.localAddress());
+                logger.info("connectionPool.release_invalid_channel:url={},channel={}",context.getRequest().uri(),channel.localAddress());
                 activeChannels.remove(channel);
                 channel.close();
             }
@@ -65,7 +65,7 @@ public class ConnectionPool {
        return promise;
    }
    public void tryMakeNewConnection(EventLoop eventLoop,Promise<PooledConnection> promise,StreamContext context){
-       logger.info("connectionPool.try_make_new_connection:uri={},address={}",context.getRequest().getRequest().uri(),context.getTargetAddress());
+       logger.info("connectionPool.try_make_new_connection:uri={},address={}",context.getRequest().uri(),context.getTargetAddress());
        SocketAddress targetAddress = context.getTargetAddress();
        final Bootstrap bootstrap = new Bootstrap()
                .channel(NioSocketChannel.class)
@@ -86,12 +86,12 @@ public class ConnectionPool {
            @Override
            public void operationComplete(ChannelFuture future) throws Exception {
                if(future.isSuccess()){
-                   logger.info("connectionPool.make_new_connection_success:uri={},address={}",context.getRequest().getRequest().uri(),context.getTargetAddress());
+                   logger.info("connectionPool.make_new_connection_success:uri={},address={}",context.getRequest().uri(),context.getTargetAddress());
                    activeChannels.add(future.channel());
                    createConnection(future,targetAddress,promise);
 
                }else{
-                   logger.error("connectionPool.make_new_connection_failure:uri={},address={}",context.getRequest().getRequest().uri(),context.getTargetAddress(),future.cause());
+                   logger.error("connectionPool.make_new_connection_failure:uri={},address={}",context.getRequest().uri(),context.getTargetAddress(),future.cause());
                    promise.setFailure(future.cause());
                }
                creatingCount.decrementAndGet();

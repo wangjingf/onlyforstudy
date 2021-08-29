@@ -4,10 +4,7 @@ package io.study.gateway.interceptor;
 import com.jd.vd.common.exception.BizException;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * filters数量刚才是固定的，只能有这么多，动态加的一下配置在filters里再做处理吧，可以再进行 二级封装,非线程安全
@@ -31,7 +28,7 @@ public class FilterLoader {
          }
          return -1;
      }
-     public void addBefore(String name,IFilter filter){
+     public void addBefore(String name, IFilter filter){
          assert  name != null;
          assert  filter != null;
          int index =  findIndexByKey(name);
@@ -40,7 +37,7 @@ public class FilterLoader {
          }
          filters.add(index,filter);
      }
-    public void addAfter(String name,IFilter filter){
+    public void addAfter(String name, IFilter filter){
         assert  name != null;
         assert  filter != null;
         int index =  findIndexByKey(name);

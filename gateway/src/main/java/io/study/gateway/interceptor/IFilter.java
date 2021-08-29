@@ -12,6 +12,9 @@ import org.apache.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * 消息不进行聚合操作
+ */
 public interface IFilter {
    // 获取filter的名称，方便调试呢
    default String name(){

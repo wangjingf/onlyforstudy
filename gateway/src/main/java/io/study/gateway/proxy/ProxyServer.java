@@ -1,8 +1,5 @@
 package io.study.gateway.proxy;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-import com.jd.vd.common.util.StringHelper;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -13,19 +10,14 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.AttributeKey;
 import io.study.gateway.channel.ProtocolMessageAggregator;
 import io.study.gateway.client.CloseOnIdleHandler;
 import io.study.gateway.common.GatewayConstant;
 import io.study.gateway.config.GatewaySetting;
-import io.study.gateway.config.ProxyConfig;
 import io.study.gateway.interceptor.FilterLoader;
-import io.study.gateway.interceptor.IFilter;
 import io.study.gateway.interceptor.impl.DefaultFilterChain;
-import io.study.gateway.invoker.ProxyInvoker;
 import io.study.gateway.message.http.HttpMessageInfo;
 import io.study.gateway.registry.IRegistry;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,10 +50,10 @@ public class ProxyServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast("http-decoder",new HttpRequestDecoder());
-                        //ch.pipeline().addLast("http-aggregator",new HttpObjectAggregator(65535));
+                        ch.pipeline().addLast("http-aggregator",new HttpObjectAggregator(65535));
 
                         ch.pipeline().addLast("httpEncoder",new HttpResponseEncoder());
-                        ch.pipeline().addLast("protocolAggregator",new ProtocolMessageAggregator(gatewaySetting.getHttpMaxChunkSize(),registry));
+                        //ch.pipeline().addLast("protocolAggregator",new ProtocolMessageAggregator(gatewaySetting.getHttpMaxChunkSize(),registry));
                         ch.pipeline().addLast("httpChunked",new ChunkedWriteHandler());
                         ch.pipeline().addLast("log",new LoggingHandler(LogLevel.TRACE));
                         ch.pipeline().addLast("idleHandler",new IdleStateHandler(0,0,gatewaySetting.getServerIdleTimeout()/1000));
@@ -109,9 +101,9 @@ public class ProxyServer {
             ProxyProtocol protocol = (ProxyProtocol) ctx.channel().attr(GatewayConstant.KEY_PROXY_PROTOCOL).get();
             StreamContext streamContext = new StreamContext();
             streamContext.setFromChannel(ctx.channel());
-            HttpMessageInfo request = new HttpMessageInfo();
+            FullHttpRequest request = (FullHttpRequest) msg;
             streamContext.setRequest(request);
-            if(ProxyProtocol.Rpc.equals(protocol)){
+           /* if(ProxyProtocol.Rpc.equals(protocol)){
                 request.setFull(true);
                 request.setRequest((FullHttpRequest) request);
                 filterChain.doFilter(streamContext);
@@ -124,8 +116,9 @@ public class ProxyServer {
                     request.setRequest((HttpRequest) httpRequest);
                     request.setContent((HttpContent) msg);
                 }
-                filterChain.doFilter(streamContext);
-            }
+
+            }*/
+            filterChain.doFilter(streamContext);
         }
 
         @Override

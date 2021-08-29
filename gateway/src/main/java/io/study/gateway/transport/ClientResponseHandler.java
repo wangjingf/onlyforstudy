@@ -53,11 +53,12 @@ public  class ClientResponseHandler extends ChannelInboundHandlerAdapter {
         //super.channelRead(ctx, msg);
         logger.info("proxyClient.read_message_success:msg={}",msg);
         //if (msg instanceof HttpResponse) {
-        if(msg instanceof HttpResponse){
-            endpoint.responseFromOrigin((HttpResponse) msg);
+        /*if(msg instanceof HttpResponse){
+
         }else if(msg instanceof HttpContent){
             endpoint.responseFromOrigin((HttpContent) msg);
-        }
+        }*/
+        endpoint.responseFromOrigin((FullHttpResponse) msg);
         ctx.fireChannelRead(msg);
        // }
     }

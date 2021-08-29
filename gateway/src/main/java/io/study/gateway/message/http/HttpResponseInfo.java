@@ -6,7 +6,7 @@ import io.netty.handler.codec.http.HttpResponse;
 public class HttpResponseInfo {
     HttpResponse response;
     boolean isSuccess;
-    Throwable e;
+    Throwable cause;
     HttpContent content;
     public HttpResponse getResponse() {
         return response;
@@ -24,12 +24,12 @@ public class HttpResponseInfo {
         isSuccess = success;
     }
 
-    public Throwable getE() {
-        return e;
+    public Throwable getCause() {
+        return cause;
     }
 
-    public void setE(Throwable e) {
-        this.e = e;
+    public void setCause(Throwable cause) {
+        this.cause = cause;
     }
 
     public HttpContent getContent() {

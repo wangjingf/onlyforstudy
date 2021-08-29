@@ -2,12 +2,12 @@ package io.study.gateway.proxy;
 
 import com.jd.vd.common.exception.BizException;
 import com.jd.vd.common.lang.Guard;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 import io.study.gateway.channel.ChannelManager;
 import io.study.gateway.client.ConnectionPoolConfig;
-import io.study.gateway.client.ConnectionPoolHandler;
 import io.study.gateway.client.PooledConnection;
 import io.study.gateway.common.GatewayConstant;
 import io.study.gateway.config.ApiConfig;
@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 
 public class ProxyFilter implements IFilter {
     IRegistry registry = null;
@@ -44,7 +43,7 @@ public class ProxyFilter implements IFilter {
     }
     @Override
     public Promise<HttpResponseInfo> filter( StreamContext context, IFilterChain filterChain) {
-        String uri = context.getRequest().getRequest().uri();
+        String uri = context.getRequest().uri();
         ApiConfig config = registry.getConfig(uri);
         logger.info("proxyfilter.receive_request:uri={}",uri);
         if(config == null){
@@ -53,7 +52,7 @@ public class ProxyFilter implements IFilter {
         Promise result = context.fromChannel.newPromise();
         channelManager = getOrCreateChannelManager(config);
         transformRequest(context,config);
-        logger.info("proxyfilter.transform_request:destUri={}",context.getRequest().getRequest().uri());
+        logger.info("proxyfilter.transform_request:destUri={}",context.getRequest().uri());
         ProxyEndpoint endpoint = new ProxyEndpoint(context,result);
         Promise<PooledConnection> connectionPromise = channelManager.acquire(context);
         if(connectionPromise.isDone() ){
@@ -90,12 +89,12 @@ public class ProxyFilter implements IFilter {
     }
 
     private void transformRequest(StreamContext context,ApiConfig config) {
-        HttpMessageInfo request = context.getRequest();
+        FullHttpRequest request = context.getRequest();
         String destUri = config.getDestUri();
         if(!destUri.startsWith("/")){
             destUri =  "/"+destUri;
         }
-        request.getRequest().setUri(destUri);
+        request.setUri(destUri);
     }
 
     private ChannelManager getOrCreateChannelManager(ApiConfig config) {

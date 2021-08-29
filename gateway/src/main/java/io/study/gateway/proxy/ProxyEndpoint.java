@@ -3,9 +3,7 @@ package io.study.gateway.proxy;
 import com.jd.vd.common.exception.BizException;
 import com.jd.vd.common.lang.Guard;
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.HttpObject;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.*;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
@@ -29,7 +27,7 @@ public class ProxyEndpoint {
     }
     private void writeReq(){
         logger.info("proxyEndpoint.write_request_to_server");
-        HttpMessageInfo request = context.getRequest();
+        FullHttpRequest request = context.getRequest();
         Channel toChannel = context.getToChannel().getChannel();
         GenericFutureListener futureListener = new GenericFutureListener<Future<? super Void>>() {
             @Override
@@ -40,11 +38,11 @@ public class ProxyEndpoint {
                 }
             }
         };
-        if(request.isFull()){
+        /*if(request.isFull()){*/
             Object req = transformToRpcReq(request);
             toChannel.writeAndFlush(req).addListener(futureListener);
 
-        }else{
+       /* }else{
             if(request.isHasContent()){
                 toChannel.write(request.getRequest());
                 toChannel.write(request.getContent()).addListener(futureListener);
@@ -52,7 +50,7 @@ public class ProxyEndpoint {
                 toChannel.writeAndFlush(request.getRequest()).addListener(futureListener);
             }
 
-        }
+        }*/
         toChannel.read();
     }
 
@@ -61,27 +59,28 @@ public class ProxyEndpoint {
      * @param request
      * @return
      */
-    private Object transformToRpcReq(HttpMessageInfo request) {
+    private Object transformToRpcReq(FullHttpRequest request) {
         return request;
     }
 
-    public void responseFromOrigin(HttpObject response){
+    public void responseFromOrigin(FullHttpResponse response){
         logger.info("proxyEndpoint.receive_client_response:response={}",response);
         if(response instanceof HttpResponse){
-            context.setResponse((HttpResponse) response);
+            context.setResponse( response);
         }
-        if(response instanceof LastHttpContent){
+       /* if(response instanceof LastHttpContent){
             LastHttpContent content = (LastHttpContent) response;
-        }
+        }*/
         Guard.assertTrue(context.getFromChannel().isActive(),"proxyEndpoint.err_from_channel_must_be_active:channel="+context.getFromChannel());
         context.getFromChannel().writeAndFlush(response).addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
                 if(!future.isSuccess()){
                     logger.error("proxyEndpoint.response_from_channel_error",future.cause());
+                    result.setFailure(future.cause());
                 }else{
                     logger.info("proxyEndpoint.write_response_success");
-                    //result.setSuccess(future.getNow());
+                    result.setSuccess(future.getNow());
                 }
             }
         });

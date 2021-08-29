@@ -3,6 +3,7 @@ package io.study.gateway.channel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponseDecoder;
 import io.netty.handler.logging.LoggingHandler;
@@ -21,6 +22,8 @@ public class OriginChannelInitializer extends ChannelInitializer {
     protected void initChannel(Channel ch) throws Exception {
         ch.pipeline().addLast("encoder", new HttpRequestEncoder());
         ch.pipeline().addLast("decoder",new HttpResponseDecoder());
+        ch.pipeline().addLast("http-aggregator",new HttpObjectAggregator(65535));
+
         ch.pipeline().addLast("loggingHandler",new LoggingHandler());
 
         //ch.pipeline().addLast("clientTimeoutHandler",new ClientTimeoutHandler());
