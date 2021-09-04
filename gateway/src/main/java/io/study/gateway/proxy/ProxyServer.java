@@ -14,33 +14,36 @@ import io.study.gateway.channel.ProtocolMessageAggregator;
 import io.study.gateway.client.CloseOnIdleHandler;
 import io.study.gateway.common.GatewayConstant;
 import io.study.gateway.config.GatewaySetting;
+import io.study.gateway.gateway.Gateway;
 import io.study.gateway.interceptor.FilterLoader;
 import io.study.gateway.interceptor.impl.DefaultFilterChain;
 import io.study.gateway.message.http.HttpMessageInfo;
 import io.study.gateway.registry.IRegistry;
+import io.study.gateway.stream.IStreamChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ProxyServer {
     GatewaySetting gatewaySetting;
     FilterLoader filterLoader = null;
     IRegistry registry;
-    public ProxyServer(IRegistry registry,GatewaySetting gatewaySetting,FilterLoader filterLoader){
-        this.gatewaySetting = gatewaySetting;
-        this.registry = registry;
-        this.filterLoader = filterLoader;
+    Gateway gateway = null;
+    public ProxyServer(Gateway gateway) {
+        this.gateway = gateway;
     }
 
 
-    public void start() throws InterruptedException{
+    public void start() throws InterruptedException {
         EventLoopGroup bossGroup = new NioEventLoopGroup();//accepterGroup
         EventLoopGroup workerGroup = new NioEventLoopGroup();//
-        ServerBootstrap server =  new ServerBootstrap();
+        ServerBootstrap server = new ServerBootstrap();
 
-        server.group(bossGroup, bossGroup)
-                .option(ChannelOption.SO_REUSEADDR,true)
-                .option(ChannelOption.SO_BACKLOG,1024)
-                .option(ChannelOption.AUTO_READ,true)
+        server.group(bossGroup, workerGroup)
+                .option(ChannelOption.SO_REUSEADDR, true)
+                .option(ChannelOption.SO_BACKLOG, 1024)
+                .option(ChannelOption.AUTO_READ, true)
                 .option(ChannelOption.SO_LINGER, -1)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true)
@@ -49,16 +52,16 @@ public class ProxyServer {
 
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast("http-decoder",new HttpRequestDecoder());
-                        ch.pipeline().addLast("http-aggregator",new HttpObjectAggregator(65535));
+                        ch.pipeline().addLast("http-decoder", new HttpRequestDecoder());
+                        ch.pipeline().addLast("http-aggregator", new HttpObjectAggregator(65535));
 
-                        ch.pipeline().addLast("httpEncoder",new HttpResponseEncoder());
+                        ch.pipeline().addLast("httpEncoder", new HttpResponseEncoder());
                         //ch.pipeline().addLast("protocolAggregator",new ProtocolMessageAggregator(gatewaySetting.getHttpMaxChunkSize(),registry));
-                        ch.pipeline().addLast("httpChunked",new ChunkedWriteHandler());
-                        ch.pipeline().addLast("log",new LoggingHandler(LogLevel.TRACE));
-                        ch.pipeline().addLast("idleHandler",new IdleStateHandler(0,0,gatewaySetting.getServerIdleTimeout()/1000));
-                        ch.pipeline().addLast("closeOnIdleHandler",new CloseOnIdleHandler());
-                        ch.pipeline().addLast("proxyHandler", new ProxyHandler(registry,filterLoader));
+                        ch.pipeline().addLast("httpChunked", new ChunkedWriteHandler());
+                        ch.pipeline().addLast("log", new LoggingHandler(LogLevel.TRACE));
+                        ch.pipeline().addLast("idleHandler", new IdleStateHandler(0, 0, gatewaySetting.getServerIdleTimeout() / 1000));
+                        ch.pipeline().addLast("closeOnIdleHandler", new CloseOnIdleHandler());
+                        ch.pipeline().addLast("proxyHandler", new ProxyHandler(gateway));
 
                     }
                 });
@@ -69,69 +72,9 @@ public class ProxyServer {
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }finally{
+        } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
-        }
-    }
-    void addFilters(){
-
-    }
-    /**
-     * // TODO: 2021/8/1   空闲的时候需要关闭channel
-     * @param pipeline
-     */
-    private void addTimeoutHandlers(ChannelPipeline pipeline) {
-
-    }
-    static class ProxyHandler extends ChannelInboundHandlerAdapter{
-        HttpRequest httpRequest = null;
-        IRegistry registry;
-        DefaultFilterChain filterChain = null;
-        GatewaySetting gatewaySetting;
-        static  final Logger logger = LoggerFactory.getLogger(ProxyHandler.class);
-        public ProxyHandler(IRegistry registry,FilterLoader filterLoader){
-
-            this.registry = registry;
-            filterChain = new DefaultFilterChain( filterLoader.getFilters(),null);
-        }
-        @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            logger.info("proxyHandler.receive_msg:msg={}",msg);
-            ProxyProtocol protocol = (ProxyProtocol) ctx.channel().attr(GatewayConstant.KEY_PROXY_PROTOCOL).get();
-            StreamContext streamContext = new StreamContext();
-            streamContext.setFromChannel(ctx.channel());
-            FullHttpRequest request = (FullHttpRequest) msg;
-            streamContext.setRequest(request);
-           /* if(ProxyProtocol.Rpc.equals(protocol)){
-                request.setFull(true);
-                request.setRequest((FullHttpRequest) request);
-                filterChain.doFilter(streamContext);
-            }else{
-                if (msg instanceof HttpRequest) {
-                    httpRequest = (HttpRequest) msg;
-                    request.setRequest((HttpRequest) httpRequest);
-
-                }else if(msg instanceof HttpContent){
-                    request.setRequest((HttpRequest) httpRequest);
-                    request.setContent((HttpContent) msg);
-                }
-
-            }*/
-            filterChain.doFilter(streamContext);
-        }
-
-        @Override
-        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-            //super.channelInactive(ctx);
-            logger.info("proxyHandler.channel_is_active");
-        }
-
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-            //super.exceptionCaught(ctx, cause);
-            logger.error("proxyHandler.exception_cause",cause);
-            ctx.close();
         }
     }
 }

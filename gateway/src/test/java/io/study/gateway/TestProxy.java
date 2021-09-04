@@ -1,11 +1,15 @@
 package io.study.gateway;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.concurrent.Promise;
 import io.study.gateway.balance.BalancePolicy;
 import io.study.gateway.base.BaseTestCase;
 import io.study.gateway.client.ConnectionPoolConfig;
 import io.study.gateway.config.*;
+import io.study.gateway.gateway.Gateway;
 import io.study.gateway.interceptor.FilterLoader;
 import io.study.gateway.interceptor.IFilter;
 import io.study.gateway.interceptor.IFilterChain;
@@ -20,9 +24,8 @@ import io.study.gateway.proxy.StreamContext;
 import io.study.gateway.registry.LocalRegistry;
 import io.study.gateway.server.ProxyResponseMap;
 import io.study.gateway.server.SimpleHttpServer;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import io.study.gateway.stat.MetricStreamChannelStats;
+
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -74,8 +77,12 @@ public class TestProxy extends BaseTestCase {
          StatFilter statFilter = new StatFilter(registry);
         filterLoader.addLast(statFilter);
         filterLoader.addLast(proxyFilter);
-
-        proxyServer =  new ProxyServer(registry,gatewaySetting,filterLoader);
+        Gateway gateway = new Gateway();
+        gateway.setSetting(gatewaySetting);
+        gateway.setFilterLoader(filterLoader);
+        gateway.setRegistry(registry);
+        gateway.setServerStats(new MetricStreamChannelStats("stat.server.",registry));
+        proxyServer =  new ProxyServer(gateway);
         new Thread(new Runnable() {
             @Override
             public void run() {

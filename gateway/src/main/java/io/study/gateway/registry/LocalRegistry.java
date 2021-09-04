@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class LocalRegistry implements IRegistry {
+public class LocalRegistry extends AbstractRegistry {
     Map<String/*domain*/,ApiConfig> registry = new ConcurrentHashMap<>();
     MetricRegistry metricRegistry = new MetricRegistry();
 
@@ -44,28 +44,13 @@ public class LocalRegistry implements IRegistry {
     }
 
     @Override
-    public Object setData(String key, Object data) {
-        return null;
-    }
-
-    @Override
-    public Counter newCounter(String name) {
-        return metricRegistry.counter(name);
-    }
-
-    @Override
-    public Meter newMeter(String name) {
-        return metricRegistry.meter(name);
-    }
-
-    @Override
-    public Timer newTimer(String name) {
-        return metricRegistry.timer(name);
+    public void setData(String key, Object data) {
     }
 
 
     public void register(String domain,ApiConfig apiConfig){
         registry.put(domain,apiConfig);
     }
+
 
 }

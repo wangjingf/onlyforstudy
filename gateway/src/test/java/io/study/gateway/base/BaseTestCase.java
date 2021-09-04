@@ -12,9 +12,7 @@ import io.study.gateway.registry.LocalRegistry;
 import io.study.gateway.server.ProxyResponseMap;
 import io.study.gateway.server.SimpleHttpServer;
 import junit.framework.TestCase;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;

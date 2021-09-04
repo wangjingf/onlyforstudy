@@ -7,12 +7,13 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.study.gateway.client.PooledConnection;
 import io.study.gateway.message.http.HttpMessageInfo;
+import io.study.gateway.stream.IStreamChannel;
 
 import java.net.SocketAddress;
 
 public class StreamContext {
     PooledConnection toChannel;
-    Channel fromChannel;
+    IStreamChannel fromChannel;
     SocketAddress targetAddress;
     /*HttpMessageInfo request;
     HttpResponse response;*/
@@ -26,11 +27,11 @@ public class StreamContext {
         this.toChannel = toChannel;
     }
 
-    public Channel getFromChannel() {
+    public IStreamChannel getFromChannel() {
         return fromChannel;
     }
 
-    public void setFromChannel(Channel fromChannel) {
+    public void setFromChannel(IStreamChannel fromChannel) {
         this.fromChannel = fromChannel;
     }
 
