@@ -6,6 +6,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Promise;
 import io.study.gateway.channel.OriginChannelInitializer;
 import io.study.gateway.config.GatewaySetting;
+import io.study.gateway.config.INode;
 import io.study.gateway.proxy.ProxyEndpoint;
 import io.study.gateway.proxy.StreamContext;
 import org.slf4j.Logger;
@@ -65,8 +66,8 @@ public class ConnectionPool {
        return promise;
    }
    public void tryMakeNewConnection(EventLoop eventLoop,Promise<PooledConnection> promise,StreamContext context){
-       logger.info("connectionPool.try_make_new_connection:uri={},address={}",context.getRequest().uri(),context.getTargetAddress());
-       SocketAddress targetAddress = context.getTargetAddress();
+       logger.info("connectionPool.try_make_new_connection:uri={},address={}",context.getRequest().uri(),context.getTargetNode().getAddress());
+       SocketAddress targetAddress = context.getTargetNode().getAddress();
        final Bootstrap bootstrap = new Bootstrap()
                .channel(NioSocketChannel.class)
                .handler(channelInitializer)
@@ -86,12 +87,12 @@ public class ConnectionPool {
            @Override
            public void operationComplete(ChannelFuture future) throws Exception {
                if(future.isSuccess()){
-                   logger.info("connectionPool.make_new_connection_success:uri={},address={}",context.getRequest().uri(),context.getTargetAddress());
+                   logger.info("connectionPool.make_new_connection_success:uri={},address={}",context.getRequest().uri(),context.getTargetNode().getAddress());
                    activeChannels.add(future.channel());
-                   createConnection(future,targetAddress,promise);
+                   createConnection(future,context.getTargetNode(),promise);
 
                }else{
-                   logger.error("connectionPool.make_new_connection_failure:uri={},address={}",context.getRequest().uri(),context.getTargetAddress(),future.cause());
+                   logger.error("connectionPool.make_new_connection_failure:uri={},address={}",context.getRequest().uri(),context.getTargetNode().getAddress(),future.cause());
                    promise.setFailure(future.cause());
                }
                creatingCount.decrementAndGet();
@@ -104,8 +105,9 @@ public class ConnectionPool {
     public int getIdleChannelCount(){
        return this.idleChannels.size();
     }
-    private void createConnection(ChannelFuture future,SocketAddress address, Promise<PooledConnection> promise) {
+    private void createConnection(ChannelFuture future, INode targetNode, Promise<PooledConnection> promise) {
         PooledConnection connection = new PooledConnection(this,future.channel());
+        connection.setTargetNode(targetNode);
         promise.setSuccess(connection);
     }
 

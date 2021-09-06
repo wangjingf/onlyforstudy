@@ -7,6 +7,7 @@ import java.util.List;
 
 public class ZookeeperServerList implements IServerList{
     public List<INode> servers;
+
     public ZookeeperServerList(List<INode> servers) {
         this.servers = servers;
     }

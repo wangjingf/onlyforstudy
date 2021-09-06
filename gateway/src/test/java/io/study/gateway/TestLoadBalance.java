@@ -4,7 +4,6 @@ import io.study.gateway.balance.ILoadBalance;
 import io.study.gateway.balance.LoadBalanceContext;
 import io.study.gateway.balance.impl.LeastActiveLoadBalance;
 import io.study.gateway.invoker.ProxyInvoker;
-import io.study.gateway.protocol.HttpProxyInvoker;
 import junit.framework.TestCase;
 import org.junit.Before;
 

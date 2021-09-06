@@ -2,7 +2,6 @@ package io.study.gateway.util;
 
 import com.jd.vd.common.io.serializer.IObjectSerializer;
 import com.jd.vd.common.io.serializer.impl.DefaultSerializer;
-import io.study.gateway.registry.CuratorChildListener;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;

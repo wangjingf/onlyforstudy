@@ -26,7 +26,7 @@ public class DefaultFilterChain implements IFilterChain {
             if(callback != null){
                 callback.apply(context);
             }
-            Promise promise = context.getFromChannel().newPromise();
+            Promise promise = context.getFromChannel().getChannel().newPromise();
             promise.setSuccess(context.getResponse());
             return promise;
         }else{

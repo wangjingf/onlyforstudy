@@ -50,7 +50,7 @@ public class ProxyFilter implements IFilter {
         if(config == null){
             throw new BizException("proxy.err_found_invalid_uri:uri="+uri);
         }
-        Promise result = context.fromChannel.newPromise();
+        Promise result = context.fromChannel.getChannel().newPromise();
         channelManager = getOrCreateChannelManager(config);
         transformRequest(context,config);
         logger.info("proxyfilter.transform_request:destUri={}",context.getRequest().uri());
@@ -74,6 +74,7 @@ public class ProxyFilter implements IFilter {
                         connection.getChannel().pipeline().addBefore("connectPoolHandler","clientResponseHandler",new ClientResponseHandler());
                         operateConnectSuccess(endpoint,context,connectionPromise.get());
                     }else{
+
                         throw new BizException("proxy.err_get_connection",future.cause());
                     }
                 }
@@ -81,9 +82,11 @@ public class ProxyFilter implements IFilter {
         }
         return result;
     }
+    private void onConnectionFail(){
 
+    }
     private void operateConnectSuccess(ProxyEndpoint endpoint,StreamContext context,PooledConnection connection) {
-        context.setTargetAddress(connection.getChannel().localAddress());
+        //context.setTargetNode(connection.getChannel().localAddress());
         context.setToChannel(connection);
         connection.getChannel().attr(GatewayConstant.KEY_PROXY_ENDPOINT).set(endpoint);
         endpoint.proxy();

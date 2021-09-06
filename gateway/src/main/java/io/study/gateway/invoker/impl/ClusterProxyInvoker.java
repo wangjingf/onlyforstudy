@@ -10,6 +10,7 @@ import io.study.gateway.balance.LoadBalanceContext;
 import io.study.gateway.balance.impl.DefaultBalance;
 import io.study.gateway.invoker.ProxyInvoker;
 import io.study.gateway.proxy.ProxyContext;
+import io.study.gateway.stream.ICircuitBreaker;
 
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -24,6 +25,11 @@ public class ClusterProxyInvoker implements ProxyInvoker {
 
     @Override
     public SocketAddress getAddress() {
+        return null;
+    }
+
+    @Override
+    public ICircuitBreaker getBreaker() {
         return null;
     }
 }

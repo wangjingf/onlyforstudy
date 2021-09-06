@@ -12,6 +12,7 @@ public class ApiConfig {
     List<INode> servers = new CopyOnWriteArrayList<>();
     String srcUri;
     String destUri;
+    boolean isRetryWhenFail;
     int timeout;
     //每秒限流多少，为空时不限流
     Integer limit;
@@ -70,5 +71,13 @@ public class ApiConfig {
 
     public void setProxyProtocol(ProxyProtocol proxyProtocol) {
         this.proxyProtocol = proxyProtocol;
+    }
+
+    public boolean isRetryWhenFail() {
+        return isRetryWhenFail;
+    }
+
+    public void setRetryWhenFail(boolean retryWhenFail) {
+        isRetryWhenFail = retryWhenFail;
     }
 }

@@ -5,25 +5,27 @@ import io.study.gateway.stream.ICircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CircuitBreaker<S,T> {//implements ICircuitBreaker<T> 
-    static final Logger h = LoggerFactory.getLogger(CircuitBreaker.class);
+public class CircuitBreaker<S,T> implements ICircuitBreaker<S,T> {//
+    static final Logger logger = LoggerFactory.getLogger(CircuitBreaker.class);
     int breakerStatus = 0;
-    long a = 0L;
-    long f = 0L;
-    final int g;
+    long lastErrorTime = 0L;
+    long lastRecoverTime = 0L;
+    final int brokenTime;
     final RateLimiter rateLimiter;
     boolean forceBreak = false;
-    final int d;
-    int e;
-
-    public CircuitBreaker(RateLimiter limiter, int var2, int var3) {
+    final int circuitCount;
+    int errorCount;
+    static final int STATUS_OK = 0;
+    static final  int STATUS_BREAK = 1;
+    static final int STATUS_RECOVER = 2;
+    public CircuitBreaker(RateLimiter limiter, int circuitCount, int brokenTime) {
         this.rateLimiter = limiter;
-        this.d = var2;
-        this.g = var3;
+        this.circuitCount = circuitCount;
+        this.brokenTime = brokenTime;
     }
 
     public String toString() {
-        return "CircuitBreaker[status=" + this.breakerStatus + ",lastErrorTime=" + this.a + ",lastRecoverTime=" + this.f + "]";
+        return "CircuitBreaker[status=" + this.breakerStatus + ",lastErrorTime=" + this.lastErrorTime + ",lastRecoverTime=" + this.lastRecoverTime + "]";
     }
 
     public synchronized int getBreakerStatus() {
@@ -31,12 +33,12 @@ public class CircuitBreaker<S,T> {//implements ICircuitBreaker<T>
     }
 
     
-    public synchronized void onSuccess(Object val) {
-        this.e = 0;
+    public synchronized void onSuccess(Object result) {
+        this.errorCount = 0;
         switch(this.breakerStatus) {
             case 2:
                 this.breakerStatus = 0;
-                h.debug("breaker.recover_ok:breaker={}", this);
+                logger.debug("breaker.recover_ok:breaker={}", this);
             default:
         }
     }
@@ -54,25 +56,25 @@ public class CircuitBreaker<S,T> {//implements ICircuitBreaker<T>
         if (this.forceBreak) {
             return true;
         } else {
-            long var2;
+            long currentTime;
             switch(this.breakerStatus) {
-                case 0:
+                case STATUS_OK:
                     return false;
-                case 1:
-                    var2 = System.currentTimeMillis();
-                    if (var2 > this.a + (long)this.g) {
-                        this.breakerStatus = 2;
-                        h.debug("breaker.try_recover_from_break:breaker={}", this);
-                        this.f = var2;
+                case STATUS_BREAK:
+                    currentTime = System.currentTimeMillis();
+                    if (currentTime > this.lastErrorTime + (long)this.brokenTime) {
+                        this.breakerStatus = STATUS_RECOVER;
+                        logger.debug("breaker.try_recover_from_break:breaker={}", this);
+                        this.lastRecoverTime = currentTime;
                         return false;
                     }
 
                     return true;
-                case 2:
-                    var2 = System.currentTimeMillis();
-                    if (var2 > this.f + (long)this.g) {
-                        h.debug("breaker.try_recover_from_break:breaker={}", this);
-                        this.f = var2;
+                case STATUS_RECOVER:
+                    currentTime = System.currentTimeMillis();
+                    if (currentTime > this.lastRecoverTime + (long)this.brokenTime) {
+                        logger.debug("breaker.try_recover_from_break:breaker={}", this);
+                        this.lastRecoverTime = currentTime;
                         return false;
                     }
 
@@ -84,23 +86,23 @@ public class CircuitBreaker<S,T> {//implements ICircuitBreaker<T>
     }
 
 
-    public synchronized void onFailure(Throwable var1) {
-        this.a = System.currentTimeMillis();
-        ++this.e;
+    public synchronized void onFailure(Throwable cause) {
+        this.lastErrorTime = System.currentTimeMillis();
+        ++this.errorCount;
         switch(this.breakerStatus) {
-            case 0:
-                if (this.e > this.d) {
+            case STATUS_OK:
+                if (this.errorCount > this.circuitCount) {
                     this.breakerStatus = 1;
-                    h.debug("breaker.repeat_error_count_exceed_limit:{},breaker={}", new Object[]{this.e, this, var1});
+                    logger.debug("breaker.repeat_error_count_exceed_limit:{},breaker={}", new Object[]{this.errorCount, this, cause});
                 } else if (!this.rateLimiter.tryAcquire()) {
                     this.breakerStatus = 1;
-                    h.debug("breaker.error_rate_exceed_limit:{},breaker={}", new Object[]{this.rateLimiter.getRate(), this, var1});
+                    logger.debug("breaker.error_rate_exceed_limit:{},breaker={}", new Object[]{this.rateLimiter.getRate(), this, cause});
                 }
                 break;
-            case 1:
-            case 2:
+            case STATUS_BREAK:
+            case STATUS_RECOVER:
                 this.breakerStatus = 1;
-                h.debug("breaker.extend_break_time:breaker={}", this);
+                logger.debug("breaker.extend_break_time:breaker={}", this);
         }
 
     }
@@ -112,7 +114,7 @@ public class CircuitBreaker<S,T> {//implements ICircuitBreaker<T>
 
     public synchronized void onCancelled() {
         switch(this.breakerStatus) {
-            case 2:
+            case STATUS_RECOVER:
                 this.breakerStatus = 1;
             default:
         }

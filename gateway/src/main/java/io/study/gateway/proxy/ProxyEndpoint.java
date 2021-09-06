@@ -11,6 +11,8 @@ import io.study.gateway.message.http.HttpMessageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class ProxyEndpoint {
     static final Logger logger = LoggerFactory.getLogger(ProxyEndpoint.class);
     StreamContext context;
@@ -33,7 +35,11 @@ public class ProxyEndpoint {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
                 if(!future.isSuccess()){
-                    logger.error("proxyEndpoint.proxy_error",future.cause());
+                    Throwable cause = future.cause();
+                    if(cause instanceof IOException){
+                        context.getTargetNode().getBreaker().onFailure(cause);
+                    }
+                    logger.error("proxyEndpoint.proxy_error", cause);
                 }else{
                 }
             }
@@ -71,8 +77,8 @@ public class ProxyEndpoint {
        /* if(response instanceof LastHttpContent){
             LastHttpContent content = (LastHttpContent) response;
         }*/
-        Guard.assertTrue(context.getFromChannel().isActive(),"proxyEndpoint.err_from_channel_must_be_active:channel="+context.getFromChannel());
-        context.getFromChannel().writeAndFlush(response).addListener(new GenericFutureListener<Future<? super Void>>() {
+        Guard.assertTrue(context.getFromChannel().getChannel().isActive(),"proxyEndpoint.err_from_channel_must_be_active:channel="+context.getFromChannel());
+        context.getFromChannel().getChannel().writeAndFlush(response).addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
                 if(!future.isSuccess()){

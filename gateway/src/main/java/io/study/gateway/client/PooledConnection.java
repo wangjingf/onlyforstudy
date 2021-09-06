@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponseDecoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.study.gateway.config.INode;
 
 
 import java.net.SocketAddress;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PooledConnection {
     Channel channel;
     ConnectionPool pool;
+    INode targetNode;
     AtomicBoolean active = new AtomicBoolean(true);
     public PooledConnection(ConnectionPool pool,Channel channel){
         this.pool = pool;
@@ -44,5 +46,11 @@ public class PooledConnection {
         return channel.isActive();
     }
 
+    public INode getTargetNode() {
+        return targetNode;
+    }
 
+    public void setTargetNode(INode targetNode) {
+        this.targetNode = targetNode;
+    }
 }
