@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ProxyServer {
-    GatewaySetting gatewaySetting;
     FilterLoader filterLoader = null;
     IRegistry registry;
     Gateway gateway = null;
@@ -59,14 +58,14 @@ public class ProxyServer {
                         //ch.pipeline().addLast("protocolAggregator",new ProtocolMessageAggregator(gatewaySetting.getHttpMaxChunkSize(),registry));
                         ch.pipeline().addLast("httpChunked", new ChunkedWriteHandler());
                         ch.pipeline().addLast("log", new LoggingHandler(LogLevel.TRACE));
-                        ch.pipeline().addLast("idleHandler", new IdleStateHandler(0, 0, gatewaySetting.getServerIdleTimeout() / 1000));
+                        ch.pipeline().addLast("idleHandler", new IdleStateHandler(0, 0, gateway.getSetting().getServerIdleTimeout() / 1000));
                         ch.pipeline().addLast("closeOnIdleHandler", new CloseOnIdleHandler());
                         ch.pipeline().addLast("proxyHandler", new ProxyHandler(gateway));
 
                     }
                 });
         try {
-            ChannelFuture future = server.bind(gatewaySetting.getPort()).sync();
+            ChannelFuture future = server.bind(gateway.getSetting().getPort()).sync();
             System.out.println("文件服务器启动了。。。。。。");
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {

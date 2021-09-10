@@ -25,6 +25,7 @@ import io.study.gateway.registry.LocalRegistry;
 import io.study.gateway.server.ProxyResponseMap;
 import io.study.gateway.server.SimpleHttpServer;
 import io.study.gateway.stat.MetricStreamChannelStats;
+import io.study.gateway.stat.RequestStatFilter;
 
 
 import java.net.InetSocketAddress;
@@ -75,13 +76,15 @@ public class TestProxy extends BaseTestCase {
 
         ProxyFilter proxyFilter = new ProxyFilter(gatewaySetting,poolConfig,registry);
          StatFilter statFilter = new StatFilter(registry);
+         RequestStatFilter requestStatFilter = new RequestStatFilter();
+         filterLoader.addLast(requestStatFilter);
         filterLoader.addLast(statFilter);
         filterLoader.addLast(proxyFilter);
         Gateway gateway = new Gateway();
         gateway.setSetting(gatewaySetting);
         gateway.setFilterLoader(filterLoader);
         gateway.setRegistry(registry);
-        gateway.setServerStats(new MetricStreamChannelStats("stat.server.",registry));
+        gateway.setServerStats(new MetricStreamChannelStats("stat.serve===============================================================r.",registry));
         proxyServer =  new ProxyServer(gateway);
         new Thread(new Runnable() {
             @Override

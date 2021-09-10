@@ -92,16 +92,16 @@ public class CircuitBreaker<S,T> implements ICircuitBreaker<S,T> {//
         switch(this.breakerStatus) {
             case STATUS_OK:
                 if (this.errorCount > this.circuitCount) {
-                    this.breakerStatus = 1;
+                    this.breakerStatus = STATUS_BREAK;
                     logger.debug("breaker.repeat_error_count_exceed_limit:{},breaker={}", new Object[]{this.errorCount, this, cause});
-                } else if (!this.rateLimiter.tryAcquire()) {
-                    this.breakerStatus = 1;
+                } else if (rateLimiter != null && !this.rateLimiter.tryAcquire()) {
+                    this.breakerStatus = STATUS_BREAK;
                     logger.debug("breaker.error_rate_exceed_limit:{},breaker={}", new Object[]{this.rateLimiter.getRate(), this, cause});
                 }
                 break;
             case STATUS_BREAK:
             case STATUS_RECOVER:
-                this.breakerStatus = 1;
+                this.breakerStatus = STATUS_BREAK;
                 logger.debug("breaker.extend_break_time:breaker={}", this);
         }
 
