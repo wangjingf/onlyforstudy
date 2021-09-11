@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class StatCollector {
+public class StatCollector implements IStatCollector{
     static final Logger logger = LoggerFactory.getLogger(StatCollector.class);
     Queue<RequestStat> stats = new ConcurrentLinkedDeque();
     public void onStat(RequestStat stat){
