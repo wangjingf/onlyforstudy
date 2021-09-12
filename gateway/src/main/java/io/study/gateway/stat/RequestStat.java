@@ -51,6 +51,8 @@ public class RequestStat {
     String target;
     long startTime;
     long endTime;
+    long requestSize;
+    long responseSize;
     int cost;
     boolean isSuccess;
     Throwable cause;

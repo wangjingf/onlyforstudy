@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +47,19 @@ public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
         }
         logger.info("httpServer.handle_request_success:uri={}",uri);
         FullHttpResponse copy = response.copy();
+        copy.headers().set(HttpHeaderNames.CONTENT_TYPE,"application/json");
         HttpUtil.setContentLength(copy,copy.content().readableBytes());
         ctx.writeAndFlush(copy).addListener(futureListener);
+//        FullHttpResponse response = responseHandler(HttpResponseStatus.OK, "isisisisisisi");
+//        ctx.writeAndFlush(response).addListener(futureListener);
     }
-
+    private FullHttpResponse responseHandler(HttpResponseStatus status, String responseContent) {
+        ByteBuf content = Unpooled.copiedBuffer(responseContent, CharsetUtil.UTF_8);
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, content);
+        response.headers().set("Content-Type", "text/plain;charset=UTF-8;");
+        response.headers().set("Content-Length", response.content().readableBytes());
+        return response;
+    }
     public void channelReadComplete(ChannelHandlerContext ctx){
 
     }

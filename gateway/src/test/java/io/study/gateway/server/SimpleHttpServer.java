@@ -14,6 +14,7 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.study.gateway.proxy.ProxyProtocol;
 
 import java.util.Map;
 
@@ -57,10 +58,9 @@ public class SimpleHttpServer {
         this.port = port;
     }
     public static void main(String[] args) throws InterruptedException{
-        int port = 5121;
-        if(args !=null &&args.length>0){
-            port = Integer.valueOf(args[0]);
-        }
-        new TimeServer().bind(port);
-    }
+
+
+        SimpleHttpServer server = new SimpleHttpServer(80,ProxyResponseMap.responseMap);
+        server.start();
+     }
 }
