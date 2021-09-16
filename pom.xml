@@ -3,26 +3,52 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cxf.my</groupId>
     <artifactId>cxf3.1</artifactId>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
+    <modules>
+        <module>elastic-search</module>
+        <module>common</module>
+        <module>gateway</module>
+        <module>rpc</module>
+        <module>hbase</module>
+        <module>gateway-module</module>
+    </modules>
     <name>cxf3.1 Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
-        <spring.version>5.1.9.RELEASE</spring.version>
+        <spring.version>5.3.8</spring.version>
         <log4j.version>2.11.0</log4j.version>
         <hibernate.version>
             5.2.18.Final
         </hibernate.version>
         <mysql.version>5.1.6</mysql.version>
+        <springboot.version>2.5.2</springboot.version>
         <jackson.version>2.4.1</jackson.version>
     </properties>
-    <dependencies>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.2</version>
 
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${springboot.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.netflix.hystrix/hystrix-core -->
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
             <version>1.5.12</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
+        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp/okhttp -->
+        <dependency>
+            <groupId>com.squareup.okhttp</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>2.7.5</version>
         </dependency>
 
         <dependency>
@@ -31,40 +57,7 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-       <!-- <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <version>3.1.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>3.1.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-            <version>3.1.10</version>
-        </dependency>
 
-
-
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-client</artifactId>
-            <version>3.1.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http-jetty</artifactId>
-            <version>3.1.10</version>
-        </dependency>
-           <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-extension-providers</artifactId>
-            <version>3.1.10</version>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>net.sf.json-lib</groupId>
@@ -125,12 +118,6 @@
             <artifactId>spring-session</artifactId>
             <version>1.0.2.RELEASE</version>
         </dependency>
-        <!--<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>3.1.2.RELEASE</version>
-            <scope>test</scope>
-        </dependency>  -->
 
 
         <!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache -->
@@ -310,14 +297,19 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.6.Final</version>
+            <version>4.1.65.Final</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-elasticsearch</artifactId>
-            <version>3.1.10.RELEASE</version>
+            <version>4.2.1</version>
         </dependency>
+
+
+
+
+
 
         <dependency>
             <groupId>junit</groupId>
@@ -327,99 +319,86 @@
         </dependency>
 
     </dependencies>
-    <build>
-        <finalName>cxf3.1</finalName>
-        <pluginManagement>
-            <plugins>
-                <!--<plugin>
-                    <groupId>org.apache.tomcat.maven</groupId>
-                    <artifactId>tomcat8-maven-plugin</artifactId>
-                    <version>3.0-r1655215</version>
-                    <configuration>
-                        &lt;!&ndash; 可以灵活配置工程路径 &ndash;&gt;
-&lt;!&ndash;
-                        <path>/SSh</path>
-&ndash;&gt;
-                        &lt;!&ndash; 可以灵活配置端口号 &ndash;&gt;
-                        <port>8080</port>
-                    </configuration>
-                </plugin>-->
-                <plugin>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-maven-plugin</artifactId>
-                    <version>9.4.8.v20171121</version>
-                    <configuration>
-                        <webApp>
-                            <contextPath>/${project.artifactId}</contextPath>
-                        </webApp>
-                    </configuration>
-                </plugin>
-              <!--  <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>tomcat-maven-plugin</artifactId>
-                    <version>1.1</version>
-                    <configuration>
-                        <port>8080</port>
-                        <uriEncoding>UTF-8</uriEncoding>
-                        <url>http://localhost:8080/manager/html</url>
-                        <server>tomcat8</server>
-                    </configuration>
-                </plugin>-->
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+      <build>
+          <finalName>cxf3.1</finalName>
+          <pluginManagement>
+              <plugins>
 
-    <repositories>
-        <repository>
-            <id>aliyun</id>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>reficio</id>
-            <url>http://repo.reficio.org/maven/</url>
-        </repository>
-        <repository>
-            <id>people.apache.snapshots</id>
-            <url>
-                http://repository.apache.org/content/groups/snapshots-group/
-            </url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+                  <plugin>
+                      <groupId>org.eclipse.jetty</groupId>
+                      <artifactId>jetty-maven-plugin</artifactId>
+                      <version>9.4.8.v20171121</version>
+                      <configuration>
+                          <webApp>
+                              <contextPath>/${project.artifactId}</contextPath>
+                          </webApp>
+                      </configuration>
+                  </plugin>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>apache.snapshots</id>
-            <name>Apache Snapshots</name>
-            <url>http://repository.apache.org/content/groups/snapshots-group/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+              </plugins>
+          </pluginManagement>
+          <plugins>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-compiler-plugin</artifactId>
+                  <configuration>
+                      <source>8</source>
+                      <target>8</target>
+                  </configuration>
+              </plugin>
+          </plugins>
+      </build>
+        <repositories>
+            <repository>
+                <id>aliyun</id>
+                <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>false</enabled>
+                    <checksumPolicy>fail</checksumPolicy>
+                </snapshots>
+            </repository>
+          <!--  <repository>
+                <id>reficio</id>
+                <url>http://repo.reficio.org/maven/</url>
+            </repository>
+            <repository>
+                <id>people.apache.snapshots</id>
+                <url>
+                    http://repository.apache.org/content/groups/snapshots-group/
+                </url>
+                <releases>
+                    <enabled>false</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
+            <repository>
+                <id>central</id>
+                <name>Central Repository</name>
+                <url>https://repo.maven.apache.org/maven2</url>
+                <layout>default</layout>
+                <snapshots>
+                    <enabled>false</enabled>
+                </snapshots>
+            </repository>-->
+
+        </repositories>
+
+        <pluginRepositories>
+            <pluginRepository>
+                <id>apache.snapshots</id>
+                <name>Apache Snapshots</name>
+                <url>http://repository.apache.org/content/groups/snapshots-group/</url>
+                <releases>
+                    <enabled>false</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </pluginRepository>
+        </pluginRepositories>
 </project>
