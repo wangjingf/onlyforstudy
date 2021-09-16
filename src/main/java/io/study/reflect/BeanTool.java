@@ -1,7 +1,7 @@
 package io.study.reflect;
 
 import io.study.exception.StdException;
-import io.study.util.StringUtils;
+import io.study.helper.StringHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +12,7 @@ public class BeanTool {
         if(obj == null){
             return null;
         }
-        String methodName = "get"+StringUtils.capitalize(property);
+        String methodName = "get"+ StringHelper.capitalize(property);
 
         try {
             Method method = obj.getClass().getMethod(methodName);

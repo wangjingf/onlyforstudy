@@ -1,11 +1,12 @@
 package io.study.lang;
 
  
-import io.entropy.json.JsonTool;
-import io.study.exception.StdException;
+ import io.study.exception.StdException;
+ import io.study.helper.JsonTool;
+ import io.study.helper.MathHelper;
+ import io.study.helper.StringHelper;
 import io.study.lang.type.ObjectTypes;
-import io.study.util.MathHelper;
-import io.study.util.StringHelper;
+
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -649,6 +650,11 @@ public abstract class Variant implements IVariant {
 
         protected Object internalSingleValue() {
             return this.value ;
+        }
+
+        @Override
+        public Object convert(Class<?> targetType) {
+            return null;
         }
     }
 }

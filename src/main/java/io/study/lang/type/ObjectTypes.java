@@ -4,19 +4,7 @@
 //
 
 package io.study.lang.type;
-import io.entropy.collection.support.ConcurrentReferenceHashMap;
-import io.entropy.collection.support.ConcurrentReferenceHashMap.ReferenceType;
-import io.entropy.exceptions.EntropyException;
-import io.entropy.lang.ICollectionObject;
-import io.entropy.lang.IConverter;
-import io.entropy.lang.IVariant;
-import io.entropy.lang.annotation.Nonnull;
-import io.entropy.lang.type.ITypeDescriptor;
-import io.entropy.lang.util.UndefinedValue;
-import io.entropy.resource.IResource;
-import io.entropy.util.ArrayHelper;
-import io.entropy.util.CollectionHelper;
-import io.entropy.util.StringHelper;
+
 import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
@@ -37,8 +25,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+
+
+import io.study.exception.StdException;
+import io.study.helper.ArrayHelper;
+import io.study.helper.CollectionHelper;
+import io.study.helper.StringHelper;
+import io.study.lang.IVariant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 public class ObjectTypes {
 
@@ -77,11 +73,10 @@ public class ObjectTypes {
     public static IObjectType COLLECTION_SET_TYPE;
     public static IObjectType FILE_TYPE;
 
-     static final IObjectType[] allTypes;
+    static final IObjectType[] allTypes;
     private static IConverter[] converters;
     private static Map<String, IObjectType> typeNameMap;
     private static Map<Class<?>, IObjectType> classTypeMap;
-    private static Map<Class<?>, ITypeDescriptor> typeDescriptors;
     private static final ConcurrentMap<Class<?>, IObjectType> extensionObjectTypes;
 
     public ObjectTypes() {
@@ -232,14 +227,7 @@ public class ObjectTypes {
         }
     }
 
-    private static Object X(Object var0) {
-        if (var0 instanceof Timestamp) {
-            String var1 = var0.toString().substring(0, 19);
-            return var1.endsWith(" 00:00:00") ? var1.substring(0, 10) : var1;
-        } else {
-            return var0.toString();
-        }
-    }
+
 
     static Object convertToSqlDate(Object value) {
         if (java.sql.Date.class.isAssignableFrom(value.getClass())) {
@@ -359,7 +347,7 @@ public class ObjectTypes {
                         month = Integer.parseInt(datePart.substring(yearIndex + 1)) - 1;
                     } else {
                         month = Integer.parseInt(datePart.substring(yearIndex + 1, monthIndex)) - 1;
-                       String dayStr = datePart.substring(monthIndex + 1);
+                        String dayStr = datePart.substring(monthIndex + 1);
                         if (dayStr.length() > 0) {
                             date = Integer.parseInt(dayStr);
                         }
@@ -413,8 +401,6 @@ public class ObjectTypes {
     public static Boolean convertToBoolean(Object value, Boolean nullValue, Boolean defaultValue) {
         if (value == null) {
             return nullValue;
-        } else if (value == UndefinedValue.INSTANCE) {
-            return Boolean.FALSE;
         } else if (value instanceof Boolean) {
             return (Boolean)value;
         } else if (value instanceof String) {
@@ -440,10 +426,10 @@ public class ObjectTypes {
             return Arrays.asList((Object[])((Object[])value));
         } else if (value.getClass().isArray()) {
             return ArrayHelper.toList(value);
-        } else if (value instanceof ICollectionObject) {
+        } /*else if (value instanceof ICollectionObject) {
             List listValue = ((ICollectionObject)value).toList();
             return listValue;
-        } else if (value instanceof Iterable) {
+        }*/ else if (value instanceof Iterable) {
             return CollectionHelper.toList((Iterable)value);
         } else {
             return value instanceof String ? StringHelper.stripedSplit(value.toString(), ",") : null;
@@ -457,9 +443,9 @@ public class ObjectTypes {
             return Arrays.asList((Object[])((Object[])value));
         } else if (value.getClass().isArray()) {
             return ArrayHelper.toList(value);
-        } else if (value instanceof ICollectionObject) {
+        }/* else if (value instanceof ICollectionObject) {
             return ((ICollectionObject)value).toCollection();
-        } else if (value instanceof Iterable) {
+        } */else if (value instanceof Iterable) {
             return CollectionHelper.toList((Iterable)value);
         } else {
             return value instanceof String ? StringHelper.stripedSplit(value.toString(), ",") : null;
@@ -476,7 +462,7 @@ public class ObjectTypes {
     }
 
     static File covertToFile(Object value) {
-        return value instanceof IResource ? ((IResource)value).toFile() : null;
+        throw new StdException("variant.err_not_support");
     }
 
     public static Object getPrimitiveInitValue(Class<?> value) {
@@ -501,14 +487,7 @@ public class ObjectTypes {
         converters = (IConverter[])ArrayHelper.append(converters, converter, IConverter.class);
     }
 
-    public static ITypeDescriptor getDefaultTypeDescriptor(Class<?> tyoe) {
-        return (ITypeDescriptor) typeDescriptors.get(tyoe);
-    }
 
-    public static ITypeDescriptor getTypeDescriptor(Type type) {
-        ITypeDescriptor typeDescriptor = (ITypeDescriptor) typeDescriptors.get(type);
-        return typeDescriptor != null ? typeDescriptor : ITypeDescriptor.fromJavaType(type, typeDescriptors);
-    }
 
     public static IObjectType requireDefaultType(String type) {
         if (type == null) {
@@ -516,7 +495,7 @@ public class ObjectTypes {
         } else {
             IObjectType objectType = (IObjectType) typeNameMap.get(type);
             if (objectType == null) {
-                throw (new EntropyException("lang.err_unknown_object_type")).param("name", type);
+                throw (new StdException("lang.err_unknown_object_type")).param("name", type);
             } else {
                 return objectType;
             }
@@ -586,7 +565,7 @@ public class ObjectTypes {
         }
     }
 
-    static Object tryConvert(@Nonnull Object value, @Nonnull Class<?> type) {
+    static Object tryConvert( Object value,  Class<?> type) {
         Class sourceType = value.getClass();
         if (sourceType != type && !type.isAssignableFrom(sourceType)) {
             if (value instanceof IVariant) {
@@ -631,7 +610,7 @@ public class ObjectTypes {
         } else {
             Object convertValue = tryConvert(value, type);
             if (convertValue == null) {
-                throw (new EntropyException("lang.err_type_convert_fail")).param("target", type).param("source", value.getClass()).param("obj", value);
+                throw (new StdException("lang.err_type_convert_fail")).param("target", type).param("source", value.getClass()).param("obj", value);
             } else {
                 return convertValue;
             }
@@ -639,9 +618,9 @@ public class ObjectTypes {
     }
 
     public static Object tryConvertToArray(Object value, Class<?> componentType) {
-        if (value instanceof ICollectionObject) {
+        /*if (value instanceof ICollectionObject) {
             value = ((ICollectionObject)value).toCollection();
-        }
+        }*/
 
         if (value == null) {
             return null;
@@ -716,7 +695,7 @@ public class ObjectTypes {
         allTypes = new IObjectType[]{PRIMITIVE_INT_TYPE, INTEGER_TYPE, STRING_TYPE, PRIMITIVE_BOOLEAN_TYPE, BOOLEAN_TYPE, PRIMITIVE_LONG_TYPE, LONG_TYPE, PRIMITIVE_DOUBLE_TYPE, DOUBLE_TYPE, PRIMITIVE_SHORT_TYPE, SHORT_TYPE, PRIMITIVE_FLOAT_TYPE, FLOAT_TYPE, PRIMITIVE_BYTE_TYPE, BYTE_TYPE, PRIMITIVE_CHAR_TYPE, CHARACTER_TYPE, SQL_DATE_TYPE, DATE_TYPE, TIMESTAMP_TYPE, NUMBER_TYPE, BIGINTEGER_TYPE, BIGDECIMAL_TYPE, BYTE_ARRAY_TYPE, CHAR_ARRAY_TYPE, OBJECT_ARRAY_TYPE, STRING_ARRAY_TYPE, LIST_TYPE, COLLECTION_TYPE, COLLECTION_SET_TYPE, FILE_TYPE,  OBJECT_TYPE};
         typeNameMap = new HashMap();
         classTypeMap = new IdentityHashMap();
-        typeDescriptors = new IdentityHashMap();
+        //typeDescriptors = new IdentityHashMap();
         IObjectType[] var0 = allTypes;
         int var1 = var0.length;
 
@@ -725,12 +704,11 @@ public class ObjectTypes {
             typeNameMap.put(var3.getClassName(), var3);
             typeNameMap.put(var3.getClassSimpleName(), var3);
             classTypeMap.put(var3.getRawClassType(), var3);
-            typeDescriptors.put(var3.getRawClassType(), ITypeDescriptor.fromJavaType(var3.getRawClassType()));
+            //typeDescriptors.put(var3.getRawClassType(), ITypeDescriptor.fromJavaType(var3.getRawClassType()));
         }
 
-        extensionObjectTypes = new ConcurrentReferenceHashMap(100, ReferenceType.WEAK, ReferenceType.STRONG);
+        extensionObjectTypes = new ConcurrentReferenceHashMap(100, ConcurrentReferenceHashMap.ReferenceType.WEAK);
     }
-
 
 
 

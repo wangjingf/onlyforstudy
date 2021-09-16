@@ -177,6 +177,8 @@ public class StdException extends RuntimeException {
     public static RuntimeException adapt(Throwable var0) {
         return (RuntimeException) (var0 instanceof RuntimeException ? (RuntimeException) var0 : new StdAdaptException(var0));
     }
-
+    public static RuntimeException adapt(Throwable var0,String message) {
+        return  adapt(var0);
+    }
 
 }

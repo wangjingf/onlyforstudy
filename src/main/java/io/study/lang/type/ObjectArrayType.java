@@ -1,6 +1,6 @@
 package io.study.lang.type;
 
-import io.entropy.lang.ICollectionObject;
+/*import io.entropy.lang.ICollectionObject;*/
 
 import java.util.Collection;
 
@@ -12,7 +12,8 @@ public class ObjectArrayType extends DefaultObjectType {
     }
 
     protected Object doConvert(Object value) {
-        if (value instanceof Object[]) {
+        return null;
+        /*if (value instanceof Object[]) {
             return (Object[])((Object[]) value);
         } else {
             if (value instanceof ICollectionObject) {
@@ -20,6 +21,6 @@ public class ObjectArrayType extends DefaultObjectType {
             }
 
             return value instanceof Collection ? ((Collection) value).toArray() : null;
-        }
+        }*/
     }
 }

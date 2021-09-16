@@ -5,8 +5,7 @@
 
 package io.study.lang.type;
 
-import io.entropy.expr.IEvalScope;
-import io.entropy.lang.annotation.Nonnull;
+
 
 public interface IConverter {
     /**
@@ -15,6 +14,6 @@ public interface IConverter {
      * @param type
      * @return
      */
-    Object tryConvert(@Nonnull Object value, Class<?> type);
+    Object tryConvert( Object value, Class<?> type);
 
 }

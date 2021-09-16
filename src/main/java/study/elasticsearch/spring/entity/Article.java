@@ -5,7 +5,7 @@ import org.springframework.data.elasticsearch.annotations.*;
 
 import java.sql.Timestamp;
 
-@Document(indexName="blog",type="doc")
+@Document(indexName="blog1")
 @Setting(settingPath = "elasticsearch_config.json")
 public class Article {
     //文档主键 唯一标识

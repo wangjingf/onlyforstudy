@@ -5,7 +5,9 @@
 
 package io.study.lang;
 
-import io.entropy.util.StringHelper;
+//import io.entropy.util.StringHelper;
+import io.study.helper.StringHelper;
+
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
@@ -130,4 +132,6 @@ public interface IVariant {
     Object i0(Object value);
 
     Object d0(Object value);
+
+    public Object convert( Class<?> targetType);
 }

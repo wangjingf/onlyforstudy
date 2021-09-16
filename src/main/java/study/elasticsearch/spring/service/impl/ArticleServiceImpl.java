@@ -5,8 +5,7 @@ import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
-import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
@@ -16,12 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.SearchResultMapper;
-import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
-import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPageImpl;
+
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
+
 import org.springframework.stereotype.Service;
 import study.elasticsearch.spring.dao.ArticleRepository;
 import study.elasticsearch.spring.entity.Article;
@@ -29,6 +29,7 @@ import study.elasticsearch.spring.service.ArticleService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -41,7 +42,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired
     ArticleRepository articleRepository;
     @Autowired
-    ElasticsearchTemplate elasticsearchTemplate;
+    ElasticsearchRestTemplate elasticsearchRestTemplate;
     @Override
     public void save(Article article) {
         articleRepository.save(article);
@@ -75,38 +76,15 @@ public class ArticleServiceImpl implements ArticleService {
         }
         logger.info("\n searchCity: searchContent [" + searchContent + "] \n ");
         // 构建搜索查询
-        SearchQuery searchQuery = getArticleSearchQuery(pageNumber,pageSize,searchContent);
+        NativeSearchQuery searchQuery = getArticleSearchQuery(pageNumber,pageSize,searchContent);
         logger.info("\n searchCity: searchContent [" + searchContent + "] \n DSL  = \n " + searchQuery.getQuery().toString());
         //Page<Article> cityPage = articleRepository.search(searchQuery);
-        Page<Article> cityPage = elasticsearchTemplate.queryForPage(searchQuery,Article.class,new SearchResultMapper() {
+        SearchHits<Article> result = elasticsearchRestTemplate.search(searchQuery, Article.class);
 
-            @Override
-            public <T> AggregatedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
-                List<Article> chunk = new ArrayList<>();
-                for (SearchHit searchHit : response.getHits()) {
-                    if (response.getHits().getHits().length <= 0) {
-                        return null;
-                    }
-                    Article article = new Article();
-                    //name or memoe
-                    HighlightField name = searchHit.getHighlightFields().get("name");
-                    if (name != null) {
-                        article.setName(concat(name.fragments()));
-                    }
-                    HighlightField content = searchHit.getHighlightFields().get("content");
-                    if (content != null) {
-                        article.setContent(concat(content.fragments()));
-                    }
+        return result.get().map(vs->{
+            return vs.getContent();
+        }).collect(Collectors.toList());
 
-                    chunk.add(article);
-                }
-                if (chunk.size() > 0) {
-                    return new AggregatedPageImpl<>((List<T>) chunk);
-                }
-                return null;
-            }
-        });
-        return cityPage.getContent();
     }
     /**
      * 根据搜索词构造搜索查询语句
@@ -122,7 +100,7 @@ public class ArticleServiceImpl implements ArticleService {
      * @param searchContent 搜索内容
      * @return
      */
-    private SearchQuery getArticleSearchQuery(Integer pageNumber, Integer pageSize,String searchContent) {
+    private NativeSearchQuery getArticleSearchQuery(Integer pageNumber, Integer pageSize, String searchContent) {
         MultiMatchQueryBuilder builder =  QueryBuilders.multiMatchQuery(searchContent,"name","content");
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         HighlightBuilder.Field highlightTitle =
@@ -138,7 +116,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .preTags("<span style=color:red>")
                 .postTags("</span>");
         // 分页参数
-        Pageable pageable = new PageRequest(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return new NativeSearchQueryBuilder()
                 .withPageable(pageable)
                 //.withHighlightBuilder(highlightBuilder)

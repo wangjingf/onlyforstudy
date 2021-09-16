@@ -66,6 +66,11 @@ public class UserRepository implements PagingAndSortingRepository {
     }
 
     @Override
+    public void deleteAllById(Iterable iterable) {
+
+    }
+
+    @Override
     public void deleteAll(Iterable iterable) {
 
     }

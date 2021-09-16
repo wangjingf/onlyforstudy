@@ -1,5 +1,8 @@
 package io.study.net.nio.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -11,6 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Server  {
+	static final Logger logger = LoggerFactory.getLogger(Server.class);
 	public static void main(String[] args) throws IOException {
 		// Get the selector
 		Selector selector = Selector.open();
@@ -35,9 +39,12 @@ public class Server  {
 					SocketChannel client = SS.accept();
 					client.configureBlocking(false);
 					// The new connection is added to a selector
-					client.register(selector, SelectionKey.OP_READ);
+					SelectionKey clientKey = client.register(selector, SelectionKey.OP_READ);
+					clientKey.interestOps(SelectionKey.OP_WRITE);
+					//clientKey.interestOps();
 					System.out.println("The new connection is accepted from the client: " + client);
 				} else if (ky.isReadable()) {
+					logger.info("readable ");
 					// Data is read from the client
 					SocketChannel client = (SocketChannel) ky.channel();
 					ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -48,6 +55,8 @@ public class Server  {
 						client.close();
 						System.out.println("The Client messages are complete; close the session.");
 					}
+				} else if(ky.isWritable()){
+					logger.info("writebale ");
 				}
 				itr.remove();
 			} // end of while loop
