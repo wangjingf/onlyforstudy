@@ -10,7 +10,7 @@ import io.study.gateway.interceptor.IFilterChain;
 import io.study.gateway.proxy.StreamContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.Request;
+
 
 public class RequestStatFilter implements IFilter {
     static final Logger logger = LoggerFactory.getLogger(RequestStatFilter.class);

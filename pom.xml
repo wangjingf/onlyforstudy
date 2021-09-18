@@ -6,12 +6,13 @@
     <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <modules>
-        <module>elastic-search</module>
+        <!--<module>elastic-search</module>
         <module>common</module>
         <module>gateway</module>
         <module>rpc</module>
         <module>hbase</module>
-        <module>gateway-module</module>
+        <module>gateway-module</module>-->
+        <module>gateway</module>
     </modules>
     <name>cxf3.1 Maven Webapp</name>
     <url>http://maven.apache.org</url>
@@ -31,6 +32,7 @@
         <version>2.5.2</version>
 
     </parent>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -75,7 +75,7 @@ public class ProxyFilter implements IFilter {
                         operateConnectSuccess(endpoint,context,connectionPromise.get());
                     }else{
 
-                        throw new BizException("proxy.err_get_connection",future.cause());
+                        throw new BizException("proxy.err_get_connection");
                     }
                 }
             });
@@ -86,7 +86,7 @@ public class ProxyFilter implements IFilter {
 
     }
     private void operateConnectSuccess(ProxyEndpoint endpoint,StreamContext context,PooledConnection connection) {
-        //context.setTargetNode(connection.getChannel().localAddress());
+        //context.setTargetNode(connection.getChannel().localAddress());RequestStatFilter
         context.setToChannel(connection);
         connection.getChannel().attr(GatewayConstant.KEY_PROXY_ENDPOINT).set(endpoint);
         endpoint.proxy();

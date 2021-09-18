@@ -3,10 +3,12 @@ package io.wjf.study.hello;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.Accumulator;
 import org.apache.spark.SparkConf;
+import org.apache.spark.TaskContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.*;
+import org.apache.spark.util.LongAccumulator;
 import scala.Tuple2;
 
 import java.util.Arrays;
@@ -25,8 +27,17 @@ public class RddHelloWorld {
 
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> lines = sc.textFile(fileName, 3);
-        Accumulator<Integer> accumulator = sc.accumulator(123);
-        accumulator.add(123);
+        LongAccumulator accumulator = sc.sc().longAccumulator();
+        sc.sc().broadcast(1,null);
+        accumulator.add(123L);
+        accumulator.add(100);;
+        int i = 123;
+        lines.map(new Function<String, Object>() {
+            @Override
+            public Object call(String v1) throws Exception {
+                return null;
+            }
+        });
         JavaRDD<String> words = lines
                 .flatMap(new FlatMapFunction<String, String>() {
                     private static final long serialVersionUID = 1L;
@@ -40,11 +51,14 @@ public class RddHelloWorld {
                                 ret.add(s);
                             }
                         }
+
+                        accumulator.add(123);
+                        System.out.println(i);
                         return ret.iterator();
                     }
                 });
 
-
+                //words.reduce()
 
                 words.foreach(new VoidFunction<String>() {
                     @Override
@@ -52,6 +66,7 @@ public class RddHelloWorld {
                         System.out.println(s);
                     }
                 });
+                accumulator.value();
         sc.close();
     }
 }
