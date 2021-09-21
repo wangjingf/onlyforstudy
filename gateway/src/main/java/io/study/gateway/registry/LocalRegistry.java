@@ -16,11 +16,11 @@ public class LocalRegistry extends AbstractRegistry {
 
     @Override
     public void start() {
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(metricRegistry)
+        /*ConsoleReporter reporter = ConsoleReporter.forRegistry(metricRegistry)
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
-        reporter.start(5, TimeUnit.SECONDS);
+        reporter.start(5, TimeUnit.SECONDS);*/
     }
 
     @Override

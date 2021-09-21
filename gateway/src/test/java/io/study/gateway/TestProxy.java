@@ -46,8 +46,8 @@ public class TestProxy extends BaseTestCase {
     }
     ApiConfig newApi(String uri,ProxyProtocol proxyProtocol){
         ApiConfig config = new ApiConfig();
-        config.setSrcUri("/html");
-        config.setDestUri("html");
+        config.setSrcUri(uri);
+        config.setDestUri(uri);
         config.setPolicy(BalancePolicy.LeastActive);
         config.setProxyProtocol(proxyProtocol);
         config.setTimeout(1000);
