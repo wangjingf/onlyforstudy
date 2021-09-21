@@ -7,17 +7,17 @@ log文件定位顺序：
  -> log4j2.yaml -> log4j2.json -> log4j2.xml
 -->
 <!-- 如果配置了monitorInterval，那么log4j2每隔一段时间就会检查一遍这个文件是否修改。最小是5s -->
-<Configuration monitorInterval="10" packages="io.entropy.log">
+<Configuration monitorInterval="10" packages="io.study">
     <!--全局属性-->
     <Properties>
         <Property name="APP_NAME">entropy</Property>
-        <Property name="LOG_FILE_PATH">d:/temp/logs/cxf</Property>
+        <Property name="LOG_FILE_PATH">d:/export/Logs/test.server.com/</Property>
         <!--设置日志输出格式-->
         <Property name="PATTERN_FORMAT">%d{HH:mm:ss.SSS} %c %-5level - %msg%xEx%n</Property>
     </Properties>
 
     <!-- 通过EntropyLogContext可以跳过具体logger的log级别设定，确定是否输出log -->
-  <!--  <EntropyLogFilter/>-->
+   <!-- <EntropyLogFilter/>-->
 
     <Appenders>
         <!--控制台输出-->
@@ -90,14 +90,14 @@ log文件定位顺序：
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="RollingFile"/>
             <AppenderRef ref="RollingFileError" level="error"/>
-            <!--<AppenderRef ref="Notify" />-->
+
         </AsyncLogger>
 
         <AsyncLogger name="io.entropy.resource" level="debug" additivity="false">
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="RollingFile"/>
             <AppenderRef ref="RollingFileError" level="error"/>
-           <!-- <AppenderRef ref="Notify" />-->
+
         </AsyncLogger>
 
         <!-- 使用异步输出. 如果上面再使用additive=true则会出现并发修改冲突 -->

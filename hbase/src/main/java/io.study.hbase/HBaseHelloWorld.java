@@ -18,10 +18,21 @@ public class HBaseHelloWorld {
     static final Logger logger = LoggerFactory.getLogger(HBaseHelloWorld.class);
     static Connection connection;
     static Admin admin;
-    public static void getConf() throws IOException {
+    /*static{
+        try {
+            connection = getConf();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+    public static Connection getConf() throws IOException {
         Configuration config = HBaseConfiguration.create();
-        Connection connection = ConnectionFactory.createConnection(config);
+        //config.set("hbase.master",local);
+        config.set("hbase.zookeeper.quorum", "localhost");
+
+        connection = ConnectionFactory.createConnection(config);
         Admin admin = connection.getAdmin();
+        return connection;
     }
     public static void putIntoHbase()throws IOException {
         TableName tn = TableName.valueOf("my_table2");
