@@ -19,7 +19,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <spring.version>5.3.8</spring.version>
-        <log4j.version>2.11.0</log4j.version>
+        <log4j.version>2.15.0</log4j.version>
         <hibernate.version>
             5.2.18.Final
         </hibernate.version>
