@@ -24,7 +24,7 @@
             5.2.18.Final
         </hibernate.version>
         <mysql.version>5.1.6</mysql.version>
-        <springboot.version>2.5.2</springboot.version>
+        <springboot.version>2.5.12</springboot.version>
         <jackson.version>2.4.1</jackson.version>
     </properties>
     <parent>
