@@ -18,7 +18,7 @@
     <name>cxf3.1 Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
-        <spring.version>5.3.8</spring.version>
+        <spring.version>5.3.20</spring.version>
         <log4j.version>2.11.0</log4j.version>
         <hibernate.version>
             5.2.18.Final
